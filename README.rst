@@ -4,11 +4,14 @@ bcl
 
 Python library that provides a simple interface for symmetric (i.e., secret-key) and asymmetric (i.e., public-key) encryption/decryption primitives.
 
-|pypi|
+|pypi| |travis|
 
 .. |pypi| image:: https://badge.fury.io/py/bcl.svg
    :target: https://badge.fury.io/py/bcl
    :alt: PyPI version and link.
+
+.. |travis| image:: https://travis-ci.com/nthparty/bcl.svg?branch=master
+    :target: https://travis-ci.com/nthparty/bcl
 
 Purpose
 -------

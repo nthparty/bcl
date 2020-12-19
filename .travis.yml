@@ -17,7 +17,6 @@ matrix:
     - os: osx
       language: generic
       before_install:
-        - brew update
         - brew install python@3.8
         - sudo python3 -m pip install -U pip
         - sudo python3 -m pip install setuptools
@@ -28,6 +27,8 @@ matrix:
         - sudo python3 -m pip install .
     - os: windows
       language: sh
+      before_install:
+        - choco install python --version=3.8.3
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
       install:
         - pip install pylint

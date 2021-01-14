@@ -6,7 +6,6 @@ primitives.
 
 import doctest
 import nacl.utils
-import nacl.encoding
 import nacl.secret
 import nacl.public
 
@@ -64,19 +63,14 @@ class asymmetric():
         """
         Create a public key using a secret key (a bytes-like object of length 32).
         """
-        return nacl.public\
-            .PrivateKey(secret).public_key\
-            .encode(encoder=nacl.encoding.Base64Encoder)\
-            .decode()
+        return bytes(nacl.public.PrivateKey(secret).public_key)
 
     @staticmethod
     def encrypt(public, plaintext):
         """
         Encrypt a plaintext (a bytes-like object) using the supplied public key.
         """
-        public_key = nacl.public.PublicKey(
-            public, encoder=nacl.encoding.Base64Encoder
-        )
+        public_key = nacl.public.PublicKey(public)
         return bytes(nacl.public.SealedBox(public_key).encrypt(plaintext))
 
     @staticmethod

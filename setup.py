@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="bcl",
-    version="0.1.1",
+    version="1.0.0",
     packages=["bcl",],
     install_requires=["pynacl",],
     license="MIT",

@@ -11,7 +11,7 @@ Python library that provides a simple interface for symmetric (i.e., secret-key)
    :alt: PyPI version and link.
 
 .. |travis| image:: https://travis-ci.com/nthparty/bcl.svg?branch=main
-    :target: https://travis-ci.com/nthparty/bcl
+   :target: https://travis-ci.com/nthparty/bcl
 
 .. |coveralls| image:: https://coveralls.io/repos/github/nthparty/bcl/badge.svg?branch=main
    :target: https://coveralls.io/github/nthparty/bcl?branch=main

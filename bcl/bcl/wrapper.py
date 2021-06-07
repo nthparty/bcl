@@ -5,7 +5,7 @@ secret-key) and asymmetric (i.e., public-key) encryption/decryption
 primitives.
 """
 
-# from __future__ import annotations
+from __future__ import annotations
 import doctest
 import base64
 import wrappers.utils
@@ -152,8 +152,7 @@ class asymmetric:
         )
 
     @staticmethod
-    def decrypt(secret_key, ciphertext):
-    # def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
+    def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
         """
         Decrypt a ciphertext (a bytes-like object) using the supplied secret key.
         """

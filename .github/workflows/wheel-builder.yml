@@ -9,9 +9,10 @@ jobs:
     strategy:
       matrix:
         PYTHON: [
-          "cp27-cp27m", "cp27-cp27mu",
-          "cp37-cp37m", "cp38-cp38", "cp39-cp39",
-          "cp35-cp35m", "cp35-cp35m", "cp36-cp36m"
+          # "cp27-cp27m", "cp27-cp27mu",
+          "cp37-cp37m", "cp38-cp38",
+          # "cp39-cp39",
+          # "cp35-cp35m", "cp35-cp35m", "cp36-cp36m"
         ]
     name: "Python ${{ matrix.PYTHON }} for manylinux1"
     steps:

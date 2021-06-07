@@ -1,14 +1,6 @@
 name: Wheel Builder
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        required: true
-on:
-  push:
-    inputs:
-      version:
-        2.0.0
+  push
 
 jobs:
   manylinux:
@@ -27,7 +19,7 @@ jobs:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies
         run: .venv/bin/pip install -U pip cffi six
-      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-${{ github.event.inputs.version }}.zip && unzip bcl*.zip && mkdir tmpwheelhouse
+      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-2.0.0.zip && unzip bcl*.zip && mkdir tmpwheelhouse
 
       - run: |
           REGEX="cp3([0-9])*"
@@ -44,7 +36,7 @@ jobs:
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ github.event.inputs.version }}-manylinux1-${{ matrix.PYTHON }}"
+          name: "bcl-2.0.0-manylinux1-${{ matrix.PYTHON }}"
           path: bcl-wheelhouse/
   macos:
     runs-on: macos-latest
@@ -66,7 +58,7 @@ jobs:
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi six
-      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-${{ github.event.inputs.version }}.zip && unzip bcl*.zip && mkdir wheelhouse
+      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-2.0.0.zip && unzip bcl*.zip && mkdir wheelhouse
       - name: Build the wheel
         run: |
             REGEX="3\.([0-9])*"
@@ -87,7 +79,7 @@ jobs:
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ github.event.inputs.version }}-macOS-${{ matrix.PYTHON.VERSION }}"
+          name: "bcl-2.0.0-macOS-${{ matrix.PYTHON.VERSION }}"
           path: bcl-wheelhouse/
   windows:
     runs-on: windows-latest
@@ -137,5 +129,5 @@ jobs:
       - run: move wheelhouse\bcl*.whl bcl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ github.event.inputs.version }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
+          name: "bcl-2.0.0-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
           path: bcl-wheelhouse\

@@ -5,6 +5,7 @@ secret-key) and asymmetric (i.e., public-key) encryption/decryption
 primitives.
 """
 
+# from __future__ import annotations
 import doctest
 import base64
 import bcl.utils
@@ -17,11 +18,13 @@ class raw(bytes):
     plaintext, or ciphertext.
     """
     @classmethod
-    def from_base64(cls, s: str) -> raw:
+    def from_base64(cls, s):
+    # def from_base64(cls, s: str) -> raw:
         """Convert Base64 UTF-8 string representation of a raw value."""
         return bytes.__new__(cls, base64.standard_b64decode(s))
 
-    def to_base64(self: raw) -> str:
+    def to_base64(self):
+    # def to_base64(self: raw) -> str:
         """Convert to equivalent Base64 UTF-8 string representation."""
         return base64.standard_b64encode(self).decode('utf-8')
 
@@ -79,21 +82,24 @@ class symmetric:
     True
     """
     @staticmethod
-    def secret() -> secret:
+    def secret():
+    # def secret() -> secret:
         """
         Create a secret key.
         """
         return secret(bcl.utils.random())
 
     @staticmethod
-    def encrypt(secret_key: secret, plaintext: plain) -> cipher:
+    def encrypt(secret_key, plaintext):
+    # def encrypt(secret_key: secret, plaintext: plain) -> cipher:
         """
         Encrypt a plaintext (a bytes-like object) using the supplied secret key.
         """
         return cipher(bcl.secret.SecretBox(secret_key).encrypt(plaintext))
 
     @staticmethod
-    def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
+    def decrypt(secret_key, ciphertext):
+    # def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
         """
         Decrypt a ciphertext (a bytes-like object) using the supplied secret key.
         """
@@ -119,21 +125,24 @@ class asymmetric:
     True
     """
     @staticmethod
-    def secret() -> secret:
+    def secret():
+    # def secret() -> secret:
         """
         Create a secret key.
         """
         return secret(bcl.utils.random())
 
     @staticmethod
-    def public(secret_key: secret) -> public:
+    def public(secret_key):
+    # def public(secret_key: secret) -> public:
         """
         Create a public key using a secret key (a bytes-like object of length 32).
         """
         return public(bcl.public.PrivateKey(secret_key).public_key)
 
     @staticmethod
-    def encrypt(public_key: public, plaintext: plain) -> cipher:
+    def encrypt(public_key, plaintext):
+    # def encrypt(public_key: public, plaintext: plain) -> cipher:
         """
         Encrypt a plaintext (a bytes-like object) using the supplied public key.
         """
@@ -143,7 +152,8 @@ class asymmetric:
         )
 
     @staticmethod
-    def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
+    def decrypt(secret_key, ciphertext):
+    # def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
         """
         Decrypt a ciphertext (a bytes-like object) using the supplied secret key.
         """

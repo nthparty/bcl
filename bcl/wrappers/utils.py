@@ -18,13 +18,13 @@ import os
 
 import six
 
-import bcl.bindings
-from bcl import encoding
+import wrappers.bindings
+from wrappers import encoding
 
 
 class EncryptedMessage(bytes):
     """
-    A bytes subclass that holds a messaged that has been encrypted by a
+    A bytes suwrappersass that holds a messaged that has been encrypted by a
     :class:`SecretBox`.
     """
 
@@ -79,6 +79,6 @@ def randombytes_deterministic(size, seed, encoder=encoding.RawEncoder):
     :param encoder: The encoder class used to encode the produced bytes
     :rtype: bytes
     """
-    raw_data = bcl.bindings.randombytes_buf_deterministic(size, seed)
+    raw_data = wrappers.bindings.randombytes_buf_deterministic(size, seed)
 
     return encoder.encode(raw_data)

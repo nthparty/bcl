@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from bcl.bindings.crypto_box import (
+from wrappers.bindings.crypto_box import (
     crypto_box,
     crypto_box_BEFORENMBYTES,
     crypto_box_BOXZEROBYTES,
@@ -33,13 +33,13 @@ from bcl.bindings.crypto_box import (
     crypto_box_seal_open,
     crypto_box_seed_keypair,
 )
-from bcl.bindings.crypto_scalarmult import (
+from wrappers.bindings.crypto_scalarmult import (
     crypto_scalarmult,
     crypto_scalarmult_BYTES,
     crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base,
 )
-from bcl.bindings.crypto_secretbox import (
+from wrappers.bindings.crypto_secretbox import (
     crypto_secretbox,
     crypto_secretbox_BOXZEROBYTES,
     crypto_secretbox_KEYBYTES,
@@ -49,12 +49,12 @@ from bcl.bindings.crypto_secretbox import (
     crypto_secretbox_ZEROBYTES,
     crypto_secretbox_open,
 )
-from bcl.bindings.randombytes import (
+from wrappers.bindings.randombytes import (
     randombytes,
     randombytes_buf_deterministic,
 )
-from bcl.bindings.sodium_core import sodium_init
-from bcl.bindings.utils import (
+from wrappers.bindings.sodium_core import sodium_init
+from wrappers.bindings.utils import (
     sodium_add,
     sodium_increment,
     sodium_memcmp,

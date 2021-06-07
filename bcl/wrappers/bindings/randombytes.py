@@ -14,8 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from bcl import exceptions as exc
-from bcl._sodium import ffi, lib
+from wrappers import exceptions as exc
+from wrappers._sodium import ffi, lib
 
 randombytes_SEEDBYTES = lib.randombytes_seedbytes()
 

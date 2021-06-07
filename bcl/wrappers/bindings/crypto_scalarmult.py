@@ -14,9 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
-from bcl import exceptions as exc
-from bcl._sodium import ffi, lib
-from bcl.exceptions import ensure
+from wrappers import exceptions as exc
+from wrappers._sodium import ffi, lib
+from wrappers.exceptions import ensure
 
 
 has_crypto_scalarmult_ed25519 = bool(lib.PYNACL_HAS_CRYPTO_SCALARMULT_ED25519)
@@ -93,7 +93,7 @@ def crypto_scalarmult_ed25519_base(n):
     :return: a point on the edwards25519 curve, represented as a
              :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
     :rtype: bytes
-    :raises bcl.exceptions.UnavailableError: If called when using a
+    :raises wrappers.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
     ensure(
@@ -130,7 +130,7 @@ def crypto_scalarmult_ed25519_base_noclamp(n):
     :return: a point on the edwards25519 curve, represented as a
              :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
     :rtype: bytes
-    :raises bcl.exceptions.UnavailableError: If called when using a
+    :raises wrappers.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
     ensure(
@@ -173,7 +173,7 @@ def crypto_scalarmult_ed25519(n, p):
     :return: a point on the edwards25519 curve, represented as a
              :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
     :rtype: bytes
-    :raises bcl.exceptions.UnavailableError: If called when using a
+    :raises wrappers.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
     ensure(
@@ -222,7 +222,7 @@ def crypto_scalarmult_ed25519_noclamp(n, p):
     :return: a point on the edwards25519 curve, represented as a
              :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
     :rtype: bytes
-    :raises bcl.exceptions.UnavailableError: If called when using a
+    :raises wrappers.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
     ensure(
@@ -267,7 +267,7 @@ def crypto_scalarmult_ristretto255_base(n):
     :return: a point on the edwards25519 curve, represented as a
              :py:data:`.crypto_scalarmult_ristretto255_BYTES` long bytes sequence
     :rtype: bytes
-    :raises bcl.exceptions.UnavailableError: If called when using a
+    :raises wrappers.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
 
@@ -305,7 +305,7 @@ def crypto_scalarmult_ristretto255(n, p):
     :return: a point on the edwards25519 curve, represented as a
              :py:data:`.crypto_scalarmult_ristretto255_BYTES` long bytes sequence
     :rtype: bytes
-    :raises bcl.exceptions.UnavailableError: If called when using a
+    :raises wrappers.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
 

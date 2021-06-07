@@ -17,7 +17,7 @@ from __future__ import absolute_import, division, print_function
 
 class CryptoError(Exception):
     """
-    Base exception for all bcl related errors
+    Base exception for all wrappers related errors
     """
 
 
@@ -53,7 +53,7 @@ class CryptPrefixError(InvalidkeyError):
 
 class UnavailableError(RuntimeError):
     """
-    is a subclass of :class:`~bcl.exceptions.RuntimeError`, raised when
+    is a subclass of :class:`~wrappers.exceptions.RuntimeError`, raised when
     trying to call functions not available in a minimal build of
     libsodium.
     """

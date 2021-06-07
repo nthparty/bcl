@@ -130,3 +130,5 @@ dmypy.json
 
 # Coverage reports
 cover/
+
+.DS_Store

@@ -5,7 +5,6 @@ secret-key) and asymmetric (i.e., public-key) encryption/decryption
 primitives.
 """
 
-from __future__ import annotations
 import doctest
 import base64
 import bcl.utils

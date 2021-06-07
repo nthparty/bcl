@@ -200,7 +200,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="bcl",
-    version="1.0.0",
+    version="2.0.0",
     license="MIT",
     url="https://github.com/nthparty/bcl",
     author="Andrei Lapets",

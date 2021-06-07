@@ -20,7 +20,7 @@ Purpose
 -------
 This library provides simple and straightforward methods for symmetric (i.e., secret-key) and asymmetric (i.e., public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying libraries.
 
-The library's name is a reference to `Boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_). However, it can also be an acronym for *basic cryptographic library*.
+The library's name is a reference to `Boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_. However, it can also be an acronym for *basic cryptographic library*.
 
 Package Installation and Usage
 ------------------------------

@@ -18,7 +18,7 @@ jobs:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies
         run: .venv/bin/pip install -U pip cffi six
-      - run: curl -L https://github.com/nthparty/bcl/archive/refs/heads/master.zip --output bcl-${{ github.event.inputs.version }}.zip && unzip bcl*.zip && mkdir tmpwheelhouse
+      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-${{ github.event.inputs.version }}.zip && unzip bcl*.zip && mkdir tmpwheelhouse
 
       - run: |
           REGEX="cp3([0-9])*"
@@ -57,7 +57,7 @@ jobs:
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi six
-      - run: curl -L https://github.com/nthparty/bcl/archive/refs/heads/master.zip --output bcl-${{ github.event.inputs.version }}.zip && unzip bcl*.zip && mkdir wheelhouse
+      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-${{ github.event.inputs.version }}.zip && unzip bcl*.zip && mkdir wheelhouse
       - name: Build the wheel
         run: |
             REGEX="3\.([0-9])*"

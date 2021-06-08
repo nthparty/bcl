@@ -32,6 +32,9 @@ jobs:
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
       - run: |
           .venv/bin/python -c "import bcl; s = bcl.asymmetric.secret(); p = bcl.asymmetric.public(s); c = bcl.asymmetric.encrypt(p, b'Test'); assert bcl.asymmetric.decrypt(s, c) == b'Test'"
+          ls .
+          ls ..
+          ls b*
           .venv/bin/python -m pylint bcl-master/bcl/bcl  # Pylint
           .venv/bin/python bcl-master/bcl/bcl/wrapper.py -v  # DocTest
       - run: mkdir bcl-wheelhouse
@@ -77,8 +80,8 @@ jobs:
       - run: venv/bin/pip install -f wheelhouse --no-index bcl
       - run: |
           venv/bin/python -c "import bcl; s = bcl.asymmetric.secret(); p = bcl.asymmetric.public(s); c = bcl.asymmetric.encrypt(p, b'Test'); assert bcl.asymmetric.decrypt(s, c) == b'Test'"
-          venv/bin/python -m pylint bcl-master/bcl/bcl  # Pylint
-          venv/bin/python bcl-master/bcl/bcl/wrapper.py -v  # DocTest
+          venv/bin/python -m pylint bcl/bcl  # Pylint
+          venv/bin/python bcl/bcl/wrapper.py -v  # DocTest
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1

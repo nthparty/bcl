@@ -18,7 +18,7 @@ jobs:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi six
+        run: .venv/bin/pip install -U pip cffi six pylint coverage nose
       - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-2.0.0.zip && unzip bcl*.zip && mkdir tmpwheelhouse
 
       - run: |
@@ -32,6 +32,8 @@ jobs:
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
       - run: |
           .venv/bin/python -c "import bcl; s = bcl.asymmetric.secret(); p = bcl.asymmetric.public(s); c = bcl.asymmetric.encrypt(p, b'Test'); assert bcl.asymmetric.decrypt(s, c) == b'Test'"
+          .venv/bin/python -m pylint bylint bcl/bcl  # Pylint
+          .venv/bin/python bcl/bcl/wrapper.py -v  # DocTest
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
@@ -57,7 +59,7 @@ jobs:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
-      - run: venv/bin/pip install -U pip wheel cffi six
+      - run: venv/bin/pip install -U pip wheel cffi six pylint coverage nose
       - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-2.0.0.zip && unzip bcl*.zip && mkdir wheelhouse
       - name: Build the wheel
         run: |
@@ -75,6 +77,8 @@ jobs:
       - run: venv/bin/pip install -f wheelhouse --no-index bcl
       - run: |
           venv/bin/python -c "import bcl; s = bcl.asymmetric.secret(); p = bcl.asymmetric.public(s); c = bcl.asymmetric.encrypt(p, b'Test'); assert bcl.asymmetric.decrypt(s, c) == b'Test'"
+          venv/bin/python -m pylint bylint bcl/bcl  # Pylint
+          venv/bin/python bcl/bcl/wrapper.py -v  # DocTest
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
@@ -108,7 +112,7 @@ jobs:
           echo "LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;$LIB" >> $GITHUB_ENV
         shell: bash
       - name: Install wheel and our Python dependencies
-        run: python -m pip install -U pip wheel cffi six
+        run: python -m pip install -U pip wheel cffi six pylint coverage nose
         shell: bash
       - name: Build the wheel
         run: |
@@ -125,6 +129,8 @@ jobs:
       - name: Test the installed wheel
         run: |
           python -c "import bcl; s = bcl.asymmetric.secret(); p = bcl.asymmetric.public(s); c = bcl.asymmetric.encrypt(p, b'Test'); assert bcl.asymmetric.decrypt(s, c) == b'Test'"
+          python -m pylint bcl/bcl  # Pylint
+          python bcl/bcl/wrapper.py -v  # DocTest
       - run: mkdir bcl-wheelhouse
       - run: move wheelhouse\bcl*.whl bcl-wheelhouse\
       - uses: actions/upload-artifact@v1

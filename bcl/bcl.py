@@ -72,7 +72,7 @@ class symmetric:
     True
     >>> isinstance(c, cipher)
     True
-    >>> c == secret.from_base64(c.to_base64())
+    >>> c == cipher.from_base64(c.to_base64())
     True
     >>> symmetric.decrypt(s, c) == x
     True

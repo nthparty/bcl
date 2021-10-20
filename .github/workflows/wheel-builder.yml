@@ -15,6 +15,7 @@ jobs:
         ]
     name: "Python ${{ matrix.PYTHON }} for manylinux1"
     steps:
+      - run: yum -y install libffi-devel
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies

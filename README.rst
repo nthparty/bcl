@@ -4,27 +4,21 @@ bcl
 
 Python library that provides a simple interface for symmetric (i.e., secret-key) and asymmetric (i.e., public-key) encryption/decryption primitives.
 
-|pypi| |travis| |coveralls|
+|pypi|
 
 .. |pypi| image:: https://badge.fury.io/py/bcl.svg
    :target: https://badge.fury.io/py/bcl
    :alt: PyPI version and link.
 
-.. |travis| image:: https://travis-ci.com/nthparty/bcl.svg?branch=main
-   :target: https://travis-ci.com/nthparty/bcl
-
-.. |coveralls| image:: https://coveralls.io/repos/github/nthparty/bcl/badge.svg?branch=main
-   :target: https://coveralls.io/github/nthparty/bcl?branch=main
-
 Purpose
 -------
 This library provides simple and straightforward methods for symmetric (i.e., secret-key) and asymmetric (i.e., public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying libraries.
 
-The library's name is a reference to `Boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_. However, it can also be an acronym for *basic cryptographic library*.
+The library's name is a reference to `boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_. However, it can also be an acronym for *basic cryptographic library*.
 
 Package Installation and Usage
 ------------------------------
-The package is available on PyPI::
+The package is available on `PyPI <https://pypi.org/project/bcl/>`_::
 
     python -m pip install bcl
 
@@ -37,7 +31,8 @@ Testing and Conventions
 -----------------------
 All unit tests are executed and their coverage is measured when using `nose <https://nose.readthedocs.io/>`_ (see ``setup.cfg`` for configution details)::
 
-    nosetests
+    python -m pip install nose coverage
+    nosetests --cover-erase
 
 Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
 
@@ -45,11 +40,12 @@ Alternatively, all unit tests are included in the module itself and can be execu
 
 Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 
-    pylint bcl
+    python -m pip install pylint
+    pylint bcl/bcl
 
 Contributions
 -------------
-In order to contribute to the source code, open an issue or submit a pull request on the GitHub page for this library.
+In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/nthparty/bcl>`_ for this library.
 
 Versioning
 ----------

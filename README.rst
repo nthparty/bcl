@@ -27,6 +27,14 @@ The library can be imported in the usual ways::
     import bcl
     from bcl import *
 
+Manual installation (building from source)
+------------------------------------------
+.. code:: shell
+
+    # Build as a wheel and install
+    python setup.py bdist_wheel
+    python -m pip install -f dist --no-index bcl
+
 Testing and Conventions
 -----------------------
 All unit tests are executed and their coverage is measured when using `nose <https://nose.readthedocs.io/>`_ (see ``setup.cfg`` for configution details)::
@@ -38,10 +46,23 @@ Alternatively, all unit tests are included in the module itself and can be execu
 
     python bcl/bcl/wrapper.py -v
 
+When using the above, be sure the installed version of bcl is the one you would like to test.
+
 Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 
     python -m pip install pylint
     pylint bcl/bcl
+    
+Publishing (for Nth Party)
+--------------------------
+.. code:: shell
+
+    # Package source distribution
+    python setup.py sdist
+    
+    # Run wheel-builder.yml and save/download artifacts locally, e.g. in ./dist
+    # Then, upload to PyPi
+    twine upload dist/bcl-2.0.0*
 
 Contributions
 -------------

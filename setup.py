@@ -203,8 +203,8 @@ setup(
     version="2.0.0",
     license="MIT",
     url="https://github.com/nthparty/bcl",
-    author="Andrei Lapets",
-    author_email="a@lapets.io",
+    author="Nth Party, Ltd.",
+    author_email="team@nthparty.com",
     description="Python library that provides a simple interface "+\
                 "for symmetric (i.e., secret-key) and asymmetric "+\
                 "(i.e., public-key) encryption/decryption primitives.",

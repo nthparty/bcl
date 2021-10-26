@@ -1,20 +1,14 @@
-"""Basic cryptographic library.
-
+"""
 Python library that provides a simple interface for symmetric (i.e.,
 secret-key) and asymmetric (i.e., public-key) encryption/decryption
 primitives.
 """
-
 from __future__ import annotations
 import doctest
 import base64
-if __name__ == "__main__":
-    import bcl  # pylint: disable=cyclic-import
-    wrappers = bcl._lib.wrapper.wrappers  # pylint: disable=protected-access
-else:
-    import wrappers.utils
-    import wrappers.secret
-    import wrappers.public
+import wrappers.utils
+import wrappers.secret
+import wrappers.public
 
 class raw(bytes):
     """

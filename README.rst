@@ -27,16 +27,21 @@ The library can be imported in the usual ways::
     import bcl
     from bcl import *
 
-Manual installation (building from source)
-------------------------------------------
-.. code:: shell
+Manual Installation (via Building from Source)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The package can be installed manually using the below sequence of commands::
 
-    # Build as a wheel and install
+    python -m pip install wheel
     python setup.py bdist_wheel
-    python -m pip install -f dist --no-index bcl
+    python -m pip install -f dist --no-index bcl --upgrade
 
 Testing and Conventions
 -----------------------
+To execute tests, it is necessary to build the module and retrieve the compiled libsodium shared library file so that the module file in the source tree has access to it::
+
+    python setup.py bdist_wheel
+    cp build/lib*/wrappers/_sodium*.so bcl/wrappers
+
 All unit tests are executed and their coverage is measured when using `nose <https://nose.readthedocs.io/>`_ (see ``setup.cfg`` for configution details)::
 
     python -m pip install nose coverage
@@ -45,8 +50,6 @@ All unit tests are executed and their coverage is measured when using `nose <htt
 Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
 
     python bcl/bcl/wrapper.py -v
-
-When using the above, be sure the installed version of bcl is the one you would like to test.
 
 Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 

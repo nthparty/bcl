@@ -198,9 +198,12 @@ class build_ext(_build_ext):
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
+name = "bcl"
+version = "2.0.0"
+
 setup(
-    name="bcl",
-    version="2.0.0",
+    name=name,
+    version=version,
     license="MIT",
     url="https://github.com/nthparty/bcl",
     author="Andrei Lapets",

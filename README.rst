@@ -2,7 +2,7 @@
 bcl
 ===
 
-Python library that provides a simple interface for symmetric (i.e., secret-key) and asymmetric (i.e., public-key) encryption/decryption primitives.
+Python library that provides a simple interface for symmetric (*i.e.*, secret-key) and asymmetric (*i.e.*, public-key) encryption/decryption primitives.
 
 |pypi|
 
@@ -12,7 +12,7 @@ Python library that provides a simple interface for symmetric (i.e., secret-key)
 
 Purpose
 -------
-This library provides simple and straightforward methods for symmetric (i.e., secret-key) and asymmetric (i.e., public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying libraries.
+This library provides simple and straightforward methods for symmetric (*i.e.*, secret-key) and asymmetric (*i.e.*, public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying libraries.
 
 The library's name is a reference to `boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_. However, it can also be an acronym for *basic cryptographic library*.
 
@@ -35,12 +35,26 @@ The package can be installed manually using the below sequence of commands::
     python setup.py bdist_wheel
     python -m pip install -f dist --no-index bcl --upgrade
 
-Testing and Conventions
------------------------
-To execute tests, it is necessary to build the module and retrieve the compiled libsodium shared library file so that the module file in the source tree has access to it::
+Preparation for Local Development
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared library file so that the module file in the source tree has access to it::
 
     python setup.py bdist_wheel
     cp build/lib*/wrappers/_sodium*.so bcl/wrappers
+
+Documentation
+-------------
+.. include:: toc.rst
+
+Once the libsodium shared library file is compiled and moved into its designated location (as described in `the relevant subsection above <#preparation-for-local-development>`_), the documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org/>`_::
+
+    cd docs
+    python -m pip install -r requirements.txt
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && make html
+
+Testing and Conventions
+-----------------------
+Before unit tests can be executed, it is first necessary to prepare for local development by compiling and moving into its designated location the libsodium shared library file (as described in `the relevant subsection above <#preparation-for-local-development>`_).
 
 All unit tests are executed and their coverage is measured when using `nose <https://nose.readthedocs.io/>`_ (see ``setup.cfg`` for configution details)::
 
@@ -55,14 +69,14 @@ Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 
     python -m pip install pylint
     pylint bcl/bcl
-    
+
 Publishing (for Nth Party)
 --------------------------
 .. code:: shell
 
     # Package source distribution
     python setup.py sdist
-    
+
     # Run wheel-builder.yml and save/download artifacts locally, e.g. in ./dist
     # Then, upload to PyPi
     twine upload dist/bcl-2.0.0*

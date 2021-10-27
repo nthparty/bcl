@@ -27,7 +27,7 @@ release = version
 author = 'Nth Party, Ltd.'
 copyright = '2020, Nth Party, Ltd' # Period omitted; precedes punctuation.
 
-import bcl  # flake8: noqa
+import bcl # flake8: noqa
 
 # -- General configuration ---------------------------------------------------
 
@@ -61,19 +61,6 @@ autodoc_default_options = {
     ])
 }
 autodoc_preserve_defaults = True
-
-def autodoc_skip_member_handler(app, what, name, obj, skip, options):
-    # # Avoid emitting entries within `native` and `sodium` that are
-    # # duplicates of the top-level definitions.
-    # if name in (''):
-    #     for method in ['']:
-    #         delattr(obj, method)
-
-    return skip
-
-def setup(app):
-    app.connect('autodoc-skip-member', autodoc_skip_member_handler)
-
 
 # -- Options for HTML output -------------------------------------------------
 

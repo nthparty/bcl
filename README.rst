@@ -70,16 +70,15 @@ Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
     python -m pip install pylint
     pylint bcl/bcl
 
-Publishing (for Nth Party)
---------------------------
-.. code:: shell
+Publishing (for Maintainers Only)
+---------------------------------
+The package can be published on PyPI by a package maintainer. First, package the source distribution::
 
-    # Package source distribution
     python setup.py sdist
 
-    # Run wheel-builder.yml and save/download artifacts locally, e.g. in ./dist
-    # Then, upload to PyPi
-    twine upload dist/bcl-2.0.0*
+Next, run ``wheel-builder.yml`` and save/download the built artifacts locally, (*e.g.*, in ``./dist``). Finally, upload the package distribution archive to PyPI (replacing ``?.?.?`` with the appropriate version number)::
+
+    twine upload dist/bcl-?.?.?*
 
 Contributions
 -------------

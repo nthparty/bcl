@@ -27,7 +27,6 @@ release = version
 author = 'Nth Party, Ltd.'
 copyright = '2020, Nth Party, Ltd' # Period omitted; precedes punctuation.
 
-import bcl # flake8: noqa
 
 # -- General configuration ---------------------------------------------------
 
@@ -61,6 +60,7 @@ autodoc_default_options = {
     ])
 }
 autodoc_preserve_defaults = True
+
 
 # -- Options for HTML output -------------------------------------------------
 

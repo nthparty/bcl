@@ -6,9 +6,14 @@ primitives.
 from __future__ import annotations
 import doctest
 import base64
-import wrappers.utils
-import wrappers.secret
-import wrappers.public
+
+# Allow doctests to run when module is executed from root directory.
+if __name__ == "__main__":
+    sys.path.append('bcl') # pragma: no cover
+
+import wrappers.utils # pylint: disable=C0413
+import wrappers.secret # pylint: disable=C0413
+import wrappers.public # pylint: disable=C0413
 
 class raw(bytes):
     """

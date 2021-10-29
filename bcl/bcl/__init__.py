@@ -12,14 +12,9 @@ import base64
 if __name__ == "__main__":
     sys.path.append('bcl') # pragma: no cover
 
-# Do not require below imports to succeed during
-# auto-generation of docs.
-try:
-    import wrappers.utils # pylint: disable=C0413
-    import wrappers.secret # pylint: disable=C0413
-    import wrappers.public # pylint: disable=C0413
-except: # pylint: disable=W0702 # pragma: no cover
-    pass
+import wrappers.utils # pylint: disable=C0413
+import wrappers.secret # pylint: disable=C0413
+import wrappers.public # pylint: disable=C0413
 
 class raw(bytes):
     """

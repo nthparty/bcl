@@ -8,14 +8,10 @@ jobs:
     container: quay.io/pypa/manylinux1_x86_64
     strategy:
       matrix:
-        PYTHON: [
-          # "cp27-cp27m", "cp27-cp27mu",
-          "cp37-cp37m", "cp38-cp38", "cp39-cp39",
-          # "cp35-cp35m", "cp35-cp35m", "cp36-cp36m"
-        ]
+        PYTHON: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
     name: "Python ${{ matrix.PYTHON }} for manylinux1"
     steps:
-      - run: yum -y install libffi-devel
+      - run: yum -y install openssl libffi-devel
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies

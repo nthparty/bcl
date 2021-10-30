@@ -4,6 +4,7 @@ secret-key) and asymmetric (i.e., public-key) encryption/decryption
 primitives.
 """
 from __future__ import annotations
+from typing import Optional
 import doctest
 import sys
 import base64
@@ -13,6 +14,7 @@ if __name__ == "__main__":
     sys.path.append('bcl') # pragma: no cover
 
 import wrappers.utils # pylint: disable=C0413
+import wrappers.bindings # pylint: disable=C0413
 import wrappers.secret # pylint: disable=C0413
 import wrappers.public # pylint: disable=C0413
 
@@ -29,6 +31,27 @@ class raw(bytes):
     def to_base64(self: raw) -> str:
         """Convert to equivalent Base64 UTF-8 string representation."""
         return base64.standard_b64encode(self).decode('utf-8')
+
+class nonce(raw):
+    """
+    Wrapper class for a bytes-like object that represents a nonce.
+
+    >>> isinstance(nonce(), bytes)
+    True
+    >>> noncetext = nonce()
+    >>> noncetext == nonce(noncetext)
+    True
+    """
+    def __new__(cls, noncetext: Optional[nonce] = None) -> nonce:
+        """Convert Base64 UTF-8 string representation of a raw value."""
+        return bytes.__new__(
+            cls,
+            noncetext if noncetext is not None else (
+                wrappers.utils.random(
+                    wrappers.bindings.crypto_secretbox_NONCEBYTES
+                )
+            )
+        )
 
 class key(raw):
     """
@@ -82,6 +105,15 @@ class symmetric:
     True
     >>> isinstance(symmetric.decrypt(s, c), plain)
     True
+
+    When no nonce object is supplied, encryption is non-deterministic.
+    Deterministic encryption is possible by supplying a nonce object.
+
+    >>> symmetric.encrypt(s, x) == symmetric.encrypt(s, x)
+    False
+    >>> n = nonce()
+    >>> symmetric.encrypt(s, x, n) == symmetric.encrypt(s, x, n)
+    True
     """
     @staticmethod
     def secret() -> secret:
@@ -91,11 +123,18 @@ class symmetric:
         return secret(wrappers.utils.random())
 
     @staticmethod
-    def encrypt(secret_key: secret, plaintext: plain) -> cipher:
+    def encrypt(
+            secret_key: secret, plaintext: plain, noncetext: Optional[nonce] = None
+        ) -> cipher:
         """
         Encrypt a plaintext (a bytes-like object) using the supplied secret key.
         """
-        return cipher(wrappers.secret.SecretBox(secret_key).encrypt(plaintext))
+        box = wrappers.secret.SecretBox(secret_key)
+        return cipher(
+            box.encrypt(plaintext)\
+            if noncetext is None else\
+            box.encrypt(plaintext, nonce=noncetext)
+        )
 
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
@@ -142,10 +181,8 @@ class asymmetric:
         """
         Encrypt a plaintext (a bytes-like object) using the supplied public key.
         """
-        return cipher(
-            wrappers.public\
-                .SealedBox(wrappers.public.PublicKey(public_key)).encrypt(plaintext)
-        )
+        box = wrappers.public.SealedBox(wrappers.public.PublicKey(public_key))
+        return cipher(box.encrypt(plaintext))
 
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:

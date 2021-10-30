@@ -5,15 +5,12 @@ on:
 jobs:
   manylinux:
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux1_x86_64
+    container: quay.io/pypa/manylinux2014_x86_64
     strategy:
       matrix:
         PYTHON: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
     name: "Python ${{ matrix.PYTHON }} for manylinux1"
     steps:
-      - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install pyopenssl --upgrade
-      - run: yum clean all
-      - run: yum update -y
       - run: yum -y install libffi-devel
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv

@@ -124,7 +124,7 @@ jobs:
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-          cp build/lib*/wrappers/_sodium*.dll bcl/wrappers
+          cp build/lib*/wrappers/_sodium.pyd bcl/wrappers
           mv dist/bcl*.whl wheelhouse
         shell: cmd
         env:

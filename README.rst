@@ -41,10 +41,10 @@ The package can be installed manually using the below sequence of commands::
 
 Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared library file so that the module file in the source tree has access to it::
+Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared/dynamic library file so that the module file in the source tree has access to it::
 
     python setup.py bdist_wheel
-    cp build/lib*/wrappers/_sodium*.so bcl/wrappers
+    cp build/lib*/wrappers/_sodium*.* bcl/wrappers
 
 Documentation
 -------------

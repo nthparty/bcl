@@ -24,7 +24,7 @@ jobs:
           fi
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
           cp build/lib*/wrappers/_sodium*.so bcl/wrappers
-          mv dist/bcl*.whl ../tmpwheelhouse
+          mv dist/bcl*.whl tmpwheelhouse
       - run: auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
       - run: |

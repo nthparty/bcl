@@ -74,7 +74,7 @@ jobs:
             fi
             rm -f dist/*.*
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
-                ../venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
+                venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
             cp build/lib*/wrappers/_sodium*.so bcl/wrappers
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}

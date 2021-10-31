@@ -56,7 +56,7 @@ jobs:
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
     name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - run: |
           curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
           sudo installer -pkg python.pkg -target /
@@ -65,18 +65,17 @@ jobs:
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi six pylint coverage nose
-      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-2.0.0.zip && unzip bcl*.zip && mkdir wheelhouse
+      - run: mkdir wheelhouse
       - name: Build wheel file.
         run: |
             REGEX="3\.([0-9])*"
             if [[ "$PYTHON_VERSION" =~ $REGEX ]]; then
                 PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
             fi
-            cd bcl-master
             rm -f dist/*.*
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
-                ../venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl ../wheelhouse
-            cd ..
+                ../venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
+            cp build/lib*/wrappers/_sodium*.so bcl/wrappers
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index bcl

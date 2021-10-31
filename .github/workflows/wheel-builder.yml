@@ -101,7 +101,7 @@ jobs:
           - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp35"}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Install Python.
         uses: actions/setup-python@v2.2.2
         with:
@@ -123,7 +123,9 @@ jobs:
         run: |
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/bcl*.whl wheelhouse
+          python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          cp build/lib*/wrappers/_sodium*.dll bcl/wrappers
+          mv dist/bcl*.whl wheelhouse
         shell: cmd
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium

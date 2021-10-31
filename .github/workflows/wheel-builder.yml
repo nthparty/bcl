@@ -1,7 +1,6 @@
 name: Wheel Builder
 on:
   push
-
 jobs:
   manylinux:
     runs-on: ubuntu-latest
@@ -11,27 +10,27 @@ jobs:
         PYTHON: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
     name: "Python ${{ matrix.PYTHON }} for manylinux2014"
     steps:
+      - uses: actions/checkout@v2
       - run: yum -y install libffi-devel
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install Python dependencies.
         run: .venv/bin/pip install -U pip cffi six pylint coverage nose
-      - run: curl -L https://github.com/wyatt-howe/bcl/archive/refs/heads/master.zip --output bcl-2.0.0.zip && unzip bcl*.zip && mkdir tmpwheelhouse
+      - run: mkdir tmpwheelhouse
       - run: |
           REGEX="cp3([0-9])*"
           if [[ "${{ matrix.PYTHON }}" =~ $REGEX ]]; then
               PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
-          cd bcl-master
-          LIBSODIUM_MAKE_ARGS="-j$(nproc)" ../.venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl ../tmpwheelhouse
+          LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
+          cp build/lib*/wrappers/_sodium*.so bcl/wrappers
+          mv dist/bcl*.whl ../tmpwheelhouse
       - run: auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
       - run: |
-          cd bcl-master
           .venv/bin/python -m pylint bcl/bcl # Check against linting rules.
           .venv/bin/python bcl/bcl/__init__.py -v # Run doctests.
           .venv/bin/python -m nose --cover-erase # Test using nose.
-          cd ..
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1

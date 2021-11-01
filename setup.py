@@ -217,8 +217,8 @@ setup(
     tests_require=["nose"],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     package_dir={"": "bcl"},
-    packages=["bcl", "wrappers", "wrappers.bindings"],
-    ext_package="wrappers",
+    packages=["bcl"],
+    ext_package="bcl",
     cffi_modules=[
         "bcl/headers/build.py:ffi",
     ],

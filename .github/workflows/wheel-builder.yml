@@ -23,7 +23,7 @@ jobs:
               PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
-          cp build/lib*/wrappers/_sodium*.so bcl/wrappers
+          cp build/lib*/bcl/_sodium*.so bcl/bcl
           mv dist/bcl*.whl tmpwheelhouse
       - run: auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
@@ -75,7 +75,7 @@ jobs:
             rm -f dist/*.*
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
                 venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
-            cp build/lib*/wrappers/_sodium*.so bcl/wrappers
+            cp build/lib*/bcl/_sodium*.so bcl/bcl
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index bcl
@@ -124,7 +124,7 @@ jobs:
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-          cp build/lib*/wrappers/_sodium.pyd bcl/wrappers
+          cp build/lib*/bcl/_sodium.pyd bcl/bcl
           mv dist/bcl*.whl wheelhouse
         shell: cmd
         env:

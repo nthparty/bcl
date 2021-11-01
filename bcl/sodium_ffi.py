@@ -7,7 +7,7 @@ import os.path
 import shutil
 import cffi
 import tarfile
-import requests
+import urllib.request
 
 def prepare_libsodium_source_tree():
     """
@@ -25,30 +25,27 @@ def prepare_libsodium_source_tree():
     libsodium_folder = './bcl/libsodium'
 
     # Download the source archive to a local path.
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        with open(libsodium_tar_gz_path, 'wb') as libsodium_tar_gz:
-            libsodium_tar_gz.write(response.raw.read())
+    response = urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
 
-        # Extract the archive into a temporary folder (removing
-        # the folder if it already exists).
-        with tarfile.open(libsodium_tar_gz_path) as libsodium_tar_gz:
-            if os.path.exists(libsodium_tar_gz_folder):
-                shutil.rmtree(libsodium_tar_gz_folder)
-            libsodium_tar_gz.extractall(libsodium_tar_gz_folder)
+    # Extract the archive into a temporary folder (removing
+    # the folder if it already exists).
+    with tarfile.open(libsodium_tar_gz_path) as libsodium_tar_gz:
+        if os.path.exists(libsodium_tar_gz_folder):
+            shutil.rmtree(libsodium_tar_gz_folder)
+        libsodium_tar_gz.extractall(libsodium_tar_gz_folder)
 
-        # Move the source tree to the destination folder (removing
-        # the destination folder first, if it already exists).
-        if os.path.exists(libsodium_folder):
-            shutil.rmtree(libsodium_folder)
-        shutil.move(
-            libsodium_tar_gz_folder + '/libsodium-1.0.18',
-            libsodium_folder
-        )
+    # Move the source tree to the destination folder (removing
+    # the destination folder first, if it already exists).
+    if os.path.exists(libsodium_folder):
+        shutil.rmtree(libsodium_folder)
+    shutil.move(
+        libsodium_tar_gz_folder + '/libsodium-1.0.18',
+        libsodium_folder
+    )
 
-        # Remove the archive and temporary folder.
-        os.remove(libsodium_tar_gz_path)
-        shutil.rmtree(libsodium_tar_gz_folder)
+    # Remove the archive and temporary folder.
+    os.remove(libsodium_tar_gz_path)
+    shutil.rmtree(libsodium_tar_gz_folder)
 
 # Retrieve and extract the libsodium source tree.
 prepare_libsodium_source_tree()

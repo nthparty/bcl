@@ -35,7 +35,7 @@ Manual Installation (via Building from Source)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The package can be installed manually using the below sequence of commands::
 
-    python -m pip install wheel
+    python -m pip install setuptools wheel cffi
     python setup.py bdist_wheel
     python -m pip install -f dist --no-index bcl --upgrade
 
@@ -43,7 +43,9 @@ Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared/dynamic library file so that the module file in the source tree has access to it::
 
-    python setup.py bdist_wheel && cp build/lib*/bcl/_sodium*.* bcl
+    python -m pip install setuptools wheel cffi
+    python setup.py bdist_wheel
+    cp build/lib*/bcl/_sodium*.* bcl
 
 Documentation
 -------------

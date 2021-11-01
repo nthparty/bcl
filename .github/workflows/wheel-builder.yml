@@ -15,7 +15,7 @@ jobs:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install Python dependencies.
-        run: .venv/bin/pip install -U pip cffi six pylint coverage nose
+        run: .venv/bin/pip install -U pip setuptools wheel cffi
       - run: mkdir tmpwheelhouse
       - run: |
           REGEX="cp3([0-9])*"
@@ -28,6 +28,7 @@ jobs:
       - run: auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
       - run: |
+          .venv/bin/pip install -U pylint coverage nose
           .venv/bin/python -m pylint bcl # Check against linting rules.
           .venv/bin/python bcl/bcl.py -v # Run doctests.
           .venv/bin/python -m nose --cover-erase # Test using nose.
@@ -64,7 +65,7 @@ jobs:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
-      - run: venv/bin/pip install -U pip wheel cffi six pylint coverage nose
+      - run: venv/bin/pip install -U pip setuptools wheel cffi
       - run: mkdir wheelhouse
       - name: Build wheel file.
         run: |
@@ -80,6 +81,7 @@ jobs:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index bcl
       - run: |
+          venv/bin/pip install -U pip pylint coverage nose
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python bcl/bcl.py -v # Run doctests.
           venv/bin/python -m nose --cover-erase # Test using nose.
@@ -118,7 +120,7 @@ jobs:
           echo "LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;$LIB" >> $GITHUB_ENV
         shell: bash
       - name: Install wheel and Python dependencies.
-        run: python -m pip install -U pip wheel cffi six pylint coverage nose
+        run: python -m pip install -U pip setuptools wheel cffi
         shell: bash
       - name: Build wheel file.
         run: |
@@ -136,6 +138,7 @@ jobs:
         run: pip install -f wheelhouse bcl --no-index
       - name: Test installed wheel.
         run: |
+          python -m pip install -U pip pylint coverage nose
           python -m pylint bcl # Check against linting rules.
           python bcl/bcl.py -v # Run doctests.
           python -m nose --cover-erase # Test using nose.

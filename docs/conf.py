@@ -60,7 +60,7 @@ autodoc_default_options = {
     ])
 }
 autodoc_preserve_defaults = True
-autodoc_mock_imports = ["six", "_sodium"]
+autodoc_mock_imports = ["_sodium"]
 
 
 # -- Options for HTML output -------------------------------------------------

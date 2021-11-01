@@ -24,8 +24,10 @@ def prepare_libsodium_source_tree():
     libsodium_tar_gz_folder = './bcl/libsodium_tar_gz'
     libsodium_folder = './bcl/libsodium'
 
-    # Download the source archive to a local path.
-    urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
+    # Download the source archive to a local path (unless
+    # it is already present).
+    if not os.path.exists(libsodium_tar_gz_path):
+        urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
 
     # Extract the archive into a temporary folder (removing
     # the folder if it already exists).

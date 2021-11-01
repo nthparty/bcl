@@ -18,6 +18,9 @@ jobs:
         run: .venv/bin/pip install -U pip setuptools wheel cffi
       - run: mkdir tmpwheelhouse
       - run: |
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+          mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
+      - run: |
           REGEX="cp3([0-9])*"
           if [[ "${{ matrix.PYTHON }}" =~ $REGEX ]]; then
               PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
@@ -67,6 +70,9 @@ jobs:
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip setuptools wheel cffi
       - run: mkdir wheelhouse
+      - run: |
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+          mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
       - name: Build wheel file.
         run: |
             REGEX="3\.([0-9])*"
@@ -110,9 +116,10 @@ jobs:
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
           architecture: ${{ matrix.WINDOWS.ARCH }}
-      - name: Extract libsodium dynamic library file.
+      - name: Download and extract libsodium dynamic library file.
         run: |
-          Expand-Archive bcl/libsodium/dist-build/libsodium-1.0.18-msvc.zip -DestinationPath c:\
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18-msvc.zip
+          Expand-Archive libsodium-1.0.18-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Add sodium to paths.
         run: |

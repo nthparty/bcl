@@ -5,9 +5,9 @@ import sys
 import os
 import os.path
 import shutil
-import cffi
 import tarfile
 import urllib.request
+import cffi
 
 def prepare_libsodium_source_tree():
     """
@@ -25,7 +25,7 @@ def prepare_libsodium_source_tree():
     libsodium_folder = './bcl/libsodium'
 
     # Download the source archive to a local path.
-    response = urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
+    urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
 
     # Extract the archive into a temporary folder (removing
     # the folder if it already exists).

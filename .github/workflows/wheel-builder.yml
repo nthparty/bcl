@@ -11,14 +11,14 @@ jobs:
     name: "Python ${{ matrix.PYTHON }} for manylinux2014"
     steps:
       - uses: actions/checkout@v2
-      - run: yum -y install libffi-devel
+      - run: yum -y install wget libffi-devel
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install Python dependencies.
         run: .venv/bin/pip install -U pip setuptools wheel cffi
       - run: mkdir tmpwheelhouse
       - run: |
-          sudo /bin/sh -c 'wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
       - run: |
           REGEX="cp3([0-9])*"

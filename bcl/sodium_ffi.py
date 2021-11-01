@@ -8,7 +8,8 @@ import cffi
 sodium_ffi = cffi.FFI()
 with open(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), "sodium_ffi.h"),
-    "r"
+    "r",
+    encoding="utf-8"
 ) as sodium_ffi_h:
     sodium_ffi.cdef(sodium_ffi_h.read())
     sodium_ffi.set_source(

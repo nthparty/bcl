@@ -43,7 +43,7 @@ Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared/dynamic library file so that the module file in the source tree has access to it::
 
-    python setup.py bdist_wheel && cp build/lib*/bcl/_sodium*.* bcl/bcl
+    python setup.py bdist_wheel && cp build/lib*/bcl/_sodium*.* bcl
 
 Documentation
 -------------
@@ -66,12 +66,12 @@ All unit tests are executed and their coverage is measured when using `nose <htt
 
 Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
 
-    python bcl/bcl/__init__.py -v
+    python bcl/bcl.py -v
 
 Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 
     python -m pip install pylint
-    pylint bcl/bcl
+    pylint bcl
 
 Publishing (for Maintainers Only)
 ---------------------------------

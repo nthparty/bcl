@@ -36,8 +36,6 @@ def abshere(*paths):
 
 sodium = functools.partial(here, "bcl/libsodium/")
 
-sys.path.insert(0, abshere("bcl"))
-
 def which(name, flags=os.X_OK): # Taken from twisted.
     result = []
     exts = filter(None, os.environ.get("PATHEXT", "").split(os.pathsep))
@@ -184,8 +182,6 @@ setup(
     long_description_content_type="text/x-rst",
     test_suite="nose.collector",
     tests_require=["nose"],
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
-    package_dir={"": "bcl"},
     packages=["bcl"],
     ext_package="bcl",
     cffi_modules=["bcl/sodium_ffi.py:sodium_ffi"],
@@ -194,5 +190,5 @@ setup(
         "build_ext": build_ext,
     },
     distclass=Distribution,
-    zip_safe=False,
+    zip_safe=False
 )

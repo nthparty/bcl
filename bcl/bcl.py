@@ -7,14 +7,13 @@ from __future__ import annotations
 from typing import Optional, Union
 import doctest
 import os
-import sys
 import base64
 
-# Allow doctests to run when module is executed from root directory.
-if __name__ == "__main__":
-    sys.path.append('bcl') # pragma: no cover
-
-from bcl import _sodium # pylint: disable=C0413
+try:
+    from bcl import _sodium
+except: # pylint: disable=W0702 # pragma: no cover
+    # Support for direct invocation in order to execute doctests.
+    import _sodium
 
 crypto_secretbox_KEYBYTES = _sodium.lib.crypto_secretbox_keybytes()
 crypto_secretbox_NONCEBYTES = _sodium.lib.crypto_secretbox_noncebytes()

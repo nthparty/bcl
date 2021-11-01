@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../bcl'))
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -60,7 +60,7 @@ autodoc_default_options = {
     ])
 }
 autodoc_preserve_defaults = True
-autodoc_mock_imports = ["six", "wrapper", "wrappers"]
+autodoc_mock_imports = ["six"]
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -2,7 +2,7 @@ bcl module
 ==========
 
 
-.. automodule:: bcl
+.. automodule:: bcl.bcl
    :members:
    :undoc-members:
    :show-inheritance:

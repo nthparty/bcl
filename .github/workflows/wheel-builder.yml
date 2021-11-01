@@ -23,13 +23,13 @@ jobs:
               PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
-          cp build/lib*/bcl/_sodium*.so bcl/bcl
+          cp build/lib*/bcl/_sodium*.so bcl
           mv dist/bcl*.whl tmpwheelhouse
       - run: auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - run: .venv/bin/pip install bcl --no-index -f wheelhouse/
       - run: |
-          .venv/bin/python -m pylint bcl/bcl # Check against linting rules.
-          .venv/bin/python bcl/bcl/__init__.py -v # Run doctests.
+          .venv/bin/python -m pylint bcl # Check against linting rules.
+          .venv/bin/python bcl/bcl.py -v # Run doctests.
           .venv/bin/python -m nose --cover-erase # Test using nose.
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
@@ -75,12 +75,13 @@ jobs:
             rm -f dist/*.*
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
                 venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
-            cp build/lib*/bcl/_sodium*.so bcl/bcl
+            cp build/lib*/bcl/_sodium*.so bcl
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index bcl
       - run: |
-          venv/bin/python -m pylint bcl/bcl # Check against linting rules.
+          venv/bin/python -m pylint bcl # Check against linting rules.
+          venv/bin/python bcl/bcl.py -v # Run doctests.
           venv/bin/python -m nose --cover-erase # Test using nose.
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
@@ -124,7 +125,7 @@ jobs:
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-          cp build/lib*/bcl/_sodium.pyd bcl/bcl
+          cp build/lib*/bcl/_sodium.pyd bcl
           mv dist/bcl*.whl wheelhouse
         shell: cmd
         env:
@@ -135,7 +136,8 @@ jobs:
         run: pip install -f wheelhouse bcl --no-index
       - name: Test installed wheel.
         run: |
-          python -m pylint bcl/bcl # Check against linting rules.
+          python -m pylint bcl # Check against linting rules.
+          python bcl/bcl.py -v # Run doctests.
           python -m nose --cover-erase # Test using nose.
       - run: mkdir bcl-wheelhouse
       - run: move wheelhouse\bcl*.whl bcl-wheelhouse\

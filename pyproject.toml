@@ -1,0 +1,8 @@
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = [
+    'setuptools',
+    'wheel',
+    'cffi>=1.4.1',
+    'requests>=2.26.0'
+]

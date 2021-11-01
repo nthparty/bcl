@@ -19,7 +19,6 @@ except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
 requirements = ["six", "cffi>=1.4.1"]
-install_requires = ["setuptools", "cffi>=1.4.1", "requests>=2.26.0"]
 
 def here(*paths):
     return os.path.relpath(os.path.join(*paths))
@@ -182,7 +181,6 @@ setup(
         "build_clib": build_clib,
         "build_ext": build_ext,
     },
-    install_requires=install_requires,
     distclass=Distribution,
     zip_safe=False
 )

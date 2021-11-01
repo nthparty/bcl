@@ -63,7 +63,7 @@ except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
 requirements = ["six", "cffi>=1.4.1"]
-setup_requirements = ["setuptools", "cffi>=1.4.1"]
+setup_requirements = ["setuptools", "cffi>=1.4.1", "requests>=2.26.0"]
 
 def here(*paths):
     return os.path.relpath(os.path.join(*paths))

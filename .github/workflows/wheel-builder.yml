@@ -18,7 +18,7 @@ jobs:
         run: .venv/bin/pip install -U pip setuptools wheel cffi
       - run: mkdir tmpwheelhouse
       - run: |
-          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+          sudo /bin/sh -c 'wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
           mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
       - run: |
           REGEX="cp3([0-9])*"
@@ -118,8 +118,8 @@ jobs:
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: Download and extract libsodium dynamic library file.
         run: |
-          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18-msvc.zip
-          Expand-Archive libsodium-1.0.18-msvc.zip -DestinationPath c:\
+          wget -O c:\libsodium-1.0.18-msvc.zip https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18-msvc.zip
+          Expand-Archive c:\libsodium-1.0.18-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Add sodium to paths.
         run: |

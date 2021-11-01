@@ -43,8 +43,7 @@ Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared/dynamic library file so that the module file in the source tree has access to it::
 
-    python setup.py bdist_wheel
-    cp build/lib*/bcl/_sodium*.* bcl/bcl
+    python setup.py bdist_wheel && cp build/lib*/bcl/_sodium*.* bcl/bcl
 
 Documentation
 -------------

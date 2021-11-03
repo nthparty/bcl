@@ -1,7 +1,12 @@
 """
-Python library that provides a simple interface for symmetric (i.e.,
-secret-key) and asymmetric (i.e., public-key) encryption/decryption
+Python library that provides a simple interface for symmetric (*i.e.*,
+secret-key) and asymmetric (*i.e.*, public-key) encryption/decryption
 primitives.
+
+This library exports a number of classes (derived from ``bytes``) for
+representing keys, nonces, plaintexts, and ciphertexts. It also exports
+two classes :obj:`symmetric` and :obj:`asymmetric` that have only static
+methods (for key generation and encryption/decryption).
 """
 from __future__ import annotations
 from typing import Optional, Union
@@ -26,15 +31,29 @@ crypto_box_SEALBYTES = _sodium.lib.crypto_box_sealbytes()
 class raw(bytes):
     """
     Wrapper class for a raw bytes-like object that represents a key,
-    plaintext, or ciphertext.
+    nonce, plaintext, or ciphertext. The derived classes :obj:`secret`,
+    :obj:`public`, :obj:`nonce`, :obj:`plain`, and :obj:`cipher`
+    all inherit the methods defined in this class.
+
+    >>> s = secret.from_base64('1P3mjNnadofjTUkzTmipYl+xdo9z/EaGLbWcJ8MAPBQ=')
+    >>> s.hex()
+    'd4fde68cd9da7687e34d49334e68a9625fb1768f73fc46862db59c27c3003c14'
+    >>> n = nonce.from_base64('JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI')
+    >>> c = symmetric.encrypt(s, 'abc'.encode(), n)
+    >>> c.to_base64()
+    'JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI9dvFXD+om1dHB6UUCt1y4BqrBw=='
     """
     @classmethod
     def from_base64(cls, s: str) -> raw:
-        """Convert Base64 UTF-8 string representation of a raw value."""
+        """
+        Convert Base64 UTF-8 string representation of a raw value.
+        """
         return bytes.__new__(cls, base64.standard_b64decode(s))
 
     def to_base64(self: raw) -> str:
-        """Convert to equivalent Base64 UTF-8 string representation."""
+        """
+        Convert to equivalent Base64 UTF-8 string representation.
+        """
         return base64.standard_b64encode(self).decode('utf-8')
 
 class nonce(raw):
@@ -46,6 +65,10 @@ class nonce(raw):
     >>> noncetext = nonce()
     >>> noncetext == nonce(noncetext)
     True
+
+    The constructor for this class checks that the supplied bytes-like
+    object represents a valid nonce value.
+
     >>> try:
     ...     nonce(bytes([1, 2, 3]))
     ... except ValueError as e:
@@ -69,7 +92,32 @@ class nonce(raw):
 
 class key(raw):
     """
-    Wrapper class for a bytes-like object that represents a key.
+    Wrapper class for a bytes-like object that represents a key. The
+    derived classes :obj:`secret` and :obj:`public` inherit the methods
+    defined in this class.
+
+    Any :obj:`key` objects (including instances of classes derived from
+    :obj:`key`) have a few features and behaviors that distinguish them
+    from bytes-like objects.
+
+    * Comparison of keys (using the built-in ``==`` and ``!=`` operators)
+      is performed in constant time.
+
+    * Keys of different types are not equivalent even if their binary
+      representation is identical.
+
+      >>> b = 'd6vGTIjbxZyMolCW+/p1QFF5hjsYC5Q4x07s+RIMKK8='
+      >>> secret.from_base64(b) == public.from_base64(b)
+      False
+      >>> secret.from_base64(b) != public.from_base64(b)
+      True
+
+    * Consistent with the above property, keys having different classes
+      are distinct when used as keys or items within containers.
+
+      >>> b = 'd6vGTIjbxZyMolCW+/p1QFF5hjsYC5Q4x07s+RIMKK8='
+      >>> len({secret.from_base64(b), public.from_base64(b)})
+      2
     """
     def __hash__(self):
         """
@@ -111,7 +159,7 @@ class key(raw):
             _sodium.lib.sodium_memcmp(k_0_buffer, k_1_buffer, length) == 0
         )
 
-    def __ne__(self, other):
+    def __ne__(self: key, other: key) -> bool:
         """
         Compare two keys (including their subclass). The portion of
         the method that compares byte values runs in constant time.
@@ -131,8 +179,8 @@ class secret(key):
     The constructor for this class can be used to generate an instance
     of a secret key or to convert a bytes-like object into a secret key.
 
-    >>> sk = secret()
-    >>> sk = secret(bytes(sk))
+    >>> s = secret()
+    >>> s = secret(bytes(s))
 
     The constructor for this class checks that the supplied bytes-like
     object is a valid key.
@@ -147,6 +195,10 @@ class secret(key):
     ...     length = crypto_secretbox_KEYBYTES
     ...     str(e) == "secret key must have exactly "  + str(length) + " bytes"
     True
+
+    The methods :obj:`symmetric.encrypt`, :obj:`symmetric.decrypt`, and
+    :obj:`asymmetric.decrypt` only accept key parameters that are objects
+    of this class.
     """
     def __new__(cls, secret_key: Optional[secret] = None) -> secret:
         """
@@ -170,8 +222,8 @@ class public(key):
     The constructor for this class can be used to generate an instance
     of a public key or to convert a bytes-like object into a public key.
 
-    >>> pk = public()
-    >>> pk = public(bytes(pk))
+    >>> p = public()
+    >>> p = public(bytes(p))
 
     The constructor for this class checks that the supplied bytes-like
     object is a valid key.
@@ -186,6 +238,9 @@ class public(key):
     ...     length = crypto_box_PUBLICKEYBYTES
     ...     str(e) == "public key must have exactly "  + str(length) + " bytes"
     True
+
+    The method :obj:`asymmetric.encrypt` only accepts key parameters that
+    are objects of this class.
     """
     def __new__(cls, public_key: Optional[public] = None) -> public:
         """
@@ -206,33 +261,43 @@ class public(key):
 class plain(raw):
     """
     Wrapper class for a bytes-like object that represents a plaintext.
+
+    >>> x = plain(os.urandom(1024))
+    >>> x == plain.from_base64(x.to_base64())
+    True
+
+    The methods :obj:`symmetric.decrypt` and :obj:`asymmetric.decrypt`
+    return objects of this class.
     """
 
 class cipher(raw):
     """
     Wrapper class for a bytes-like object that represents a ciphertext.
+
+    >>> c = cipher(os.urandom(1024))
+    >>> c == cipher.from_base64(c.to_base64())
+    True
+
+    The methods :obj:`symmetric.encrypt` and :obj:`asymmetric.encrypt`
+    return objects of this class, and the methods :obj:`symmetric.decrypt`
+    and :obj:`asymmetric.decrypt` can only be applied to objects of this
+    class.
     """
 
 class symmetric:
     """
-    Symmetric (i.e., secret-key) encryption/decryption primitives.
+    Symmetric (*i.e.*, secret-key) encryption/decryption primitives.
+    This class encapsulates only static methods and should not be
+    instantiated.
 
-    >>> x = plain(os.urandom(1024))
-    >>> isinstance(x, raw)
-    True
-    >>> isinstance(x, plain)
-    True
+    >>> x = 'abc'.encode()
     >>> s = symmetric.secret()
-    >>> isinstance(s, key)
-    True
-    >>> isinstance(s, secret)
+    >>> isinstance(s, key) and isinstance(s, secret)
     True
     >>> s == secret.from_base64(s.to_base64())
     True
     >>> c = symmetric.encrypt(s, x)
-    >>> isinstance(c, raw)
-    True
-    >>> isinstance(c, cipher)
+    >>> isinstance(c, raw) and isinstance(c, cipher)
     True
     >>> c == cipher.from_base64(c.to_base64())
     True
@@ -241,11 +306,15 @@ class symmetric:
     >>> isinstance(symmetric.decrypt(s, c), plain)
     True
 
-    When no nonce object is supplied, encryption is non-deterministic.
-    Deterministic encryption is possible by supplying a nonce object.
+    Encryption is non-deterministic if no :obj:`nonce` parameter is
+    supplied.
 
     >>> symmetric.encrypt(s, x) == symmetric.encrypt(s, x)
     False
+
+    Deterministic encryption is possible by supplying a :obj:`nonce`
+    parameter.
+
     >>> n = nonce()
     >>> symmetric.encrypt(s, x, n) == symmetric.encrypt(s, x, n)
     True
@@ -253,7 +322,7 @@ class symmetric:
     @staticmethod
     def secret() -> secret:
         """
-        Create a secret key.
+        Generate a :obj:`secret` key.
         """
         return secret()
 
@@ -263,8 +332,8 @@ class symmetric:
             noncetext: Optional[nonce] = None
         ) -> cipher:
         """
-        Encrypt a plaintext (a bytes-like object) using the supplied secret key
-        (and a nonce, if it is supplied).
+        Encrypt a plaintext (a bytes-like object) using the supplied
+        :obj:`secret` key (and an optional :obj:`nonce`, if applicable).
 
         >>> m = plain(bytes([1, 2, 3]))
         >>> s = symmetric.secret()
@@ -321,7 +390,8 @@ class symmetric:
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
         """
-        Decrypt a ciphertext (a bytes-like object) using the supplied secret key.
+        Decrypt a ciphertext (an instance of :obj:`cipher`) using the supplied
+        :obj:`secret` key.
 
         >>> m = plain(bytes([1, 2, 3]))
         >>> s = symmetric.secret()
@@ -369,16 +439,16 @@ class symmetric:
 
 class asymmetric:
     """
-    Asymmetric (i.e., public-key) encryption/decryption primitives.
+    Asymmetric (*i.e.*, public-key) encryption/decryption primitives.
+    This class encapsulates only static methods and should not be
+    instantiated.
 
-    >>> x = plain(os.urandom(1024))
-    >>> x == plain.from_base64(x.to_base64())
-    True
+    >>> x = 'abc'.encode()
     >>> s = asymmetric.secret()
-    >>> p = asymmetric.public(s)
-    >>> isinstance(p, key)
+    >>> isinstance(s, key) and isinstance(s, secret)
     True
-    >>> isinstance(p, public)
+    >>> p = asymmetric.public(s)
+    >>> isinstance(p, key) and isinstance(p, public)
     True
     >>> p == public.from_base64(p.to_base64())
     True
@@ -389,25 +459,37 @@ class asymmetric:
     @staticmethod
     def secret() -> secret:
         """
-        Create a secret key.
+        Generate a :obj:`secret` key.
+
+        >>> s = symmetric.secret()
+        >>> isinstance(s, key) and isinstance(s, secret)
+        True
         """
         return secret()
 
     @staticmethod
     def public(secret_key: secret) -> public:
         """
-        Create a public key using a secret key (a bytes-like object of length 32).
+        Generate a :obj:`public` key using a :obj:`secret` key.
+
+        >>> s = asymmetric.secret()
+        >>> p = asymmetric.public(s)
+        >>> isinstance(p, key) and isinstance(p, public)
+        True
         """
         q = _sodium.ffi.new("unsigned char[]", _sodium.lib.crypto_scalarmult_bytes())
         if _sodium.lib.crypto_scalarmult_base(q, secret_key) != 0:
             raise RuntimeError("libsodium error during decryption") # pragma: no cover
 
-        return public(_sodium.ffi.buffer(q, _sodium.lib.crypto_scalarmult_scalarbytes())[:])
+        return public(
+            _sodium.ffi.buffer(q, _sodium.lib.crypto_scalarmult_scalarbytes())[:]
+        )
 
     @staticmethod
     def encrypt(public_key: public, plaintext: Union[plain, bytes, bytearray]) -> cipher:
         """
-        Encrypt a plaintext (a bytes-like object) using the supplied public key.
+        Encrypt a plaintext (any bytes-like object) using the supplied
+        :obj:`public` key.
 
         >>> m = plain(bytes([1, 2, 3]))
         >>> s = asymmetric.secret()
@@ -446,7 +528,8 @@ class asymmetric:
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
         """
-        Decrypt a ciphertext (a bytes-like object) using the supplied secret key.
+        Decrypt a ciphertext (an instance of :obj:`cipher`) using the supplied
+        :obj:`secret` key.
 
         >>> m = plain(bytes([1, 2, 3]))
         >>> s = asymmetric.secret()

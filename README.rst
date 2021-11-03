@@ -20,7 +20,7 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
 
 Purpose
 -------
-This library provides simple and straightforward methods for symmetric (*i.e.*, secret-key) and asymmetric (*i.e.*, public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying libraries.
+This library provides simple and straightforward methods for symmetric (*i.e.*, secret-key) and asymmetric (*i.e.*, public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying cryptographic libraries.
 
 The library's name is a reference to `boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_. However, it can also be an acronym for *basic cryptographic library*.
 
@@ -34,6 +34,59 @@ The library can be imported in the usual ways::
 
     import bcl
     from bcl import *
+
+Examples
+^^^^^^^^
+This library provides concise methods for implementing symmetric encryption workflows::
+
+    >>> from bcl import symmetric
+    >>> s = symmetric.secret() # Generate a secret key.
+    >>> c = symmetric.encrypt(s, "abc".encode())
+    >>> symmetric.decrypt(s, c).decode('utf-8')
+    'abc'
+
+Asymmetric encryption workflows are also supported::
+
+    >>> from bcl import asymmetric
+    >>> s = asymmetric.secret() # Generate a secret key.
+    >>> p = asymmetric.public(s) # Generate a corresponding public key.
+    >>> c = asymmetric.encrypt(p, "abc".encode())
+    >>> asymmetric.decrypt(s, c).decode('utf-8')
+    'abc'
+
+The library also provides a number of classes for representing keys (secret and public), nonces, plaintexts, and ciphertexts. All methods expect and return instances of the appropriate classes::
+
+    >>> from bcl import secret, public, cipher
+    >>> s = asymmetric.secret()
+    >>> isinstance(s, secret)
+    True
+    >>> p = asymmetric.public(s)
+    >>> isinstance(p, public)
+    True
+    >>> c = symmetric.encrypt(s, "abc".encode())
+    >>> type(c)
+    <class 'bcl.bcl.cipher'>
+    >>> symmetric.decrypt(bytes(s), c)
+    Traceback (most recent call last):
+      ...
+    TypeError: can only decrypt using a symmetric secret key
+    >>> symmetric.decrypt(s, bytes(c))
+    Traceback (most recent call last):
+      ...
+    TypeError: can only decrypt a ciphertext
+
+Furthermore, the above classes are derived from ``bytes``, so `all methods and other operators <https://docs.python.org/3/library/stdtypes.html#bytes>`_ supported by ``bytes`` objects are supported::
+
+    >>> p.hex()
+    '0be9cece7fee92809908bd14666eab96b77deebb488c738445d842a6613b7b48'
+
+In addition, Base64 conversion methods are included for all of the above classes to support concise encoding and decoding of objects::
+
+    >>> p.to_base64()
+    'C+nOzn/ukoCZCL0UZm6rlrd97rtIjHOERdhCpmE7e0g='
+    >>> b = 'C+nOzn/ukoCZCL0UZm6rlrd97rtIjHOERdhCpmE7e0g='
+    >>> type(public.from_base64(b))
+    <class 'bcl.bcl.public'>
 
 Manual Installation (via Building from Source)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

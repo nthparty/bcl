@@ -4,7 +4,7 @@ bcl
 
 Python library that provides a simple interface for symmetric (*i.e.*, secret-key) and asymmetric (*i.e.*, public-key) encryption/decryption primitives.
 
-|pypi| |readthedocs| |coveralls|
+|pypi| |readthedocs| |actions| |coveralls|
 
 .. |pypi| image:: https://badge.fury.io/py/bcl.svg
    :target: https://badge.fury.io/py/bcl
@@ -13,6 +13,10 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
 .. |readthedocs| image:: https://readthedocs.org/projects/bcl/badge/?version=latest
    :target: https://bcl.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
+   
+.. |actions| image:: https://github.com/nthparty/bcl/workflows/Wheel%20Builder/badge.svg
+   :target: https://github.com/nthparty/bcl/actions
+   :alt: GitHub Actions status.
 
 .. |coveralls| image:: https://coveralls.io/repos/github/nthparty/bcl/badge.svg?branch=main
    :target: https://coveralls.io/github/nthparty/bcl?branch=main

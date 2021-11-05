@@ -60,6 +60,7 @@ class build_clib(_build_clib):
         files += glob.glob(here("bcl/libsodium/*/*/*/*"))
         files += glob.glob(here("bcl/libsodium/*/*/*/*/*"))
         files += glob.glob(here("bcl/libsodium/*/*/*/*/*/*"))
+        files += glob.glob(here("bcl/libsodium/*/*/*/*/*/*/*"))
         return files
 
     def build_libraries(self, libraries):

@@ -13,8 +13,8 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
 .. |readthedocs| image:: https://readthedocs.org/projects/bcl/badge/?version=latest
    :target: https://bcl.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
-   
-.. |actions| image:: https://github.com/nthparty/bcl/workflows/Wheel%20Builder/badge.svg
+
+.. |actions| image:: https://github.com/nthparty/bcl/workflows/lint-test-build-upload/badge.svg
    :target: https://github.com/nthparty/bcl/actions
    :alt: GitHub Actions status.
 
@@ -92,21 +92,32 @@ In addition, Base64 conversion methods are included for all of the above classes
     >>> type(public.from_base64(b))
     <class 'bcl.bcl.public'>
 
-Manual Installation (via Building from Source)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The package can be installed manually using the below sequence of commands::
+Development, Build, and Manual Installation Instructions
+--------------------------------------------------------
+Developing the library further in a local environment and/or building the library from source requires retrieving and compiling `libsodium <https://doc.libsodium.org/>`_.
+
+Building from Source
+^^^^^^^^^^^^^^^^^^^^
+The library can be built manually from source on Linux and macOS using the sequence of commands below::
 
     python -m pip install setuptools wheel cffi
     python setup.py bdist_wheel
-    python -m pip install -f dist --no-index bcl --upgrade
+
+The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
+
+    wget -O bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
 
 Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Before documentation can be generated or tests can be executed, it is necessary to build the module and retrieve the compiled libsodium shared/dynamic library file so that the module file in the source tree has access to it::
+Before `documentation can be generated <#documentation>`_ or `tests can be executed <#testing-and-conventions>`_, it is necessary to `run the build process <#building-from-source>`_ and then to use the command below to move the compiled libsodium shared/dynamic library file into its designated location (so that the module file ``bcl/bcl.py`` is able to import it)::
 
-    python -m pip install setuptools wheel cffi
-    python setup.py bdist_wheel
     cp build/lib*/bcl/_sodium*.* bcl
+
+Manual Installation
+^^^^^^^^^^^^^^^^^^^
+Once the package is `built <#building-from-source>`_, it can be installed manually using the command below::
+
+    python -m pip install -f dist --no-index bcl --upgrade
 
 Documentation
 -------------
@@ -116,7 +127,7 @@ Once the libsodium shared library file is compiled and moved into its designated
 
     cd docs
     python -m pip install -r requirements.txt
-    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && make html
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../bcl/sodium_ffi.py && make html
 
 Testing and Conventions
 -----------------------
@@ -142,7 +153,7 @@ The package can be published on PyPI by a package maintainer. First, package the
 
     python setup.py sdist
 
-Next, run ``wheel-builder.yml`` and save/download the built artifacts locally, (*e.g.*, in ``./dist``). Finally, upload the package distribution archive to PyPI (replacing ``?.?.?`` with the appropriate version number)::
+Next, run the ``lint-test-build-upload.yml`` workflow and save/download the built artifacts locally, (*e.g.*, in ``./dist``). Finally, upload the package distribution archive to PyPI (replacing ``?.?.?`` with the appropriate version number)::
 
     twine upload dist/bcl-?.?.?*
 

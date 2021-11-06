@@ -1,4 +1,4 @@
-name: Wheel Builder
+name: lint-test-build-upload
 on:
   push
 jobs:

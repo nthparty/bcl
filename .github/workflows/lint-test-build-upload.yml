@@ -141,10 +141,6 @@ jobs:
           cp build/lib*/bcl/_sodium.pyd bcl
           mv dist/bcl*.whl wheelhouse
         shell: cmd
-        env:
-          PYNACL_SODIUM_LIBRARY_NAME: sodium
-          PYNACL_SODIUM_STATIC: 1
-          SODIUM_INSTALL: system
       - name: Test wheel installation.
         run: pip install -f wheelhouse bcl --no-index
       - name: Test installed wheel.

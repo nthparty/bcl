@@ -27,7 +27,13 @@ def prepare_libsodium_source_tree():
     # Download the source archive to a local path (unless
     # it is already present).
     if not os.path.exists(libsodium_tar_gz_path):
-        urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
+        try:
+            urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
+        except:
+            raise RuntimeError(
+                'failed to download libsodium archive and no local ' + \
+                'archive was found at `' + libsodium_tar_gz_path + '`'
+            ) from None
 
     # Extract the archive into a temporary folder (removing
     # the folder if it already exists).
@@ -63,11 +69,8 @@ with open(
     sodium_ffi.set_source(
         "_sodium",
         (
-            (
-                "#define SODIUM_STATIC\n" \
-                if os.getenv("PYNACL_SODIUM_STATIC") is not None else \
-                ""
-            ) + "#include <sodium.h>"
+            ("#define SODIUM_STATIC\n" if sys.platform == "win32" else "") + \
+            "#include <sodium.h>"
         ),
         libraries=["libsodium" if sys.platform == "win32" else "sodium"]
     )

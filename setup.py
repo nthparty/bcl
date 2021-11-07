@@ -8,7 +8,6 @@ import platform
 import glob
 import subprocess
 import errno
-import functools
 from distutils.sysconfig import get_config_vars
 from setuptools import Distribution, setup
 from setuptools.command.build_ext import build_ext as _build_ext
@@ -18,15 +17,7 @@ try:
 except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
-def here(*paths):
-    return os.path.relpath(os.path.join(*paths))
-
-def abshere(*paths):
-    return os.path.abspath(here(*paths))
-
-sodium = functools.partial(here, "bcl/libsodium/")
-
-def which(name, flags=os.X_OK): # Taken from twisted.
+def which(name): # Taken from twisted.
     result = []
     exts = filter(None, os.environ.get("PATHEXT", "").split(os.pathsep))
     path = os.environ.get("PATH", None)
@@ -34,46 +25,44 @@ def which(name, flags=os.X_OK): # Taken from twisted.
         return []
     for p in os.environ.get("PATH", "").split(os.pathsep):
         p = os.path.join(p, name)
-        if os.access(p, flags):
+        if os.access(p, os.X_OK):
             result.append(p)
         for e in exts:
             pext = p + e
-            if os.access(pext, flags):
+            if os.access(pext, os.X_OK):
                 result.append(pext)
     return result
 
-def use_system():
-    if os.environ.get("SODIUM_INSTALL") == "system":
-        return True # Don't compile the bundled sodium copy.
-    else:
-        return False # Use the bundled copy.
-
 class Distribution(Distribution):
     def has_c_libraries(self):
-        return not use_system()
+        # On Windows, only a precompiled dynamic library
+        # file is used.
+        return not sys.platform == "win32"
 
 class build_clib(_build_clib):
     def get_source_files(self):
-        files = glob.glob(here("bcl/libsodium/*"))
-        files += glob.glob(here("bcl/libsodium/*/*"))
-        files += glob.glob(here("bcl/libsodium/*/*/*"))
-        files += glob.glob(here("bcl/libsodium/*/*/*/*"))
-        files += glob.glob(here("bcl/libsodium/*/*/*/*/*"))
-        files += glob.glob(here("bcl/libsodium/*/*/*/*/*/*"))
-        files += glob.glob(here("bcl/libsodium/*/*/*/*/*/*/*"))
+        files = glob.glob(os.path.relpath("bcl/libsodium/*"))
+        files += glob.glob(os.path.relpath("bcl/libsodium/*/*"))
+        files += glob.glob(os.path.relpath("bcl/libsodium/*/*/*"))
+        files += glob.glob(os.path.relpath("bcl/libsodium/*/*/*/*"))
+        files += glob.glob(os.path.relpath("bcl/libsodium/*/*/*/*/*"))
+        files += glob.glob(os.path.relpath("bcl/libsodium/*/*/*/*/*/*"))
+        files += glob.glob(os.path.relpath("bcl/libsodium/*/*/*/*/*/*/*"))
         return files
 
     def build_libraries(self, libraries):
-        raise Exception("build_libraries")
+        raise RuntimeError("`build_libraries` should not be invoked")
 
     def check_library_list(self, libraries):
-        raise Exception("check_library_list")
+        raise RuntimeError("`check_library_list` should not be invoked")
 
     def get_library_names(self):
         return ["sodium"]
 
     def run(self):
-        if use_system():
+        # On Windows, only a precompiled dynamic library
+        # file is used.
+        if sys.platform == "win32":
             return
 
         # Use Python's build environment variables.
@@ -94,25 +83,20 @@ class build_clib(_build_clib):
                 raise
 
         # Ensure all of our executable files have their permissions set.
+        prefix = 'bcl/libsodium/'
         for filename in [
-            "bcl/libsodium/autogen.sh",
-            "bcl/libsodium/compile",
-            "bcl/libsodium/configure",
-            "bcl/libsodium/depcomp",
-            "bcl/libsodium/install-sh",
-            "bcl/libsodium/missing",
-            "bcl/libsodium/msvc-scripts/process.bat",
-            "bcl/libsodium/test/default/wintest.bat",
+            "autogen.sh", "compile", "configure", "depcomp", "install-sh",
+            "missing", "msvc-scripts/process.bat", "test/default/wintest.bat",
         ]:
-            os.chmod(here(filename), 0o755)
+            os.chmod(os.path.relpath(prefix + filename), 0o755)
 
         if not which("make"):
-            raise Exception("ERROR: The 'make' utility is missing from PATH")
+            raise RuntimeError("make utility cannot be found")
 
-        # Locate our configure script.
-        configure = abshere("bcl/libsodium/configure")
+        # Determine location of libsodium configuration script.
+        configure = os.path.abspath(os.path.relpath("bcl/libsodium/configure"))
 
-        # Run `./configure`.
+        # Configure libsodium.
         configure_flags = [
             "--disable-shared",
             "--enable-static",
@@ -124,8 +108,6 @@ class build_clib(_build_clib):
             # On Solaris, libssp doesn't link statically and causes linker
             # errors during import.
             configure_flags.append("--disable-ssp")
-        if os.environ.get("SODIUM_INSTALL_MINIMAL"):
-            configure_flags.append("--enable-minimal")
         subprocess.check_call(
             [configure]
             + configure_flags
@@ -134,6 +116,7 @@ class build_clib(_build_clib):
         )
 
         make_args = os.environ.get("LIBSODIUM_MAKE_ARGS", "").split()
+
         # Build the library.
         subprocess.check_call(["make"] + make_args, cwd=build_temp)
 

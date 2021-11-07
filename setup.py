@@ -2,12 +2,15 @@
 Setup, package, and build file for the bcl cryptography library.
 """
 import sys
+import platform
 import os
 import os.path
-import platform
+import shutil
 import glob
 import subprocess
+import tarfile
 import errno
+import urllib.request
 from distutils.sysconfig import get_config_vars
 from setuptools import Distribution, setup
 from setuptools.command.build_ext import build_ext as _build_ext
@@ -17,21 +20,51 @@ try:
 except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
-def which(name): # Taken from twisted.
-    result = []
-    exts = filter(None, os.environ.get("PATHEXT", "").split(os.pathsep))
-    path = os.environ.get("PATH", None)
-    if path is None:
-        return []
-    for p in os.environ.get("PATH", "").split(os.pathsep):
-        p = os.path.join(p, name)
-        if os.access(p, os.X_OK):
-            result.append(p)
-        for e in exts:
-            pext = p + e
-            if os.access(pext, os.X_OK):
-                result.append(pext)
-    return result
+def prepare_libsodium_source_tree():
+    """
+    Retrieve the libsodium source archive and extract it
+    to the location used by the build process.
+    """
+    # URL from which libsodium source archive is retrieved,
+    # and paths into which it is extracted and then moved.
+    url = (
+        'https://github.com/jedisct1/libsodium/releases' + \
+        '/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
+    )
+    libsodium_tar_gz_path = './bcl/libsodium.tar.gz'
+    libsodium_tar_gz_folder = './bcl/libsodium_tar_gz'
+    libsodium_folder = './bcl/libsodium'
+
+    # Download the source archive to a local path (unless
+    # it is already present).
+    if not os.path.exists(libsodium_tar_gz_path):
+        try:
+            urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
+        except:
+            raise RuntimeError(
+                'failed to download libsodium archive and no local ' + \
+                'archive was found at `' + libsodium_tar_gz_path + '`'
+            ) from None
+
+    # Extract the archive into a temporary folder (removing
+    # the folder if it already exists).
+    with tarfile.open(libsodium_tar_gz_path) as libsodium_tar_gz:
+        if os.path.exists(libsodium_tar_gz_folder):
+            shutil.rmtree(libsodium_tar_gz_folder)
+        libsodium_tar_gz.extractall(libsodium_tar_gz_folder)
+
+    # Move the source tree to the destination folder (removing
+    # the destination folder first, if it already exists).
+    if os.path.exists(libsodium_folder):
+        shutil.rmtree(libsodium_folder)
+    shutil.move(
+        libsodium_tar_gz_folder + '/libsodium-1.0.18',
+        libsodium_folder
+    )
+
+    # Remove the archive and temporary folder.
+    os.remove(libsodium_tar_gz_path)
+    shutil.rmtree(libsodium_tar_gz_folder)
 
 class Distribution(Distribution):
     def has_c_libraries(self):
@@ -65,6 +98,9 @@ class build_clib(_build_clib):
         if sys.platform == "win32":
             return
 
+        # Retrieve (if necessary) and extract the libsodium source tree.
+        prepare_libsodium_source_tree()
+
         # Use Python's build environment variables.
         build_env = {
             key: val
@@ -74,7 +110,7 @@ class build_clib(_build_clib):
         }
         os.environ.update(build_env)
 
-        # Ensure our temporary build directory exists.
+        # Ensure the temporary build directory exists.
         build_temp = os.path.abspath(self.build_temp)
         try:
             os.makedirs(build_temp)
@@ -82,7 +118,7 @@ class build_clib(_build_clib):
             if e.errno != errno.EEXIST:
                 raise
 
-        # Ensure all of our executable files have their permissions set.
+        # Ensure that all executable files have the necessary permissions.
         prefix = 'bcl/libsodium/'
         for filename in [
             "autogen.sh", "compile", "configure", "depcomp", "install-sh",
@@ -90,29 +126,33 @@ class build_clib(_build_clib):
         ]:
             os.chmod(os.path.relpath(prefix + filename), 0o755)
 
-        if not which("make"):
+        # Confirm that make utility can be found.
+        found = False
+        if not os.environ.get("PATH", None) is None:
+            for p in os.environ.get("PATH", "").split(os.pathsep):
+                p = os.path.join(p, "make")
+                if os.access(p, os.X_OK):
+                    found = True
+                for e in filter(
+                    None,
+                    os.environ.get("PATHEXT", "").split(os.pathsep)
+                ):
+                    if os.access(p + e, os.X_OK):
+                        found = True
+        if not found:
             raise RuntimeError("make utility cannot be found")
 
-        # Determine location of libsodium configuration script.
-        configure = os.path.abspath(os.path.relpath("bcl/libsodium/configure"))
-
-        # Configure libsodium.
-        configure_flags = [
-            "--disable-shared",
-            "--enable-static",
-            "--disable-debug",
-            "--disable-dependency-tracking",
-            "--with-pic",
-        ]
-        if platform.system() == "SunOS":
-            # On Solaris, libssp doesn't link statically and causes linker
-            # errors during import.
-            configure_flags.append("--disable-ssp")
+        # Determine location of libsodium configuration script and
+        # configure libsodium.
         subprocess.check_call(
-            [configure]
-            + configure_flags
-            + ["--prefix", os.path.abspath(self.build_clib)],
-            cwd=build_temp,
+            [os.path.abspath(os.path.relpath("bcl/libsodium/configure"))] + \
+            [
+                "--disable-shared", "--enable-static",
+                "--disable-debug", "--disable-dependency-tracking", "--with-pic",
+            ] + \
+            (["--disable-ssp"] if platform.system() == "SunOS" else []) + \
+            ["--prefix", os.path.abspath(self.build_clib)],
+            cwd=build_temp
         )
 
         make_args = os.environ.get("LIBSODIUM_MAKE_ARGS", "").split()

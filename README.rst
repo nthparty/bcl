@@ -98,7 +98,7 @@ Developing the library further in a local environment and/or building the librar
 
 Building from Source
 ^^^^^^^^^^^^^^^^^^^^
-The library can be built manually from source on Linux and macOS using the sequence of commands below::
+The library can be built manually from source **on Linux and macOS** using the sequence of commands below::
 
     python -m pip install setuptools wheel cffi
     python setup.py bdist_wheel

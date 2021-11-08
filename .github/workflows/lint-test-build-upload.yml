@@ -35,10 +35,9 @@ jobs:
           .venv/bin/python -m pylint bcl # Check against linting rules.
           .venv/bin/python bcl/bcl.py -v # Run doctests.
           .venv/bin/python -m nose --cover-erase # Test using nose.
-          .venv/bin/python -m coveralls # Submit to coveralls.
+          .venv/bin/python -m coveralls --service=github # Submit to coveralls.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: mkdir bcl-wheelhouse
       - run: mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1

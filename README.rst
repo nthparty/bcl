@@ -149,13 +149,18 @@ Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 
 Publishing (for Maintainers Only)
 ---------------------------------
-The package can be published on PyPI by a package maintainer. First, package the source distribution::
+The package can be published on PyPI by a package maintainer. First, remove any old build/distribution files and package the source distribution::
 
+    rm -rf dist && rm -rf bcl.egg-info
     python setup.py sdist
 
-Next, run the ``lint-test-build-upload.yml`` workflow and save/download the built artifacts locally, (*e.g.*, in ``./dist``). Finally, upload the package distribution archive to PyPI (replacing ``?.?.?`` with the appropriate version number)::
+Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel.  Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain::
 
-    twine upload dist/bcl-?.?.?*
+    cd dist && for i in `ls *.zip`; do unzip $i; done && rm *.zip && cd ..
+
+Finally, upload the package distribution archive to PyPI::
+
+    twine upload dist/*
 
 Contributions
 -------------

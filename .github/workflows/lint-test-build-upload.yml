@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Python.
-      - run: |
+        run: |
           yum -y install wget libffi-devel
           /opt/python/${{ matrix.PYTHON }}/bin/python -m pip install virtualenv
           /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv

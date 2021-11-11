@@ -60,35 +60,65 @@ class nonce(raw):
     """
     Wrapper class for a bytes-like object that represents a nonce.
 
-    >>> isinstance(nonce(), bytes)
+    >>> n = nonce()
+    >>> n = nonce(bytes(n))
+    >>> isinstance(n, nonce) and isinstance(n, bytes)
     True
-    >>> noncetext = nonce()
-    >>> noncetext == nonce(noncetext)
-    True
+
+    While the constructor works like the constructor for bytes-like
+    objects in also accepting an integer argument, an instance can
+    only have the exact length permitted for a nonce.
+
+    >>> nonce(nonce.length).hex()
+    '000000000000000000000000000000000000000000000000'
 
     The constructor for this class checks that the supplied bytes-like
-    object represents a valid nonce value.
+    object or integer argument satisfy the conditions for a valid nonce.
 
+    >>> nonce('abc')
+    Traceback (most recent call last):
+      ...
+    TypeError: nonce constructor argument must be a bytes-like object or an integer
     >>> try:
     ...     nonce(bytes([1, 2, 3]))
     ... except ValueError as e:
-    ...     length = crypto_secretbox_NONCEBYTES
-    ...     str(e) == "nonce must have exactly "  + str(length) + " bytes"
+    ...     str(e) == "nonce must have exactly "  + str(nonce.length) + " bytes"
+    True
+    >>> try:
+    ...     nonce(123)
+    ... except ValueError as e:
+    ...     str(e) == "nonce must have exactly "  + str(nonce.length) + " bytes"
     True
     """
-    def __new__(cls, noncetext: Optional[nonce] = None) -> nonce:
+    length = crypto_secretbox_NONCEBYTES
+
+    def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> nonce:
         """
         Create a nonce object.
         """
-        if noncetext is None:
-            noncetext = os.urandom(crypto_secretbox_NONCEBYTES)
-        elif len(noncetext) != crypto_secretbox_NONCEBYTES:
-            raise ValueError(
-                "nonce must have exactly " + \
-                str(crypto_secretbox_NONCEBYTES) + " bytes"
-            )
+        if argument is None:
+            return bytes.__new__(cls, os.urandom(crypto_secretbox_NONCEBYTES))
 
-        return bytes.__new__(cls, noncetext)
+        if isinstance(argument, (bytes, bytearray)):
+            if len(argument) != crypto_secretbox_NONCEBYTES:
+                raise ValueError(
+                    "nonce must have exactly " + \
+                    str(crypto_secretbox_NONCEBYTES) + " bytes"
+                )
+            return bytes.__new__(cls, argument)
+
+        if isinstance(argument, int):
+            if argument != crypto_secretbox_NONCEBYTES:
+                raise ValueError(
+                    "nonce must have exactly " + \
+                    str(crypto_secretbox_NONCEBYTES) + " bytes"
+                )
+            return bytes.__new__(cls, argument)
+
+        raise TypeError(
+            "nonce constructor argument must be a bytes-like " + \
+            "object or an integer"
+        )
 
 class key(raw):
     """
@@ -119,7 +149,7 @@ class key(raw):
       >>> len({secret.from_base64(b), public.from_base64(b)})
       2
     """
-    def __hash__(self):
+    def __hash__(self: key) -> int:
         """
         Return hash of this key object that takes into account
         the subclass of the object.
@@ -181,40 +211,68 @@ class secret(key):
 
     >>> s = secret()
     >>> s = secret(bytes(s))
+    >>> isinstance(s, secret) and isinstance(s, key)and isinstance(s, bytes)
+    True
+
+    While the constructor works like the constructor for bytes-like
+    objects in also accepting an integer argument, an instance can only
+    have the exact length permitted for a secret key.
+
+    >>> secret(secret.length).hex()
+    '0000000000000000000000000000000000000000000000000000000000000000'
 
     The constructor for this class checks that the supplied bytes-like
-    object is a valid key.
+    object or integer argument satisfy the conditions for a valid secret
+    key.
 
-    >>> secret(123)
+    >>> secret('abc')
     Traceback (most recent call last):
       ...
-    TypeError: secret key must be a bytes-like object
+    TypeError: secret key constructor argument must be a bytes-like object or an integer
     >>> try:
     ...     secret(bytes([1, 2, 3]))
     ... except ValueError as e:
-    ...     length = crypto_secretbox_KEYBYTES
-    ...     str(e) == "secret key must have exactly "  + str(length) + " bytes"
+    ...     str(e) == "secret key must have exactly "  + str(secret.length) + " bytes"
+    True
+    >>> try:
+    ...     secret(123)
+    ... except ValueError as e:
+    ...     str(e) == "secret key must have exactly "  + str(secret.length) + " bytes"
     True
 
     The methods :obj:`symmetric.encrypt`, :obj:`symmetric.decrypt`, and
     :obj:`asymmetric.decrypt` only accept key parameters that are objects
     of this class.
     """
-    def __new__(cls, secret_key: Optional[secret] = None) -> secret:
+    length = crypto_secretbox_KEYBYTES
+
+    def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> secret:
         """
         Create a secret key object.
         """
-        if secret_key is None:
-            secret_key = secret(os.urandom(crypto_secretbox_KEYBYTES))
-        elif not isinstance(secret_key, (bytes, bytearray)):
-            raise TypeError("secret key must be a bytes-like object")
-        elif len(secret_key) != crypto_secretbox_KEYBYTES:
-            raise ValueError(
-                "secret key must have exactly " + \
-                str(crypto_secretbox_KEYBYTES) + " bytes"
-            )
+        if argument is None:
+            return bytes.__new__(cls, secret(os.urandom(crypto_secretbox_KEYBYTES)))
 
-        return bytes.__new__(cls, secret_key)
+        if isinstance(argument, (bytes, bytearray)):
+            if len(argument) != crypto_secretbox_KEYBYTES:
+                raise ValueError(
+                    "secret key must have exactly " + \
+                    str(crypto_secretbox_KEYBYTES) + " bytes"
+                )
+            return bytes.__new__(cls, argument)
+
+        if isinstance(argument, int):
+            if argument != crypto_secretbox_KEYBYTES:
+                raise ValueError(
+                    "secret key must have exactly " + \
+                    str(crypto_secretbox_KEYBYTES) + " bytes"
+                )
+            return bytes.__new__(cls, argument)
+
+        raise TypeError(
+            "secret key constructor argument must be a bytes-like " + \
+            "object or an integer"
+        )
 
 class public(key):
     """
@@ -224,16 +282,32 @@ class public(key):
 
     >>> p = public()
     >>> p = public(bytes(p))
+    >>> isinstance(p, public) and isinstance(p, key)and isinstance(p, bytes)
+    True
+
+    While the constructor works like the constructor for bytes-like
+    objects in also accepting an integer argument, an instance can only
+    have the exact length permitted for a public key.
+
+    >>> public(public.length).hex()
+    '0000000000000000000000000000000000000000000000000000000000000000'
 
     The constructor for this class checks that the supplied bytes-like
-    object is a valid key.
+    object or integer argument satisfy the conditions for a valid public
+    key.
 
-    >>> public(123)
+    >>> public('abc')
     Traceback (most recent call last):
       ...
-    TypeError: public key must be a bytes-like object
+    TypeError: public key constructor argument must be a bytes-like object or an integer
     >>> try:
     ...     public(bytes([1, 2, 3]))
+    ... except ValueError as e:
+    ...     length = crypto_box_PUBLICKEYBYTES
+    ...     str(e) == "public key must have exactly "  + str(length) + " bytes"
+    True
+    >>> try:
+    ...     public(123)
     ... except ValueError as e:
     ...     length = crypto_box_PUBLICKEYBYTES
     ...     str(e) == "public key must have exactly "  + str(length) + " bytes"
@@ -242,21 +316,35 @@ class public(key):
     The method :obj:`asymmetric.encrypt` only accepts key parameters that
     are objects of this class.
     """
-    def __new__(cls, public_key: Optional[public] = None) -> public:
+    length = crypto_box_PUBLICKEYBYTES
+
+    def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> public:
         """
         Create a public key object.
         """
-        if public_key is None:
-            public_key = public(os.urandom(crypto_box_PUBLICKEYBYTES))
-        elif not isinstance(public_key, (bytes, bytearray)):
-            raise TypeError("public key must be a bytes-like object")
-        elif len(public_key) != crypto_box_PUBLICKEYBYTES:
-            raise ValueError(
-                "public key must have exactly " + \
-                str(crypto_box_PUBLICKEYBYTES) + " bytes"
-            )
+        if argument is None:
+            return bytes.__new__(cls, secret(os.urandom(crypto_box_PUBLICKEYBYTES)))
 
-        return bytes.__new__(cls, public_key)
+        if isinstance(argument, (bytes, bytearray)):
+            if len(argument) != crypto_box_PUBLICKEYBYTES:
+                raise ValueError(
+                    "public key must have exactly " + \
+                    str(crypto_box_PUBLICKEYBYTES) + " bytes"
+                )
+            return bytes.__new__(cls, argument)
+
+        if isinstance(argument, int):
+            if argument != crypto_box_PUBLICKEYBYTES:
+                raise ValueError(
+                    "public key must have exactly " + \
+                    str(crypto_box_PUBLICKEYBYTES) + " bytes"
+                )
+            return bytes.__new__(cls, argument)
+
+        raise TypeError(
+            "public key constructor argument must be a bytes-like " + \
+            "object or an integer"
+        )
 
 class plain(raw):
     """

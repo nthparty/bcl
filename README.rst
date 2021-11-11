@@ -98,7 +98,7 @@ Developing the library further in a local environment and/or building the librar
 
 Building from Source
 ^^^^^^^^^^^^^^^^^^^^
-The library can be built manually from source **on Linux and macOS** using the sequence of commands below::
+The library can be built manually from source **within Linux and macOS** using the sequence of commands below::
 
     python -m pip install setuptools wheel cffi
     python setup.py bdist_wheel
@@ -106,6 +106,8 @@ The library can be built manually from source **on Linux and macOS** using the s
 The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
 
     wget -O bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+
+The process for building manually from source within a Windows environment is not currently documented, but an example of one sequence of steps can be found in the Windows job entry within the GitHub Actions workflow defined in the file ``.github/workflows/lint-test-build-upload.yml``.
 
 Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -167,7 +167,7 @@ class build_ext(_build_ext):
         return _build_ext.run(self)
 
 with open("README.rst", "r") as fh:
-    long_description = fh.read()
+    long_description = fh.read().replace(".. include:: toc.rst\n\n", "")
 
 name = "bcl"
 version = "2.0.0"

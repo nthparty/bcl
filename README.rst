@@ -162,6 +162,7 @@ Next, navigate to the appropriate GitHub Actions run of the workflow defined in 
 
 Finally, upload the package distribution archive to PyPI::
 
+    python -m pip install twine
     twine upload dist/*
 
 Contributions

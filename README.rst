@@ -45,7 +45,7 @@ This library provides concise methods for implementing symmetric encryption work
 
     >>> from bcl import symmetric
     >>> s = symmetric.secret() # Generate a secret key.
-    >>> c = symmetric.encrypt(s, "abc".encode())
+    >>> c = symmetric.encrypt(s, 'abc'.encode())
     >>> symmetric.decrypt(s, c).decode('utf-8')
     'abc'
 
@@ -54,7 +54,7 @@ Asymmetric encryption workflows are also supported::
     >>> from bcl import asymmetric
     >>> s = asymmetric.secret() # Generate a secret key.
     >>> p = asymmetric.public(s) # Generate a corresponding public key.
-    >>> c = asymmetric.encrypt(p, "abc".encode())
+    >>> c = asymmetric.encrypt(p, 'abc'.encode())
     >>> asymmetric.decrypt(s, c).decode('utf-8')
     'abc'
 
@@ -67,7 +67,7 @@ The library also provides a number of classes for representing keys (secret and 
     >>> p = asymmetric.public(s)
     >>> isinstance(p, public)
     True
-    >>> c = symmetric.encrypt(s, "abc".encode())
+    >>> c = symmetric.encrypt(s, 'abc'.encode())
     >>> type(c)
     <class 'bcl.bcl.cipher'>
     >>> symmetric.decrypt(bytes(s), c)

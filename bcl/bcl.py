@@ -90,7 +90,9 @@ class nonce(raw):
     ...     str(e) == "nonce must have exactly "  + str(nonce.length) + " bytes"
     True
     """
-    length = crypto_secretbox_NONCEBYTES
+
+    length: int = crypto_secretbox_NONCEBYTES
+    """Length (in number of bytes) of nonce instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> nonce:
         """
@@ -244,7 +246,9 @@ class secret(key):
     :obj:`asymmetric.decrypt` only accept key parameters that are objects
     of this class.
     """
-    length = crypto_secretbox_KEYBYTES
+
+    length: int = crypto_secretbox_KEYBYTES
+    """Length (in number of bytes) of secret key instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> secret:
         """
@@ -316,7 +320,9 @@ class public(key):
     The method :obj:`asymmetric.encrypt` only accepts key parameters that
     are objects of this class.
     """
-    length = crypto_box_PUBLICKEYBYTES
+
+    length: int = crypto_box_PUBLICKEYBYTES
+    """Length (in number of bytes) of public key instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> public:
         """

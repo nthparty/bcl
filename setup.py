@@ -170,7 +170,7 @@ with open("README.rst", "r") as fh:
     long_description = fh.read().replace(".. include:: toc.rst\n\n", "")
 
 name = "bcl"
-version = "2.0.0"
+version = "2.0.1"
 
 setup(
     name=name,

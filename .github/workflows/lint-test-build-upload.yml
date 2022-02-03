@@ -151,7 +151,7 @@ jobs:
           venv/bin/pip install -U pip pylint coverage nose
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python bcl/bcl.py -v # Run doctests.
-          venv/bin/python -m nose --cover-erase # Test using nose.
+          #venv/bin/python -m nose --cover-erase # Test using nose.  # BCl 2.0.0 has succeeded before but but errored at end [due to nose in 3.10 bug](https://github.com/nose-devs/nose/issues/1099)
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse
@@ -205,7 +205,7 @@ jobs:
           python -m pip install -U pip pylint coverage nose
           python -m pylint bcl # Check against linting rules.
           python bcl/bcl.py -v # Run doctests.
-          # python -m nose --cover-erase # Test using nose.  # BCl 2.0.0 has succeeded before but but errored at end [due to nose in 3.10 bug](https://github.com/nose-devs/nose/issues/1099)
+          python -m nose --cover-erase # Test using nose.
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse

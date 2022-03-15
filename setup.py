@@ -170,11 +170,14 @@ with open("README.rst", "r") as fh:
     long_description = fh.read().replace(".. include:: toc.rst\n\n", "")
 
 name = "bcl"
-version = "2.0.1"
+version = "2.0.2"
 
 setup(
     name=name,
     version=version,
+    packages=["bcl"],
+    ext_package="bcl",
+    install_requires=["cffi~=1.15"],
     license="MIT",
     url="https://github.com/nthparty/bcl",
     author="Nth Party, Ltd.",
@@ -186,8 +189,6 @@ setup(
     long_description_content_type="text/x-rst",
     test_suite="nose.collector",
     tests_require=["nose"],
-    packages=["bcl"],
-    ext_package="bcl",
     cffi_modules=["bcl/sodium_ffi.py:sodium_ffi"],
     cmdclass={
         "build_clib": build_clib,

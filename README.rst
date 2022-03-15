@@ -149,22 +149,6 @@ Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
     python -m pip install pylint
     pylint bcl
 
-Publishing (for Maintainers Only)
----------------------------------
-The package can be published on PyPI by a package maintainer. First, remove any old build/distribution files and package the source distribution::
-
-    rm -rf dist && rm -rf bcl.egg-info
-    python setup.py sdist
-
-Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel.  Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain::
-
-    cd dist && for i in `ls *.zip`; do unzip $i; done && rm *.zip && cd ..
-
-Finally, upload the package distribution archive to PyPI::
-
-    python -m pip install twine
-    twine upload dist/*
-
 Contributions
 -------------
 In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/nthparty/bcl>`_ for this library.
@@ -172,3 +156,19 @@ In order to contribute to the source code, open an issue or submit a pull reques
 Versioning
 ----------
 The version number format for this library and the changes to the library associated with version number increments conform with `Semantic Versioning 2.0.0 <https://semver.org/#semantic-versioning-200>`_.
+
+Publishing
+----------
+This library can be published as a `package on PyPI <https://pypi.org/project/bcl/>`_ by a package maintainer. First, remove any old build/distribution files and package the source into a distribution archive::
+
+    rm -rf dist *.egg-info
+    python setup.py sdist
+
+Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain::
+
+    cd dist && for i in `ls *.zip`; do unzip $i; done && rm *.zip && cd ..
+
+Finally, install the `twine <https://pypi.org/project/twine/>`_ package and upload the package distribution archive to PyPI::
+
+    python -m pip install twine
+    python -m twine upload dist/*

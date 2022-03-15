@@ -170,7 +170,7 @@ with open("README.rst", "r") as fh:
     long_description = fh.read().replace(".. include:: toc.rst\n\n", "")
 
 name = "bcl"
-version = "2.0.2"
+version = "2.1.0"
 
 setup(
     name=name,
@@ -187,8 +187,6 @@ setup(
                 "(i.e., public-key) encryption/decryption primitives.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    test_suite="nose.collector",
-    tests_require=["nose"],
     cffi_modules=["bcl/sodium_ffi.py:sodium_ffi"],
     cmdclass={
         "build_clib": build_clib,

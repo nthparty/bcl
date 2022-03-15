@@ -61,7 +61,7 @@ jobs:
             ABI_VERSION: '3.6'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg'
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
-    name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
+    name: "Python ${{ matrix.PYTHON.VERSION }} with ABI ${{ matrix.PYTHON.ABI_VERSION }} for macOS"
     steps:
       - uses: actions/checkout@v2
       - name: Install Python.
@@ -95,7 +95,7 @@ jobs:
         run: venv/bin/pip install -f wheelhouse --no-index bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
-          venv/bin/pip install -U pip pytest pytest-cov
+          venv/bin/pip install -U pip pylint pytest pytest-cov
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
@@ -116,7 +116,7 @@ jobs:
             ABI_VERSION: '3.6'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
-    name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
+    name: "Python ${{ matrix.PYTHON.VERSION }} with ABI ${{ matrix.PYTHON.ABI_VERSION }} for macOS 11 ARM"
     steps:
       - uses: actions/checkout@v2
       - name: Install Python.
@@ -171,7 +171,7 @@ jobs:
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
           - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
-    name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
+    name: "Python ${{ matrix.PYTHON.VERSION }} with ABI ${{ matrix.PYTHON.ABI_VERSION }} for Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@v2
       - name: Install Python.

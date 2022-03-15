@@ -15,7 +15,8 @@ import os
 import base64
 
 try:
-    from bcl import _sodium
+    # Import shared/dynamic library (libsodium subset).
+    from bcl import _sodium # pylint: disable=R0401
 except: # pylint: disable=W0702 # pragma: no cover
     # Support for direct invocation in order to execute doctests.
     import _sodium

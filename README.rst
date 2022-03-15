@@ -147,7 +147,7 @@ Alternatively, all unit tests are included in the module itself and can be execu
 Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
 
     python -m pip install pylint
-    pylint bcl
+    python -m pylint bcl
 
 Contributions
 -------------

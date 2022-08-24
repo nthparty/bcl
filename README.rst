@@ -106,17 +106,17 @@ The library can be built manually from source **within Linux and macOS** using t
     python -m pip install setuptools wheel cffi
     python setup.py bdist_wheel
 
-The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
+The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
 
-    wget -O bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+    wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
 
 The process for building manually from source within a Windows environment is not currently documented, but an example of one sequence of steps can be found in the Windows job entry within the GitHub Actions workflow defined in the file ``.github/workflows/lint-test-build-upload.yml``.
 
 Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Before `documentation can be generated <#documentation>`_ or `tests can be executed <#testing-and-conventions>`_, it is necessary to `run the build process <#building-from-source>`_ and then to use the command below to move the compiled libsodium shared/dynamic library file into its designated location (so that the module file ``bcl/bcl.py`` is able to import it)::
+Before `documentation can be generated <#documentation>`_ or `tests can be executed <#testing-and-conventions>`_, it is necessary to `run the build process <#building-from-source>`_ and then to use the command below to move the compiled libsodium shared/dynamic library file into its designated location (so that the module file ``src/bcl/bcl.py`` is able to import it)::
 
-    cp build/lib*/bcl/_sodium*.* bcl
+    cp build/lib*/bcl/_sodium*.* src/bcl
 
 Manual Installation
 ^^^^^^^^^^^^^^^^^^^
@@ -130,7 +130,7 @@ Once the libsodium shared library file is compiled and moved into its designated
 
     python -m pip install .[docs]
     cd docs
-    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../bcl/sodium_ffi.py && make html
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && make html
 
 Testing and Conventions
 -----------------------
@@ -143,12 +143,12 @@ All unit tests are executed and their coverage is measured when using `pytest <h
 
 Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`__::
 
-    python bcl/bcl.py -v
+    python src/bcl/bcl.py -v
 
 Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
 
     python -m pip install pylint
-    python -m pylint bcl
+    python -m pylint src/bcl
 
 Contributions
 -------------
@@ -162,7 +162,7 @@ Publishing
 ----------
 This library can be published as a `package on PyPI <https://pypi.org/project/bcl>`__ by a package maintainer. First, remove any old build/distribution files and package the source into a distribution archive::
 
-    rm -rf dist *.egg-info
+    rm -rf build dist src/*.egg-info
     python setup.py sdist
 
 Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain::

@@ -20,7 +20,7 @@ try:
 except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
-def prepare_libsodium_source_tree(libsodium_folder='bcl/libsodium'):
+def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     """
     Retrieve the libsodium source archive and extract it
     to the location used by the build process.
@@ -31,8 +31,8 @@ def prepare_libsodium_source_tree(libsodium_folder='bcl/libsodium'):
         'https://github.com/jedisct1/libsodium/releases' +
         '/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
     )
-    libsodium_tar_gz_path = './bcl/libsodium.tar.gz'
-    libsodium_tar_gz_folder = './bcl/libsodium_tar_gz'
+    libsodium_tar_gz_path = './src/bcl/libsodium.tar.gz'
+    libsodium_tar_gz_folder = './src/bcl/libsodium_tar_gz'
 
     # Download the source archive to a local path (unless
     # it is already present).
@@ -77,7 +77,7 @@ class build_clib(_build_clib):
         return [
             file
             for i in range(1, 8)
-            for file in glob.glob(os.path.relpath('bcl/libsodium' + ('/*' * i)))
+            for file in glob.glob(os.path.relpath('src/bcl/libsodium' + ('/*' * i)))
         ]
 
     def build_libraries(self, libraries):
@@ -142,7 +142,7 @@ class build_clib(_build_clib):
         # Configure libsodium, build it as a shared library file, check it,
         # and install it.
         subprocess.check_call(
-            [os.path.abspath(os.path.relpath('bcl/libsodium/configure'))] +
+            [os.path.abspath(os.path.relpath('src/bcl/libsodium/configure'))] +
             [
                 '--disable-shared', '--enable-static',
                 '--disable-debug', '--disable-dependency-tracking', '--with-pic',
@@ -193,7 +193,7 @@ setup(
                 '(i.e., public-key) encryption/decryption primitives.',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    cffi_modules=['bcl/sodium_ffi.py:sodium_ffi'],
+    cffi_modules=['src/bcl/sodium_ffi.py:sodium_ffi'],
     cmdclass={
         'build_clib': build_clib,
         'build_ext': build_ext,

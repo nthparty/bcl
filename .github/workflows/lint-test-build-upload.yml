@@ -23,7 +23,7 @@ jobs:
       - name: Download libsodium source tree archive and extract it.
         run: |
           wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
-          mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
+          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Build wheel file.
         run: |
           mkdir tmpwheelhouse
@@ -32,14 +32,14 @@ jobs:
               PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
-          cp build/lib*/bcl/_sodium*.so bcl
+          cp build/lib*/bcl/_sodium*.so src/bcl
           mv dist/bcl*.whl tmpwheelhouse
           auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           .venv/bin/pip install -U pylint pytest pytest-cov coveralls
           .venv/bin/python -m pylint bcl # Check against linting rules.
-          .venv/bin/python bcl/bcl.py -v # Run doctests.
+          .venv/bin/python src/bcl/bcl.py -v # Run doctests.
           .venv/bin/python -m pytest # Run tests.
           .venv/bin/python -m coveralls --service=github # Submit to coveralls.
         env:
@@ -77,7 +77,7 @@ jobs:
       - name: Download libsodium source tree archive and extract it.
         run: |
           wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
-          mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
+          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Build wheel file.
         run: |
           mkdir wheelhouse
@@ -88,7 +88,7 @@ jobs:
           rm -f dist/*.*
           LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
               venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
-          cp build/lib*/bcl/_sodium*.so bcl
+          cp build/lib*/bcl/_sodium*.so src/bcl
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - name: Test wheel installation.
@@ -97,7 +97,7 @@ jobs:
         run: |
           venv/bin/pip install -U pip pylint pytest pytest-cov
           venv/bin/python -m pylint bcl # Check against linting rules.
-          venv/bin/python bcl/bcl.py -v # Run doctests.
+          venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
       - name: Upload wheel file.
         run: |
@@ -132,7 +132,7 @@ jobs:
       - name: Download libsodium source tree archive and extract it.
         run: |
           wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
-          mv libsodium-1.0.18.tar.gz bcl/libsodium.tar.gz
+          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Build wheel file.
         run: |
           mkdir wheelhouse
@@ -143,7 +143,7 @@ jobs:
           rm -f dist/*.*
           LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" MACOSX_DEPLOYMENT_TARGET="10.10" CFLAGS="-arch arm64 -arch x86_64" ARCHFLAGS="-arch arm64 -arch x86_64" _PYTHON_HOST_PLATFORM="macosx-10.9-universal2" \
               venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
-          cp build/lib*/bcl/_sodium*.so bcl
+          cp build/lib*/bcl/_sodium*.so src/bcl
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - name: Test wheel installation.
@@ -152,7 +152,7 @@ jobs:
         run: |
           venv/bin/pip install -U pip pylint pytest pytest-cov
           venv/bin/python -m pylint bcl # Check against linting rules.
-          venv/bin/python bcl/bcl.py -v # Run doctests.
+          venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
       - name: Upload wheel file.
         run: |
@@ -197,7 +197,7 @@ jobs:
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-          cp build/lib*/bcl/_sodium.pyd bcl
+          cp build/lib*/bcl/_sodium.pyd src/bcl
           mv dist/bcl*.whl wheelhouse
         shell: cmd
       - name: Test wheel installation.
@@ -206,7 +206,7 @@ jobs:
         run: |
           python -m pip install -U pip pylint pytest pytest-cov
           python -m pylint bcl # Check against linting rules.
-          python bcl/bcl.py -v # Run doctests.
+          python src/bcl/bcl.py -v # Run doctests.
           python -m pytest # Run tests.
       - name: Upload wheel file.
         run: |

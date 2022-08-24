@@ -16,8 +16,8 @@ import base64
 
 try:
     # Import shared/dynamic library (libsodium subset).
-    from bcl import _sodium # pylint: disable=R0401
-except: # pylint: disable=W0702 # pragma: no cover
+    from bcl import _sodium # pylint: disable=cyclic-import
+except: # pylint: disable=bare-except # pragma: no cover
     # Support for direct invocation in order to execute doctests.
     import _sodium
 
@@ -83,12 +83,12 @@ class nonce(raw):
     >>> try:
     ...     nonce(bytes([1, 2, 3]))
     ... except ValueError as e:
-    ...     str(e) == "nonce must have exactly "  + str(nonce.length) + " bytes"
+    ...     str(e) == 'nonce must have exactly '  + str(nonce.length) + ' bytes'
     True
     >>> try:
     ...     nonce(123)
     ... except ValueError as e:
-    ...     str(e) == "nonce must have exactly "  + str(nonce.length) + " bytes"
+    ...     str(e) == 'nonce must have exactly '  + str(nonce.length) + ' bytes'
     True
     """
 
@@ -105,22 +105,22 @@ class nonce(raw):
         if isinstance(argument, (bytes, bytearray)):
             if len(argument) != crypto_secretbox_NONCEBYTES:
                 raise ValueError(
-                    "nonce must have exactly " + \
-                    str(crypto_secretbox_NONCEBYTES) + " bytes"
+                    'nonce must have exactly ' +
+                    str(crypto_secretbox_NONCEBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         if isinstance(argument, int):
             if argument != crypto_secretbox_NONCEBYTES:
                 raise ValueError(
-                    "nonce must have exactly " + \
-                    str(crypto_secretbox_NONCEBYTES) + " bytes"
+                    'nonce must have exactly ' +
+                    str(crypto_secretbox_NONCEBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         raise TypeError(
-            "nonce constructor argument must be a bytes-like " + \
-            "object or an integer"
+            'nonce constructor argument must be a bytes-like ' +
+            'object or an integer'
         )
 
 class key(raw):
@@ -182,13 +182,13 @@ class key(raw):
         (k_0, k_1) = (bytes(self), bytes(other))
         length = max(len(k_0), len(k_1))
 
-        k_0_buffer = _sodium.ffi.new("char []", length)
-        k_1_buffer = _sodium.ffi.new("char []", length)
+        k_0_buffer = _sodium.ffi.new('char []', length)
+        k_1_buffer = _sodium.ffi.new('char []', length)
         _sodium.ffi.memmove(k_0_buffer, k_0, len(k_0))
         _sodium.ffi.memmove(k_1_buffer, k_1, len(k_1))
 
         return (
-            len(k_0) == len(k_1) and \
+            len(k_0) == len(k_1) and
             _sodium.lib.sodium_memcmp(k_0_buffer, k_1_buffer, length) == 0
         )
 
@@ -235,12 +235,12 @@ class secret(key):
     >>> try:
     ...     secret(bytes([1, 2, 3]))
     ... except ValueError as e:
-    ...     str(e) == "secret key must have exactly "  + str(secret.length) + " bytes"
+    ...     str(e) == 'secret key must have exactly '  + str(secret.length) + ' bytes'
     True
     >>> try:
     ...     secret(123)
     ... except ValueError as e:
-    ...     str(e) == "secret key must have exactly "  + str(secret.length) + " bytes"
+    ...     str(e) == 'secret key must have exactly '  + str(secret.length) + ' bytes'
     True
 
     The methods :obj:`symmetric.encrypt`, :obj:`symmetric.decrypt`, and
@@ -261,22 +261,22 @@ class secret(key):
         if isinstance(argument, (bytes, bytearray)):
             if len(argument) != crypto_secretbox_KEYBYTES:
                 raise ValueError(
-                    "secret key must have exactly " + \
-                    str(crypto_secretbox_KEYBYTES) + " bytes"
+                    'secret key must have exactly ' +
+                    str(crypto_secretbox_KEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         if isinstance(argument, int):
             if argument != crypto_secretbox_KEYBYTES:
                 raise ValueError(
-                    "secret key must have exactly " + \
-                    str(crypto_secretbox_KEYBYTES) + " bytes"
+                    'secret key must have exactly ' +
+                    str(crypto_secretbox_KEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         raise TypeError(
-            "secret key constructor argument must be a bytes-like " + \
-            "object or an integer"
+            'secret key constructor argument must be a bytes-like ' +
+            'object or an integer'
         )
 
 class public(key):
@@ -309,13 +309,13 @@ class public(key):
     ...     public(bytes([1, 2, 3]))
     ... except ValueError as e:
     ...     length = crypto_box_PUBLICKEYBYTES
-    ...     str(e) == "public key must have exactly "  + str(length) + " bytes"
+    ...     str(e) == 'public key must have exactly '  + str(length) + ' bytes'
     True
     >>> try:
     ...     public(123)
     ... except ValueError as e:
     ...     length = crypto_box_PUBLICKEYBYTES
-    ...     str(e) == "public key must have exactly "  + str(length) + " bytes"
+    ...     str(e) == 'public key must have exactly '  + str(length) + ' bytes'
     True
 
     The method :obj:`asymmetric.encrypt` only accepts key parameters that
@@ -335,22 +335,22 @@ class public(key):
         if isinstance(argument, (bytes, bytearray)):
             if len(argument) != crypto_box_PUBLICKEYBYTES:
                 raise ValueError(
-                    "public key must have exactly " + \
-                    str(crypto_box_PUBLICKEYBYTES) + " bytes"
+                    'public key must have exactly ' +
+                    str(crypto_box_PUBLICKEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         if isinstance(argument, int):
             if argument != crypto_box_PUBLICKEYBYTES:
                 raise ValueError(
-                    "public key must have exactly " + \
-                    str(crypto_box_PUBLICKEYBYTES) + " bytes"
+                    'public key must have exactly ' +
+                    str(crypto_box_PUBLICKEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         raise TypeError(
-            "public key constructor argument must be a bytes-like " + \
-            "object or an integer"
+            'public key constructor argument must be a bytes-like ' +
+            'object or an integer'
         )
 
 class plain(raw):
@@ -442,7 +442,7 @@ class symmetric:
         Traceback (most recent call last):
           ...
         TypeError: can only encrypt using a symmetric secret key
-        >>> c = symmetric.encrypt(s, "abc")
+        >>> c = symmetric.encrypt(s, 'abc')
         Traceback (most recent call last):
           ...
         TypeError: can only encrypt a plaintext object or bytes-like object
@@ -452,30 +452,30 @@ class symmetric:
         TypeError: nonce parameter must be a nonce object
         """
         if not isinstance(secret_key, secret):
-            raise TypeError("can only encrypt using a symmetric secret key")
+            raise TypeError('can only encrypt using a symmetric secret key')
 
         if not isinstance(plaintext, (plain, bytes, bytearray)):
-            raise TypeError("can only encrypt a plaintext object or bytes-like object")
+            raise TypeError('can only encrypt a plaintext object or bytes-like object')
         if len(plaintext) > crypto_secretbox_MESSAGEBYTES_MAX:
             raise ValueError( # pragma: no cover
-                "message length can be at most " + \
-                str(crypto_secretbox_MESSAGEBYTES_MAX) + " bytes"
+                'message length can be at most ' +
+                str(crypto_secretbox_MESSAGEBYTES_MAX) + ' bytes'
             )
 
         if noncetext is None:
             noncetext = nonce()
         elif not isinstance(noncetext, nonce):
-            raise TypeError("nonce parameter must be a nonce object")
+            raise TypeError('nonce parameter must be a nonce object')
 
-        padded_plaintext = (b"\x00" * crypto_secretbox_ZEROBYTES) + plaintext
-        ciphertext = _sodium.ffi.new("unsigned char[]", len(padded_plaintext))
+        padded_plaintext = (b'\x00' * crypto_secretbox_ZEROBYTES) + plaintext
+        ciphertext = _sodium.ffi.new('unsigned char[]', len(padded_plaintext))
         if _sodium.lib.crypto_secretbox(
             ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
         ) != 0:
-            raise RuntimeError("libsodium error during encryption") # pragma: no cover
+            raise RuntimeError('libsodium error during encryption') # pragma: no cover
 
         return cipher(
-            noncetext + \
+            noncetext +
             _sodium.ffi.buffer(
                 ciphertext,
                 len(padded_plaintext)
@@ -500,7 +500,7 @@ class symmetric:
         Traceback (most recent call last):
           ...
         TypeError: can only decrypt using a symmetric secret key
-        >>> c = symmetric.decrypt(s, "abc")
+        >>> c = symmetric.decrypt(s, 'abc')
         Traceback (most recent call last):
           ...
         TypeError: can only decrypt a ciphertext
@@ -510,22 +510,22 @@ class symmetric:
         RuntimeError: ciphertext failed verification
         """
         if not isinstance(secret_key, secret):
-            raise TypeError("can only decrypt using a symmetric secret key")
+            raise TypeError('can only decrypt using a symmetric secret key')
 
         if not isinstance(ciphertext, cipher):
-            raise TypeError("can only decrypt a ciphertext")
+            raise TypeError('can only decrypt a ciphertext')
 
         padded_ciphertext = (
-            (b"\x00" * crypto_secretbox_BOXZEROBYTES) + \
+            (b'\x00' * crypto_secretbox_BOXZEROBYTES) +
             ciphertext[crypto_secretbox_NONCEBYTES:]
         )
-        plaintext = _sodium.ffi.new("unsigned char[]", len(padded_ciphertext))
+        plaintext = _sodium.ffi.new('unsigned char[]', len(padded_ciphertext))
         if _sodium.lib.crypto_secretbox_open(
             plaintext, padded_ciphertext, len(padded_ciphertext),
             ciphertext[:crypto_secretbox_NONCEBYTES],
             secret_key
         ) != 0:
-            raise RuntimeError("ciphertext failed verification")
+            raise RuntimeError('ciphertext failed verification')
 
         return plain(
             _sodium.ffi.buffer(plaintext, len(padded_ciphertext)) \
@@ -572,9 +572,9 @@ class asymmetric:
         >>> isinstance(p, key) and isinstance(p, public)
         True
         """
-        q = _sodium.ffi.new("unsigned char[]", _sodium.lib.crypto_scalarmult_bytes())
+        q = _sodium.ffi.new('unsigned char[]', _sodium.lib.crypto_scalarmult_bytes())
         if _sodium.lib.crypto_scalarmult_base(q, secret_key) != 0:
-            raise RuntimeError("libsodium error during decryption") # pragma: no cover
+            raise RuntimeError('libsodium error during decryption') # pragma: no cover
 
         return public(
             _sodium.ffi.buffer(q, _sodium.lib.crypto_scalarmult_scalarbytes())[:]
@@ -599,24 +599,24 @@ class asymmetric:
         Traceback (most recent call last):
           ...
         TypeError: can only encrypt using a public key
-        >>> c = asymmetric.encrypt(p, "abc")
+        >>> c = asymmetric.encrypt(p, 'abc')
         Traceback (most recent call last):
           ...
         TypeError: can only encrypt a plaintext object or bytes-like object
         """
         if not isinstance(public_key, public):
-            raise TypeError("can only encrypt using a public key")
+            raise TypeError('can only encrypt using a public key')
 
         if not isinstance(plaintext, (plain, bytes, bytearray)):
-            raise TypeError("can only encrypt a plaintext object or bytes-like object")
+            raise TypeError('can only encrypt a plaintext object or bytes-like object')
 
         plaintext_length = len(plaintext)
         ciphertext_length = crypto_box_SEALBYTES + plaintext_length
-        ciphertext = _sodium.ffi.new("unsigned char[]", ciphertext_length)
+        ciphertext = _sodium.ffi.new('unsigned char[]', ciphertext_length)
         if _sodium.lib.crypto_box_seal(
             ciphertext, plaintext, plaintext_length, public_key
         ) != 0:
-            raise RuntimeError("libsodium error during encryption") # pragma: no cover
+            raise RuntimeError('libsodium error during encryption') # pragma: no cover
 
         return cipher(_sodium.ffi.buffer(ciphertext, ciphertext_length)[:])
 
@@ -639,7 +639,7 @@ class asymmetric:
         Traceback (most recent call last):
           ...
         TypeError: can only decrypt using an asymmetric secret key
-        >>> c = asymmetric.decrypt(s, "abc")
+        >>> c = asymmetric.decrypt(s, 'abc')
         Traceback (most recent call last):
           ...
         TypeError: can only decrypt a ciphertext
@@ -647,18 +647,18 @@ class asymmetric:
         ...     asymmetric.decrypt(s, cipher(bytes([0])))
         ... except ValueError as e:
         ...     length = crypto_box_SEALBYTES
-        ...     str(e) == "asymmetric ciphertext must have at least "  + str(length) + " bytes"
+        ...     str(e) == 'asymmetric ciphertext must have at least '  + str(length) + ' bytes'
         True
         """
         if not isinstance(secret_key, secret):
-            raise TypeError("can only decrypt using an asymmetric secret key")
+            raise TypeError('can only decrypt using an asymmetric secret key')
 
         if not isinstance(ciphertext, cipher):
-            raise TypeError("can only decrypt a ciphertext")
+            raise TypeError('can only decrypt a ciphertext')
 
-        q = _sodium.ffi.new("unsigned char[]", _sodium.lib.crypto_scalarmult_bytes())
+        q = _sodium.ffi.new('unsigned char[]', _sodium.lib.crypto_scalarmult_bytes())
         if _sodium.lib.crypto_scalarmult_base(q, secret_key) != 0:
-            raise RuntimeError("libsodium error during decryption") # pragma: no cover
+            raise RuntimeError('libsodium error during decryption') # pragma: no cover
         public_key = public(
             _sodium.ffi.buffer(q, _sodium.lib.crypto_scalarmult_scalarbytes())[:]
         )
@@ -666,16 +666,16 @@ class asymmetric:
         ciphertext_length = len(ciphertext)
         if not ciphertext_length >= crypto_box_SEALBYTES:
             raise ValueError(
-                "asymmetric ciphertext must have at least " + \
-                str(crypto_box_SEALBYTES) + " bytes"
+                'asymmetric ciphertext must have at least ' +
+                str(crypto_box_SEALBYTES) + ' bytes'
             )
 
         plaintext_length = ciphertext_length - crypto_box_SEALBYTES
-        plaintext = _sodium.ffi.new("unsigned char[]", max(1, plaintext_length))
+        plaintext = _sodium.ffi.new('unsigned char[]', max(1, plaintext_length))
         if _sodium.lib.crypto_box_seal_open(
             plaintext, ciphertext, ciphertext_length, public_key, secret_key
         ) != 0:
-            raise RuntimeError("libsodium error during decryption") # pragma: no cover
+            raise RuntimeError('libsodium error during decryption') # pragma: no cover
 
         return plain(_sodium.ffi.buffer(plaintext, plaintext_length)[:])
 
@@ -683,9 +683,9 @@ class asymmetric:
 # machine.
 def _sodium_init():
     if _sodium.lib.sodium_init() == -1:
-        raise RuntimeError("libsodium error during initialization") # pragma: no cover
+        raise RuntimeError('libsodium error during initialization') # pragma: no cover
 
-_sodium.ffi.init_once(_sodium_init, "libsodium")
+_sodium.ffi.init_once(_sodium_init, 'libsodium')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     doctest.testmod() # pragma: no cover

@@ -17,7 +17,7 @@ with open(
     sodium_ffi.set_source(
         '_sodium',
         (
-            ('#define SODIUM_STATIC\n' if sys.platform == 'win32' else '') + \
+            ('#define SODIUM_STATIC\n' if sys.platform == 'win32' else '') +
             '#include <sodium.h>'
         ),
         libraries=['libsodium' if sys.platform == 'win32' else 'sodium']

@@ -28,7 +28,7 @@ def prepare_libsodium_source_tree(libsodium_folder='bcl/libsodium'):
     # URL from which libsodium source archive is retrieved,
     # and paths into which it is extracted and then moved.
     url = (
-        'https://github.com/jedisct1/libsodium/releases' + \
+        'https://github.com/jedisct1/libsodium/releases' +
         '/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
     )
     libsodium_tar_gz_path = './bcl/libsodium.tar.gz'
@@ -41,7 +41,7 @@ def prepare_libsodium_source_tree(libsodium_folder='bcl/libsodium'):
             urllib.request.urlretrieve(url, filename=libsodium_tar_gz_path)
         except:
             raise RuntimeError(
-                'failed to download libsodium archive and no local ' + \
+                'failed to download libsodium archive and no local ' +
                 'archive was found at `' + libsodium_tar_gz_path + '`'
             ) from None
 
@@ -142,12 +142,12 @@ class build_clib(_build_clib):
         # Configure libsodium, build it as a shared library file, check it,
         # and install it.
         subprocess.check_call(
-            [os.path.abspath(os.path.relpath('bcl/libsodium/configure'))] + \
+            [os.path.abspath(os.path.relpath('bcl/libsodium/configure'))] +
             [
                 '--disable-shared', '--enable-static',
                 '--disable-debug', '--disable-dependency-tracking', '--with-pic',
-            ] + \
-            (['--disable-ssp'] if platform.system() == 'SunOS' else []) + \
+            ] +
+            (['--disable-ssp'] if platform.system() == 'SunOS' else []) +
             ['--prefix', os.path.abspath(self.build_clib)],
             cwd=build_temp
         )
@@ -166,31 +166,31 @@ class build_ext(_build_ext):
 
         return _build_ext.run(self)
 
-with open("README.rst", "r") as fh:
-    long_description = fh.read().replace(".. include:: toc.rst\n\n", "")
+with open('README.rst', 'r') as fh:
+    long_description = fh.read().replace('.. include:: toc.rst\n\n', '')
 
-name = "bcl"
-version = "2.1.0"
+name = 'bcl'
+version = '2.1.0'
 
 setup(
     name=name,
     version=version,
-    packages=["bcl"],
-    ext_package="bcl",
-    install_requires=["cffi~=1.15"],
-    license="MIT",
-    url="https://github.com/nthparty/bcl",
-    author="Nth Party, Ltd.",
-    author_email="team@nthparty.com",
-    description="Python library that provides a simple interface "+\
-                "for symmetric (i.e., secret-key) and asymmetric "+\
-                "(i.e., public-key) encryption/decryption primitives.",
+    packages=['bcl'],
+    ext_package='bcl',
+    install_requires=['cffi~=1.15'],
+    license='MIT',
+    url='https://github.com/nthparty/bcl',
+    author='Nth Party, Ltd.',
+    author_email='team@nthparty.com',
+    description='Python library that provides a simple interface ' + \
+                'for symmetric (i.e., secret-key) and asymmetric ' + \
+                '(i.e., public-key) encryption/decryption primitives.',
     long_description=long_description,
-    long_description_content_type="text/x-rst",
-    cffi_modules=["bcl/sodium_ffi.py:sodium_ffi"],
+    long_description_content_type='text/x-rst',
+    cffi_modules=['bcl/sodium_ffi.py:sodium_ffi'],
     cmdclass={
-        "build_clib": build_clib,
-        "build_ext": build_ext,
+        'build_clib': build_clib,
+        'build_ext': build_ext,
     },
     distclass=Distribution,
     zip_safe=False

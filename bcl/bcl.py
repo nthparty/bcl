@@ -3,7 +3,7 @@ Python library that provides a simple interface for symmetric (*i.e.*,
 secret-key) and asymmetric (*i.e.*, public-key) encryption/decryption
 primitives.
 
-This library exports a number of classes (derived from ``bytes``) for
+This library exports a number of classes (derived from :obj:`bytes`) for
 representing keys, nonces, plaintexts, and ciphertexts. It also exports
 two classes :obj:`symmetric` and :obj:`asymmetric` that have only static
 methods (for key generation and encryption/decryption).

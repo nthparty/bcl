@@ -26,11 +26,11 @@ Purpose
 -------
 This library provides simple and straightforward methods for symmetric (*i.e.*, secret-key) and asymmetric (*i.e.*, public-key) cryptographic encryption and decryption capabilities. The library's interface is designed for ease of use and therefore hides from users some of the flexibilities and performance trade-offs that can be leveraged via direct use of the underlying cryptographic libraries.
 
-The library's name is a reference to `boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`_, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org/>`_. However, it can also be an acronym for *basic cryptographic library*.
+The library's name is a reference to `boron trichloride <https://en.wikipedia.org/wiki/Boron_trichloride>`__, as it is a wrapper and binding for a limited set of capabilities found in `libsodium <https://doc.libsodium.org>`__. However, it can also be an acronym for *basic cryptographic library*.
 
-Package Installation and Usage
-------------------------------
-The package is available on `PyPI <https://pypi.org/project/bcl/>`_::
+Installation and Usage
+----------------------
+This library is available as a `package on PyPI <https://pypi.org/project/bcl>`__::
 
     python -m pip install bcl
 
@@ -79,7 +79,10 @@ The library also provides a number of classes for representing keys (secret and 
       ...
     TypeError: can only decrypt a ciphertext
 
-Furthermore, the above classes are derived from ``bytes``, so `all methods and other operators <https://docs.python.org/3/library/stdtypes.html#bytes>`_ supported by ``bytes`` objects are supported::
+.. |bytes| replace:: ``bytes``
+.. _bytes: https://docs.python.org/3/library/stdtypes.html#bytes
+
+Furthermore, the above classes are derived from |bytes|_, so `all methods and other operators <https://docs.python.org/3/library/stdtypes.html#bytes>`__ supported by |bytes|_ objects are supported::
 
     >>> p.hex()
     '0be9cece7fee92809908bd14666eab96b77deebb488c738445d842a6613b7b48'
@@ -94,7 +97,7 @@ In addition, Base64 conversion methods are included for all of the above classes
 
 Development, Build, and Manual Installation Instructions
 --------------------------------------------------------
-Developing the library further in a local environment and/or building the library from source requires retrieving and compiling `libsodium <https://doc.libsodium.org/>`_.
+Developing the library further in a local environment and/or building the library from source requires retrieving and compiling `libsodium <https://doc.libsodium.org>`__.
 
 Building from Source
 ^^^^^^^^^^^^^^^^^^^^
@@ -123,43 +126,41 @@ Once the package is `built <#building-from-source>`_, it can be installed manual
 
 Documentation
 -------------
-.. include:: toc.rst
+Once the libsodium shared library file is compiled and moved into its designated location (as described in `the relevant subsection above <#preparation-for-local-development>`_), the documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org>`__::
 
-Once the libsodium shared library file is compiled and moved into its designated location (as described in `the relevant subsection above <#preparation-for-local-development>`_), the documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org/>`_::
-
+    python -m pip install .[docs]
     cd docs
-    python -m pip install -r requirements.txt
     sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../bcl/sodium_ffi.py && make html
 
 Testing and Conventions
 -----------------------
-Before unit tests can be executed, it is first necessary to prepare for local development by compiling and moving into its designated location the libsodium shared library file (as described in `the relevant subsection above <#preparation-for-local-development>`_).
+Before unit tests can be executed, it is first necessary to prepare for local development by compiling and moving into its designated location the libsodium shared library file (as described in `the relevant subsection above <#preparation-for-local-development>`__).
 
-All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org/>`_ (see ``setup.cfg`` for configuration details)::
+All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``setup.cfg`` for configuration details)::
 
     python -m pip install pytest pytest-cov
     python -m pytest
 
-Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`_::
+Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`__::
 
     python bcl/bcl.py -v
 
-Style conventions are enforced using `Pylint <https://www.pylint.org/>`_::
+Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
 
     python -m pip install pylint
     python -m pylint bcl
 
 Contributions
 -------------
-In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/nthparty/bcl>`_ for this library.
+In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/nthparty/bcl>`__ for this library.
 
 Versioning
 ----------
-The version number format for this library and the changes to the library associated with version number increments conform with `Semantic Versioning 2.0.0 <https://semver.org/#semantic-versioning-200>`_.
+The version number format for this library and the changes to the library associated with version number increments conform with `Semantic Versioning 2.0.0 <https://semver.org/#semantic-versioning-200>`__.
 
 Publishing
 ----------
-This library can be published as a `package on PyPI <https://pypi.org/project/bcl/>`_ by a package maintainer. First, remove any old build/distribution files and package the source into a distribution archive::
+This library can be published as a `package on PyPI <https://pypi.org/project/bcl>`__ by a package maintainer. First, remove any old build/distribution files and package the source into a distribution archive::
 
     rm -rf dist *.egg-info
     python setup.py sdist
@@ -168,7 +169,7 @@ Next, navigate to the appropriate GitHub Actions run of the workflow defined in 
 
     cd dist && for i in `ls *.zip`; do unzip $i; done && rm *.zip && cd ..
 
-Finally, install the `twine <https://pypi.org/project/twine/>`_ package and upload the package distribution archive to PyPI::
+Finally, upload the package distribution archive to `PyPI <https://pypi.org>`__::
 
     python -m pip install twine
     python -m twine upload dist/*

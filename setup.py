@@ -167,10 +167,10 @@ class build_ext(_build_ext):
         return _build_ext.run(self)
 
 with open('README.rst', 'r') as fh:
-    long_description = fh.read().replace('.. include:: toc.rst\n\n', '')
+    long_description = fh.read()
 
 name = 'bcl'
-version = '2.1.0'
+version = '2.2.0'
 
 setup(
     name=name,
@@ -178,6 +178,12 @@ setup(
     packages=['bcl'],
     ext_package='bcl',
     install_requires=['cffi~=1.15'],
+    extras_require={
+        'docs': [
+            'sphinx~=4.2.0',
+            'sphinx-rtd-theme~=1.0.0'
+        ]
+    },
     license='MIT',
     url='https://github.com/nthparty/bcl',
     author='Nth Party, Ltd.',

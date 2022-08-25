@@ -37,11 +37,15 @@ jobs:
           auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
-          .venv/bin/pip install -U .[lint,test,coveralls]
+          .venv/bin/pip install -U .[lint,test]
           .venv/bin/python -m pylint bcl # Check against linting rules.
           .venv/bin/python src/bcl/bcl.py -v # Run doctests.
           .venv/bin/python -m pytest # Run tests.
+      - name: Publish coverage results.
+        run: |
+          .venv/bin/pip install -U .[coveralls]
           .venv/bin/python -m coveralls --service=github # Submit to coveralls.
+        if: matrix.PYTHON == 'cp38-cp38'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload wheel file.

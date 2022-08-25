@@ -103,7 +103,7 @@ Building from Source
 ^^^^^^^^^^^^^^^^^^^^
 The library can be built manually from source **within Linux and macOS** using the sequence of commands below::
 
-    python -m pip install setuptools wheel cffi
+    python -m pip install .[build]
     python setup.py bdist_wheel
 
 The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
@@ -122,7 +122,7 @@ Manual Installation
 ^^^^^^^^^^^^^^^^^^^
 Once the package is `built <#building-from-source>`_, it can be installed manually using the command below::
 
-    python -m pip install -f dist --no-index bcl --upgrade
+    python -m pip install -f dist . --upgrade
 
 Documentation
 -------------
@@ -138,7 +138,7 @@ Before unit tests can be executed, it is first necessary to prepare for local de
 
 All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``setup.cfg`` for configuration details)::
 
-    python -m pip install pytest pytest-cov
+    python -m pip install .[test]
     python -m pytest
 
 Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`__::
@@ -147,8 +147,8 @@ Alternatively, all unit tests are included in the module itself and can be execu
 
 Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
 
-    python -m pip install pylint
-    python -m pylint src/bcl
+    python -m pip install .[lint]
+    python -m pylint bcl
 
 Contributions
 -------------
@@ -160,7 +160,11 @@ The version number format for this library and the changes to the library associ
 
 Publishing
 ----------
-This library can be published as a `package on PyPI <https://pypi.org/project/bcl>`__ by a package maintainer. First, remove any old build/distribution files and package the source into a distribution archive::
+This library can be published as a `package on PyPI <https://pypi.org/project/bcl>`__ by a package maintainer. First, install the dependencies required for packaging and publishing::
+
+    python -m pip install .[publish]
+
+Remove any old build/distribution files. Then, package the source into a distribution archive::
 
     rm -rf build dist src/*.egg-info
     python setup.py sdist

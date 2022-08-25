@@ -179,9 +179,27 @@ setup(
     ext_package='bcl',
     install_requires=['cffi~=1.15'],
     extras_require={
+        'build': [
+            'setuptools~=62.0',
+            'wheel~=0.37',
+            'cffi~=1.15'
+        ],
         'docs': [
             'sphinx~=4.2.0',
             'sphinx-rtd-theme~=1.0.0'
+        ],
+        'test': [
+            'pytest~=7.0',
+            'pytest-cov~=3.0'
+        ],
+        'lint': [
+            'pylint~=2.14.0'
+        ],
+        'coveralls': [
+            'coveralls~=3.3.1'
+        ],
+        'publish': [
+            'twine~=4.0'
         ]
     },
     license='MIT',

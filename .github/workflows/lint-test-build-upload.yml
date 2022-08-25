@@ -48,6 +48,10 @@ jobs:
         if: matrix.PYTHON == 'cp38-cp38'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Test auto-generation of documentation.
+        run: |
+          .venv/bin/pip install -U .[docs]
+          cd docs && ../.venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.
         run: |
            mkdir bcl-wheelhouse
@@ -103,6 +107,10 @@ jobs:
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
+      - name: Test auto-generation of documentation.
+        run: |
+          venv/bin/pip install -U .[docs]
+          cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse
@@ -158,6 +166,10 @@ jobs:
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
+      - name: Test auto-generation of documentation.
+        run: |
+          venv/bin/pip install -U .[docs]
+          cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse
@@ -212,6 +224,12 @@ jobs:
           python -m pylint bcl # Check against linting rules.
           python src/bcl/bcl.py -v # Run doctests.
           python -m pytest # Run tests.
+      - name: Test auto-generation of documentation.
+        run: |
+          python -m pip install -U .[docs]
+          cd docs
+          sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py
+          cd ..
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse

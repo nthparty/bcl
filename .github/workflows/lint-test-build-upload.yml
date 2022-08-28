@@ -111,6 +111,7 @@ jobs:
           venv/bin/python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
+          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U .[docs]
           cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.
@@ -170,6 +171,7 @@ jobs:
           venv/bin/python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
+          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U .[docs]
           cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.

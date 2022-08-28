@@ -88,6 +88,7 @@ jobs:
           venv/bin/pip install -U pip .[build]
       - name: Build wheel file.
         run: |
+          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           mkdir wheelhouse
           REGEX="3\.([0-9])*"
           if [[ "$PYTHON_VERSION" =~ $REGEX ]]; then
@@ -147,6 +148,7 @@ jobs:
           venv/bin/pip install -U pip .[build]
       - name: Build wheel file.
         run: |
+          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           mkdir wheelhouse
           REGEX="3\.([0-9])*"
           if [[ "$PYTHON_VERSION" =~ $REGEX ]]; then

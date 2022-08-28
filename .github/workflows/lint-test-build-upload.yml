@@ -76,8 +76,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive and extract it.
         run: |
-          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
-          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
+          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
       - name: Install Python.
         run: |
           curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
@@ -97,7 +96,7 @@ jobs:
           fi
           rm -f dist/*.*
           LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
-              venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && cp dist/bcl*.whl wheelhouse
+              venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium*.so src/bcl
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
@@ -135,8 +134,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive and extract it.
         run: |
-          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
-          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
+          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
       - name: Install Python.
         run: |
           curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
@@ -156,7 +154,7 @@ jobs:
           fi
           rm -f dist/*.*
           LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" MACOSX_DEPLOYMENT_TARGET="10.10" CFLAGS="-arch arm64 -arch x86_64" ARCHFLAGS="-arch arm64 -arch x86_64" _PYTHON_HOST_PLATFORM="macosx-10.9-universal2" \
-              venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && cp dist/bcl*.whl wheelhouse
+              venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium*.so src/bcl
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}

@@ -87,7 +87,7 @@ jobs:
         env:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - name: Install Python dependencies for build process.
-        run: venv/bin/pip install -U pip .[build]
+        run: venv/bin/pip install -U pip setuptools wheel cffi
       - name: Build wheel file.
         run: |
           mkdir wheelhouse
@@ -146,7 +146,7 @@ jobs:
         env:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - name: Install Python dependencies for build process.
-        run: venv/bin/pip install -U pip .[build]
+        run: venv/bin/pip install -U pip setuptools wheel cffi
       - name: Build wheel file.
         run: |
           mkdir wheelhouse

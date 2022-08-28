@@ -104,6 +104,7 @@ jobs:
         run: venv/bin/pip install -f wheelhouse --no-index bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
+          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U pip .[lint,test]
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
@@ -162,6 +163,7 @@ jobs:
         run: venv/bin/pip install -f wheelhouse --no-index bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
+          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U pip .[lint,test]
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.

@@ -10,10 +10,10 @@ jobs:
     strategy:
       matrix:
         python:
-          - version: "cp37-cp37m"
-          - version: "cp38-cp38"
-          - version: "cp39-cp39"
-          - version: "cp310-cp310"
+          - {version: "cp37-cp37m", limited-api: "cp37"}
+          - {version: "cp38-cp38", limited-api: "cp38"}
+          - {version: "cp39-cp39", limited-api: "cp39"}
+          - {version: "cp310-cp310", limited-api: "cp310"}
     name: "Python ${{ matrix.python.version }} for manylinux2014"
     steps:
       - uses: actions/checkout@v2
@@ -33,10 +33,7 @@ jobs:
       - name: Build wheel file.
         run: |
           mkdir tmpwheelhouse
-          REGEX="cp3([0-9])*"
-          if [[ "${{ matrix.python.version }}" =~ $REGEX ]]; then
-              PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
-          fi
+          PY_LIMITED_API="--py-limited-api=${{ matrix.python.limited-api }}"
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
           cp build/lib*/bcl/_sodium*.so src/bcl
           mv dist/bcl*.whl tmpwheelhouse

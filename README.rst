@@ -14,7 +14,7 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
    :target: https://bcl.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
 
-.. |actions| image:: https://github.com/nthparty/bcl/workflows/lint-test-build-upload/badge.svg
+.. |actions| image:: https://github.com/nthparty/bcl/workflows/lint-test-cover-docs-build-upload/badge.svg
    :target: https://github.com/nthparty/bcl/actions
    :alt: GitHub Actions status.
 

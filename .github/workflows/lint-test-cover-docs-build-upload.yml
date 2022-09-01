@@ -126,7 +126,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_9_x86_64"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_9_x86_64"
           path: bcl-wheelhouse/
   macos-arm:
     runs-on: macOS-11
@@ -185,7 +185,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_10_universal2"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_10_universal2"
           path: bcl-wheelhouse/
   windows:
     runs-on: windows-latest
@@ -195,7 +195,10 @@ jobs:
           - {version: 'win32', arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
           - {version: 'win_amd64', arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
         python:
-          - {version: "3.9", version-abi: "cp36", version-sodium-msvc: "v142"}
+          - {version: "3.7", version-abi: "cp37"}
+          - {version: "3.8", version-abi: "cp38"}
+          - {version: "3.9", version-abi: "cp39"}
+          - {version: "3.10", version-abi: "cp310"}
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}"
     steps:
       - uses: actions/checkout@v2
@@ -207,7 +210,7 @@ jobs:
       - name: Add environment variables for libsodium.
         run: |
           echo "INCLUDE=C:/libsodium/include;$INCLUDE" >> $GITHUB_ENV
-          echo "LIB=C:/libsodium/${{ matrix.windows.arch-sodium }}/release/${{ matrix.python.version-sodium-msvc }}/static;$LIB" >> $GITHUB_ENV
+          echo "LIB=C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/static;$LIB" >> $GITHUB_ENV
         shell: bash
       - name: Install Python.
         uses: actions/setup-python@v2.2.2

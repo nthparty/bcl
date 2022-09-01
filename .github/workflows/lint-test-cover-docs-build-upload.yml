@@ -69,17 +69,17 @@ jobs:
       matrix:
         python:
           - version: '3.7'
-            version-abi: 'cp36'
+            version-abi: 'cp37'
             version-macos: '10.9'
             url: 'https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.7/bin/python3'
           - version: '3.8'
-            version-abi: 'cp36'
+            version-abi: 'cp38'
             version-macos: '10.9'
             url: 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-macosx10.9.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
           - version: '3.9'
-            version-abi: 'cp36'
+            version-abi: 'cp39'
             version-macos: '10.9'
             url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macosx10.9.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
@@ -128,19 +128,18 @@ jobs:
         with:
           name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_9_x86_64"
           path: bcl-wheelhouse/
-        if: matrix.python.version == '3.8'
   macos-arm:
     runs-on: macOS-11
     strategy:
       matrix:
         python:
           - version: '3.9'
-            version-abi: 'cp36'
+            version-abi: 'cp39'
             version-macos: '11'
             url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macos11.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
           - version: '3.10'
-            version-abi: 'cp36'
+            version-abi: 'cp310'
             version-macos: '11'
             url: 'https://www.python.org/ftp/python/3.10.6/python-3.10.6-macos11.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
@@ -188,7 +187,6 @@ jobs:
         with:
           name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_10_universal2"
           path: bcl-wheelhouse/
-        if: matrix.python.version == '3.9'
   windows:
     runs-on: windows-latest
     strategy:
@@ -247,5 +245,5 @@ jobs:
           move wheelhouse\bcl*.whl bcl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.arch }}"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}"
           path: bcl-wheelhouse\

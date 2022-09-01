@@ -10,11 +10,11 @@ jobs:
     strategy:
       matrix:
         python:
-          - {version: "cp37-cp37m", limited-api: "cp37"}
-          - {version: "cp38-cp38", limited-api: "cp38"}
-          - {version: "cp39-cp39", limited-api: "cp39"}
-          - {version: "cp310-cp310", limited-api: "cp310"}
-    name: "Python ${{ matrix.python.version }} for manylinux2014"
+          - {version: "3.7", version-abi: "cp37", version-abi-suffix: "cp37m"}
+          - {version: "3.8", version-abi: "cp38", version-abi-suffix: "cp38"}
+          - {version: "3.9", version-abi: "cp39", version-abi-suffix: "cp39"}
+          - {version: "3.10", version-abi: "cp310", version-abi-suffix: "cp310"}
+    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64"
     steps:
       - uses: actions/checkout@v2
       - name: Install development dependencies.
@@ -26,14 +26,14 @@ jobs:
           mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
-          /opt/python/${{ matrix.python.version }}/bin/python -m pip install virtualenv
-          /opt/python/${{ matrix.python.version }}/bin/python -m virtualenv .venv
+          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi-suffix }}/bin/python -m pip install virtualenv
+          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi-suffix }}/bin/python -m virtualenv .venv
       - name: Install Python dependencies for build process.
         run: .venv/bin/pip install -U pip .[build]
       - name: Build wheel file.
         run: |
           mkdir tmpwheelhouse
-          PY_LIMITED_API="--py-limited-api=${{ matrix.python.limited-api }}"
+          PY_LIMITED_API="--py-limited-api=${{ matrix.python.version-abi }}"
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
           cp build/lib*/bcl/_sodium*.so src/bcl
           mv dist/bcl*.whl tmpwheelhouse
@@ -48,7 +48,7 @@ jobs:
         run: |
           .venv/bin/pip install -U .[coveralls]
           .venv/bin/python -m coveralls --service=github # Submit to coveralls.
-        if: matrix.python.version == 'cp38-cp38'
+        if: matrix.python.version == '3.8'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test auto-generation of documentation.
@@ -61,7 +61,7 @@ jobs:
            mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-manylinux1-${{ matrix.python.version }}"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64"
           path: bcl-wheelhouse/
   macos:
     runs-on: macos-latest
@@ -115,7 +115,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-macOS-${{ matrix.python.version }}"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_9_x86_64"
           path: bcl-wheelhouse/
   macos-arm:
     runs-on: macOS-11
@@ -168,17 +168,17 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-macOS-arm-${{ matrix.python.version }}"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_10_universal2"
           path: bcl-wheelhouse/
   windows:
     runs-on: windows-latest
     strategy:
       matrix:
         windows:
-          - {arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
-          - {arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
+          - {version: 'win32', arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
+          - {version: 'win_amd64', arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
         python:
-          - {version: "3.9", version-sodium-msvc: "v142", use-abi3: "true", version-abi: "cp36"}
+          - {version: "3.9", version-abi: "cp36", version-sodium-msvc: "v142"}
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}"
     steps:
       - uses: actions/checkout@v2
@@ -228,5 +228,5 @@ jobs:
           move wheelhouse\bcl*.whl bcl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-win-${{ matrix.windows.arch }}-${{ matrix.python.version }}"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.arch }}"
           path: bcl-wheelhouse\

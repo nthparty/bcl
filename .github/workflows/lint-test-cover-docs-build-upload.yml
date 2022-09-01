@@ -9,8 +9,10 @@ jobs:
     container: quay.io/pypa/manylinux2014_x86_64
     strategy:
       matrix:
-        python: 
-          - version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
+        python:
+          - version: "cp37-cp37m"
+          - version: "cp38-cp38"
+          - version: "cp39-cp39"
     name: "Python ${{ matrix.python.version }} for manylinux2014"
     steps:
       - uses: actions/checkout@v2

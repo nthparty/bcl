@@ -70,9 +70,20 @@ jobs:
         python:
           - version: '3.8'
             version-abi: 'cp36'
-            url: 'https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg'
+            version-macos: '10.9'
+            url: 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-macosx10.9.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS"
+          - version: '3.9'
+            version-abi: 'cp36'
+            version-macos: '10.9'
+            url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macosx10.9.pkg'
+            bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
+          - version: '3.10'
+            version-abi: 'cp36'
+            version-macos: '11'
+            url: 'https://www.python.org/ftp/python/3.10.6/python-3.10.6-macos11.pkg'
+            bin-path: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
+    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }}"
     steps:
       - uses: actions/checkout@v2
       - name: Install Python.
@@ -115,18 +126,24 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_9_x86_64"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx-${{ matrix.python.version-macos }}"
           path: bcl-wheelhouse/
   macos-arm:
     runs-on: macOS-11
     strategy:
       matrix:
         python:
+          - version: '3.9'
+            version-abi: 'cp36'
+            version-macos: '11'
+            url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macos11.pkg'
+            bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
           - version: '3.10'
             version-abi: 'cp36'
-            url: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
+            version-macos: '11'
+            url: 'https://www.python.org/ftp/python/3.10.6/python-3.10.6-macos11.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 11 ARM"
+    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }} ARM"
     steps:
       - uses: actions/checkout@v2
       - name: Install Python.
@@ -168,7 +185,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx_10_10_universal2"
+          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-macosx-arm-${{ matrix.python.version-macos }}"
           path: bcl-wheelhouse/
   windows:
     runs-on: windows-latest

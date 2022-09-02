@@ -133,8 +133,9 @@ class key(raw):
     :obj:`key`) have a few features and behaviors that distinguish them
     from bytes-like objects.
 
-    * Comparison of keys (using the built-in ``==`` and ``!=`` operators)
-      is performed in constant time.
+    * Comparison of keys (using the built-in ``==`` and ``!=`` operators
+      via the :obj:`__eq__` and :obj:`__ne__` methods) is performed in
+      constant time.
 
     * Keys of different types are not equivalent even if their binary
       representation is identical.

@@ -41,7 +41,11 @@ The library can be imported in the usual ways::
 
 Examples
 ^^^^^^^^
-This library provides concise methods for implementing symmetric encryption workflows::
+
+.. |symmetric| replace:: symmetric
+.. _symmetric: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.symmetric
+
+This library provides concise methods for implementing |symmetric|_ encryption workflows::
 
     >>> from bcl import symmetric
     >>> s = symmetric.secret() # Generate a secret key.
@@ -49,7 +53,10 @@ This library provides concise methods for implementing symmetric encryption work
     >>> symmetric.decrypt(s, c).decode('utf-8')
     'abc'
 
-Asymmetric encryption workflows are also supported::
+.. |Asymmetric| replace:: Asymmetric
+.. _Asymmetric: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.asymmetric
+
+|Asymmetric|_ encryption workflows are also supported::
 
     >>> from bcl import asymmetric
     >>> s = asymmetric.secret() # Generate a secret key.
@@ -58,7 +65,25 @@ Asymmetric encryption workflows are also supported::
     >>> asymmetric.decrypt(s, c).decode('utf-8')
     'abc'
 
-The library also provides a number of classes for representing keys (secret and public), nonces, plaintexts, and ciphertexts. All methods expect and return instances of the appropriate classes::
+.. |keys| replace:: keys
+.. _keys: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.key
+
+.. |secret| replace:: secret
+.. _secret: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.secret
+
+.. |public| replace:: public
+.. _public: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.public
+
+.. |nonces| replace:: nonces
+.. _nonces: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.nonce
+
+.. |plaintexts| replace:: plaintexts
+.. _plaintexts: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.plain
+
+.. |ciphertexts| replace:: ``ciphertexts``
+.. _ciphertexts: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.cipher
+
+This library also provides a number of classes for representing |keys|_ (|secret|_ and |public|_), |nonces|_, |plaintexts|_, and |ciphertexts|_. All methods expect and return instances of the appropriate classes::
 
     >>> from bcl import secret, public, cipher
     >>> s = asymmetric.secret()
@@ -112,7 +137,7 @@ Developing the library further in a local environment and/or building the librar
 
     wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
 
-The process for building manually from source within a Windows environment is not currently documented, but an example of one sequence of steps can be found in the Windows job entry within the GitHub Actions workflow defined in the file ``.github/workflows/lint-test-build-upload.yml``.
+The process for building manually from source within a Windows environment is not currently documented, but an example of one sequence of steps can be found in the Windows job entry within the GitHub Actions workflow defined in the file ``.github/workflows/lint-test-cover-docs-build-upload.yml``.
 
 Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -166,12 +191,17 @@ This library can be published as a `package on PyPI <https://pypi.org/project/bc
 
     python -m pip install .[publish]
 
+Ensure that the correct version number appears in ``setup.py``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number)::
+
+    git tag ?.?.?
+    git push origin ?.?.?
+
 Remove any old build/distribution files. Then, package the source into a distribution archive::
 
     rm -rf build dist src/*.egg-info
     python setup.py sdist
 
-Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain::
+Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-cover-docs-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain::
 
     cd dist && for i in `ls *.zip`; do unzip $i; done && rm *.zip && cd ..
 

@@ -152,7 +152,7 @@ Once the package is `built <#building-from-source>`_, it can be installed manual
     python -m pip install -f dist . --upgrade
 
 Documentation
--------------
+^^^^^^^^^^^^^
 Once the libsodium shared library file is compiled and moved into its designated location (as described in `the relevant subsection above <#preparation-for-local-development>`_), the documentation can be generated automatically from the source files using `Sphinx <https://www.sphinx-doc.org>`__::
 
     python -m pip install .[docs]
@@ -160,7 +160,7 @@ Once the libsodium shared library file is compiled and moved into its designated
     sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && make html
 
 Testing and Conventions
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 Before unit tests can be executed, it is first necessary to prepare for local development by compiling and moving into its designated location the libsodium shared library file (as described in `the relevant subsection above <#preparation-for-local-development>`__).
 
 All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``setup.cfg`` for configuration details)::
@@ -178,15 +178,15 @@ Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
     python -m pylint bcl
 
 Contributions
--------------
+^^^^^^^^^^^^^
 In order to contribute to the source code, open an issue or submit a pull request on the `GitHub page <https://github.com/nthparty/bcl>`__ for this library.
 
 Versioning
-----------
+^^^^^^^^^^
 The version number format for this library and the changes to the library associated with version number increments conform with `Semantic Versioning 2.0.0 <https://semver.org/#semantic-versioning-200>`__.
 
 Publishing
-----------
+^^^^^^^^^^
 This library can be published as a `package on PyPI <https://pypi.org/project/bcl>`__ by a package maintainer. First, install the dependencies required for packaging and publishing::
 
     python -m pip install .[publish]

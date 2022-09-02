@@ -97,7 +97,9 @@ In addition, Base64 conversion methods are included for all of the above classes
 
 Development, Build, and Manual Installation Instructions
 --------------------------------------------------------
-Developing the library further in a local environment and/or building the library from source requires retrieving and compiling `libsodium <https://doc.libsodium.org>`__.
+All development and installation dependencies are managed using `setuptools <https://pypi.org/project/setuptools>`__ and are fully specified in ``setup.py``. The ``extras_require`` parameter is used to `specify optional requirements <https://setuptools.pypa.io/en/latest/userguide/dependency_management.html#optional-dependencies>`__ for various development tasks. This makes it possible to specify additional options (such as ``docs``, ``lint``, and so on) when performing installation using `pip <https://pypi.org/project/pip>`__::
+
+    python -m pip install .[docs,lint]
 
 Building from Source
 ^^^^^^^^^^^^^^^^^^^^
@@ -106,7 +108,7 @@ The library can be built manually from source **within Linux and macOS** using t
     python -m pip install .[build]
     python setup.py bdist_wheel
 
-The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
+Developing the library further in a local environment and/or building the library from source requires `libsodium <https://doc.libsodium.org>`__. The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location::
 
     wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
 
@@ -175,5 +177,4 @@ Next, navigate to the appropriate GitHub Actions run of the workflow defined in 
 
 Finally, upload the package distribution archive to `PyPI <https://pypi.org>`__::
 
-    python -m pip install twine
     python -m twine upload dist/*

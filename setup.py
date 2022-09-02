@@ -175,8 +175,8 @@ version = '2.2.0'
 setup(
     name=name,
     version=version,
-    packages=['bcl'],
-    ext_package='bcl',
+    packages=[name],
+    ext_package=name,
     install_requires=['cffi~=1.15'],
     extras_require={
         'build': [

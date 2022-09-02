@@ -80,7 +80,7 @@ This library provides concise methods for implementing |symmetric|_ encryption w
 .. |plaintexts| replace:: plaintexts
 .. _plaintexts: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.plain
 
-.. |ciphertexts| replace:: ``ciphertexts``
+.. |ciphertexts| replace:: ciphertexts
 .. _ciphertexts: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.cipher
 
 This library also provides a number of classes for representing |keys|_ (|secret|_ and |public|_), |nonces|_, |plaintexts|_, and |ciphertexts|_. All methods expect and return instances of the appropriate classes::

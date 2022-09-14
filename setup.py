@@ -25,6 +25,11 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     Retrieve the libsodium source archive and extract it
     to the location used by the build process.
     """
+
+    # Return if libsodium source tree has already been prepared.
+    if os.path.exists(libsodium_folder) and len(os.listdir(libsodium_folder)) != 0:
+        return libsodium_folder
+
     # URL from which libsodium source archive is retrieved,
     # and paths into which it is extracted and then moved.
     url = (

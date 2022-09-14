@@ -86,6 +86,10 @@ jobs:
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }}"
     steps:
       - uses: actions/checkout@v2
+      - name: Download libsodium source tree archive.
+        run: |
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
           curl "${{ matrix.python.url }}" -o python.pkg
@@ -94,11 +98,9 @@ jobs:
           ${{ matrix.python.bin-path }} -m virtualenv venv
       - name: Install Python dependencies for build process.
         run: |
-          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U pip .[build]
       - name: Build wheel file.
         run: |
-          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           mkdir wheelhouse
           REGEX="3\.([0-9])*"
           PY_LIMITED_API="--py-limited-api=${{ matrix.python.version-abi }}"
@@ -110,14 +112,12 @@ jobs:
         run: venv/bin/pip install -f wheelhouse --no-index bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
-          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U pip .[lint,test]
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
-          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U .[docs]
           cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.
@@ -129,7 +129,7 @@ jobs:
           name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_9_x86_64"
           path: bcl-wheelhouse/
   macos-arm:
-    runs-on: macOS-11
+    runs-on: macos-11
     strategy:
       matrix:
         python:
@@ -146,6 +146,10 @@ jobs:
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }} ARM"
     steps:
       - uses: actions/checkout@v2
+      - name: Download libsodium source tree archive.
+        run: |
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
           curl "${{ matrix.python.url }}" -o python.pkg
@@ -154,11 +158,9 @@ jobs:
           ${{ matrix.python.bin-path }} -m virtualenv venv
       - name: Install Python dependencies for build process.
         run: |
-          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U pip .[build]
       - name: Build wheel file.
         run: |
-          wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           mkdir wheelhouse
           PY_LIMITED_API="--py-limited-api=${{ matrix.python.version-abi }}"
           rm -f dist/*.*
@@ -169,14 +171,12 @@ jobs:
         run: venv/bin/pip install -f wheelhouse --no-index bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
-          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U pip .[lint,test]
           venv/bin/python -m pylint bcl # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
-          wget -O ./src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
           venv/bin/pip install -U .[docs]
           cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
       - name: Upload wheel file.

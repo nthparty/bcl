@@ -175,7 +175,7 @@ with open('README.rst', 'r') as fh:
     long_description = fh.read()
 
 name = 'bcl'
-version = '2.2.0'
+version = '2.3.0'
 
 setup(
     name=name,

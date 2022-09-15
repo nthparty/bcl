@@ -2,7 +2,7 @@ name: lint-test-cover-docs-build-upload
 on:
   push
 env:
-  version: "2.2.0"
+  version: "2.3.0"
 jobs:
   manylinux:
     runs-on: ubuntu-latest
@@ -10,10 +10,10 @@ jobs:
     strategy:
       matrix:
         python:
-          - {version: "3.7", version-abi: "cp37", version-abi-suffix: "cp37m"}
-          - {version: "3.8", version-abi: "cp38", version-abi-suffix: "cp38"}
-          - {version: "3.9", version-abi: "cp39", version-abi-suffix: "cp39"}
-          - {version: "3.10", version-abi: "cp310", version-abi-suffix: "cp310"}
+          - {version: "3.7", version-abi: "cp37"}
+          - {version: "3.8", version-abi: "cp38"}
+          - {version: "3.9", version-abi: "cp39"}
+          - {version: "3.10", version-abi: "cp310"}
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64"
     steps:
       - uses: actions/checkout@v2
@@ -26,8 +26,8 @@ jobs:
           mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
-          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi-suffix }}/bin/python -m pip install virtualenv
-          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi-suffix }}/bin/python -m virtualenv .venv
+          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi }}/bin/python -m pip install virtualenv
+          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi }}/bin/python -m virtualenv .venv
       - name: Install Python dependencies for build process.
         run: .venv/bin/pip install -U pip .[build]
       - name: Build wheel file.
@@ -68,22 +68,10 @@ jobs:
     strategy:
       matrix:
         python:
-          - version: '3.7'
-            version-abi: 'cp37'
-            version-macos: '10.9'
-            url: 'https://www.python.org/ftp/python/3.7.9/python-3.7.9-macosx10.9.pkg'
-            bin-path: '/Library/Frameworks/Python.framework/Versions/3.7/bin/python3'
-          - version: '3.8'
-            version-abi: 'cp38'
-            version-macos: '10.9'
-            url: 'https://www.python.org/ftp/python/3.8.9/python-3.8.9-macosx10.9.pkg'
-            bin-path: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
-          - version: '3.9'
-            version-abi: 'cp39'
-            version-macos: '10.9'
-            url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macosx10.9.pkg'
-            bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }}"
+          - {version: '3.7', version-abi: 'cp37', version-url: '3.7.9'}
+          - {version: '3.8', version-abi: 'cp38', version-url: '3.8.9'}
+          - {version: '3.9', version-abi: 'cp39', version-url: '3.9.9'}
+    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 10.9"
     steps:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive.
@@ -92,10 +80,10 @@ jobs:
           mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
-          curl "${{ matrix.python.url }}" -o python.pkg
+          curl "https://www.python.org/ftp/python/${{ matrix.python.version-url }}/python-${{ matrix.python.version-url }}-macosx10.9.pkg" -o python.pkg
           sudo installer -pkg python.pkg -target /
-          ${{ matrix.python.bin-path }} -m pip install -U virtualenv
-          ${{ matrix.python.bin-path }} -m virtualenv venv
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m pip install -U virtualenv
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m virtualenv venv
       - name: Install Python dependencies for build process.
         run: |
           venv/bin/pip install -U pip .[build]
@@ -133,17 +121,9 @@ jobs:
     strategy:
       matrix:
         python:
-          - version: '3.9'
-            version-abi: 'cp39'
-            version-macos: '11'
-            url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macos11.pkg'
-            bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
-          - version: '3.10'
-            version-abi: 'cp310'
-            version-macos: '11'
-            url: 'https://www.python.org/ftp/python/3.10.6/python-3.10.6-macos11.pkg'
-            bin-path: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }} ARM"
+          - {version: '3.9', version-abi: 'cp39', version-url: '3.9.9'}
+          - {version: '3.10', version-abi: 'cp310', version-url: '3.10.6'}
+    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 11 ARM"
     steps:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive.
@@ -152,10 +132,10 @@ jobs:
           mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
-          curl "${{ matrix.python.url }}" -o python.pkg
+          curl "https://www.python.org/ftp/python/${{ matrix.python.version-url }}/python-${{ matrix.python.version-url }}-macos11.pkg" -o python.pkg
           sudo installer -pkg python.pkg -target /
-          ${{ matrix.python.bin-path }} -m pip install -U virtualenv
-          ${{ matrix.python.bin-path }} -m virtualenv venv
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m pip install -U virtualenv
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m virtualenv venv
       - name: Install Python dependencies for build process.
         run: |
           venv/bin/pip install -U pip .[build]

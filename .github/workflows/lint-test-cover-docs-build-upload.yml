@@ -10,10 +10,10 @@ jobs:
     strategy:
       matrix:
         python:
-          - {version: "3.7", version-abi: "cp37"}
-          - {version: "3.8", version-abi: "cp38"}
-          - {version: "3.9", version-abi: "cp39"}
-          - {version: "3.10", version-abi: "cp310"}
+          - {version: "3.7", version-abi: "cp37", version-abi-suffix: "cp37m"}
+          - {version: "3.8", version-abi: "cp38", version-abi-suffix: "cp38"}
+          - {version: "3.9", version-abi: "cp39", version-abi-suffix: "cp39"}
+          - {version: "3.10", version-abi: "cp310", version-abi-suffix: "cp310"}
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64"
     steps:
       - uses: actions/checkout@v2
@@ -26,8 +26,8 @@ jobs:
           mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
       - name: Install Python.
         run: |
-          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi }}/bin/python -m pip install virtualenv
-          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi }}/bin/python -m virtualenv .venv
+          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi-suffix }}/bin/python -m pip install virtualenv
+          /opt/python/${{ matrix.python.version-abi }}-${{ matrix.python.version-abi-suffix }}/bin/python -m virtualenv .venv
       - name: Install Python dependencies for build process.
         run: .venv/bin/pip install -U pip .[build]
       - name: Build wheel file.

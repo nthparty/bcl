@@ -163,7 +163,7 @@ Testing and Conventions
 ^^^^^^^^^^^^^^^^^^^^^^^
 Before unit tests can be executed, it is first necessary to prepare for local development by compiling and moving into its designated location the libsodium shared library file (as described in `the relevant subsection above <#preparation-for-local-development>`__).
 
-All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``setup.cfg`` for configuration details)::
+All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``pyproject.toml`` for configuration details)::
 
     python -m pip install .[test]
     python -m pytest
@@ -175,7 +175,7 @@ Alternatively, all unit tests are included in the module itself and can be execu
 Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
 
     python -m pip install .[lint]
-    python -m pylint bcl
+    python -m pylint src/bcl
 
 Contributions
 ^^^^^^^^^^^^^

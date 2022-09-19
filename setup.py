@@ -1,5 +1,5 @@
 """
-Setup, package, and build file for the bcl cryptography library.
+Setup, package, and build file.
 """
 import sys
 import platform

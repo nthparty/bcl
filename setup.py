@@ -55,7 +55,26 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     with tarfile.open(libsodium_tar_gz_path) as libsodium_tar_gz:
         if os.path.exists(libsodium_tar_gz_folder):
             shutil.rmtree(libsodium_tar_gz_folder)
-        libsodium_tar_gz.extractall(libsodium_tar_gz_folder)
+        def is_within_directory(directory, target):
+            
+            abs_directory = os.path.abspath(directory)
+            abs_target = os.path.abspath(target)
+        
+            prefix = os.path.commonprefix([abs_directory, abs_target])
+            
+            return prefix == abs_directory
+        
+        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+        
+            for member in tar.getmembers():
+                member_path = os.path.join(path, member.name)
+                if not is_within_directory(path, member_path):
+                    raise Exception("Attempted Path Traversal in Tar File")
+        
+            tar.extractall(path, members, numeric_owner) 
+            
+        
+        safe_extract(libsodium_tar_gz, libsodium_tar_gz_folder)
 
     # Move the source tree to the destination folder (removing
     # the destination folder first, if it already exists).

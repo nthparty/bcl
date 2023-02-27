@@ -13,7 +13,7 @@ import errno
 import urllib.request
 from distutils.sysconfig import get_config_vars
 from setuptools import Distribution, setup
-from setuptools.command.build_ext import build_ext as _build_ext
+import pystache
 
 try:
     from setuptools.command.build_clib import build_clib as _build_clib
@@ -71,11 +71,97 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     shutil.rmtree(libsodium_tar_gz_folder)
 
     return libsodium_folder
+def extract_current_build_path():
+    """
+    Extract path to current bcl build directory
+    """
+
+    build_dirs = os.listdir("build")
+    lib_dir = None
+    for item in build_dirs:
+        if "lib." in item:
+            lib_dir = item
+
+    if lib_dir is None:  # If still None, then settle for just 'lib' with no '.'.
+        for item in build_dirs:
+            if "lib" in item:
+                lib_dir = item
+
+    if lib_dir is None:
+        raise NotADirectoryError(
+            "Could not locate lib.<platform>-<python_version> directory within build directory."
+        )
+
+    return f"build/{lib_dir}/bcl/"
+
+def extract_current_lib_path():
+    """
+    Extract path to temp.<platform>-<arch>-<python_version> compiled libsodium library
+    """
+
+    build_dirs = os.listdir("build")
+    lib_dir = None
+    for item in build_dirs:
+        if "temp." in item:
+            lib_dir = item
+
+    if lib_dir is None:
+        raise NotADirectoryError(
+            "Could not locate lib.<platform>-<python_version> directory within build directory."
+        )
+
+    return f"build/{lib_dir}/lib/"
+
+def render_sodium():
+    """
+    Emit compiled sodium binary as hex string in _sodium.py file
+    """
+
+    if os.environ.get('LIB', None) is None and sys.platform == "win32":
+        raise EnvironmentError(
+            "For Windows builds, environment variable $LIB must be set to path to libsodium directory"
+        )
+
+    # Extract path to compiled libsodium binary
+    path_to_sodium = \
+        f"{os.environ.get('LIB')}/libsodium.dll" if sys.platform == "win32" \
+            else f"{extract_current_lib_path()}/libsodium.so"
+
+    data = {
+        "SODIUM_HEX": open(
+            path_to_sodium, "rb"
+        ).read().hex()
+    }
+    template = open(f"{extract_current_build_path()}/_sodium.tmpl", encoding='utf-8').read()  # pylint: disable=consider-using-with
+
+    # Emit rendered file to build directory
+    with open(f"{extract_current_build_path()}/_sodium.py", "w", encoding='utf-8') as sodium_out:
+        sodium_out.write(pystache.render(template, data))
 
 class Distribution(Distribution):
     def has_c_libraries(self):
-        # On Windows, only a precompiled dynamic library file is used.
-        return not sys.platform == 'win32'
+        # Even though libsodium for Windows includes a precompiled libsodium.dll binary,
+        # we still need to call render_sodium() for windows builds in the build_clib.run
+        # function, which only gets triggered if this function returns True
+        return True
+
+def extract_sodium_from_static_archive(lib_temp: str):
+    """
+    For certain versions of macOS, the libsodium.a contains multiple target architectures.
+    Calls to subprocess are wrapped in a try/except because only certain macOS GH runners contain
+    these multi-target files
+    """
+
+    if platform.processor() == "arm":
+        try:
+            subprocess.check_call(['lipo', 'libsodium.a', '-thin', 'arm64', '-output', 'libsodium.a'], cwd=lib_temp)
+        except:
+            pass
+    else:
+        try:
+            subprocess.check_call(['lipo', 'libsodium.a', '-thin', 'x86_64', '-output', 'libsodium.a'], cwd=lib_temp)
+        except:
+            pass
 
 class build_clib(_build_clib):
     def get_source_files(self):
@@ -97,6 +183,7 @@ class build_clib(_build_clib):
     def run(self):
         # On Windows, only a precompiled dynamic library file is used.
         if sys.platform == 'win32':
+            render_sodium()
             return
 
         # Confirm that make utility can be found.
@@ -161,15 +248,23 @@ class build_clib(_build_clib):
         subprocess.check_call(['make', 'check'] + make_args, cwd=build_temp)
         subprocess.check_call(['make', 'install'] + make_args, cwd=build_temp)
 
-class build_ext(_build_ext):
-    def run(self):
-        if self.distribution.has_c_libraries():
-            build_clib = self.get_finalized_command('build_clib')
-            self.include_dirs.append(os.path.join(build_clib.build_clib, 'include'),)
-            self.library_dirs.insert(0, os.path.join(build_clib.build_clib, 'lib64'),)
-            self.library_dirs.insert(0, os.path.join(build_clib.build_clib, 'lib'),)
+        # Build dynamic (shared object) library file from the statically compiled archive binary file.
+        lib_temp = os.path.join(self.build_clib, 'lib')
 
-        return _build_ext.run(self)
+        # Different macOS GH runners contain either single or multi-target static archives
+        if sys.platform == "darwin":
+            extract_sodium_from_static_archive(lib_temp)
+
+        # Explode the archive into many individual object files.
+        subprocess.check_call(['ar', '-x', 'libsodium.a'], cwd=lib_temp)
+
+        import glob
+        object_file_relpaths = glob.glob(lib_temp+"/*.o")
+        object_file_names = [o.split('/')[-1] for o in object_file_relpaths]
+        subprocess.check_call(['gcc', '-shared'] + object_file_names + ['-o', 'libsodium.so'], cwd=lib_temp)  # Invoke gcc to (re-)link dynamically.
+
+        # Emit sodium binary to _sodium.py file as hex-encoded string
+        render_sodium()
 
 with open('README.rst', 'r') as fh:
     long_description = fh.read()
@@ -182,12 +277,12 @@ setup(
     version=version,
     packages=[name],
     ext_package=name,
-    install_requires=['cffi~=1.15'],
+    install_requires=['pystache~=0.6'],
     extras_require={
         'build': [
             'setuptools~=62.0',
             'wheel~=0.37',
-            'cffi~=1.15'
+            'pystache~=0.6'
         ],
         'docs': [
             'sphinx~=4.2.0',
@@ -216,10 +311,8 @@ setup(
                 '(i.e., public-key) encryption/decryption primitives.',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    cffi_modules=['src/bcl/sodium_ffi.py:sodium_ffi'],
     cmdclass={
-        'build_clib': build_clib,
-        'build_ext': build_ext,
+        'build_clib': build_clib
     },
     distclass=Distribution,
     zip_safe=False

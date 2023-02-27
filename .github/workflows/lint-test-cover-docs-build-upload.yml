@@ -15,6 +15,8 @@ jobs:
           - {version: "3.9", version-abi: "cp39", version-abi-suffix: "cp39"}
           - {version: "3.10", version-abi: "cp310", version-abi-suffix: "cp310"}
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64"
+    env:
+      PY_LIMITED_API: --py-limited-api=${{ matrix.python.version-abi }}
     steps:
       - uses: actions/checkout@v2
       - name: Install development dependencies.
@@ -33,11 +35,13 @@ jobs:
       - name: Build wheel file.
         run: |
           mkdir tmpwheelhouse
-          PY_LIMITED_API="--py-limited-api=${{ matrix.python.version-abi }}"
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python setup.py bdist_wheel $PY_LIMITED_API
-          cp build/lib*/bcl/_sodium*.so src/bcl
           mv dist/bcl*.whl tmpwheelhouse
-          auditwheel repair tmpwheelhouse/bcl*.whl -w wheelhouse/
+          mkdir wheelhouse
+          mv tmpwheelhouse/bcl*.whl wheelhouse/
+          cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
+      - name: Test wheel installation.
+        run: .venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           .venv/bin/pip install -U .[lint,test]
@@ -54,7 +58,7 @@ jobs:
       - name: Test auto-generation of documentation.
         run: |
           .venv/bin/pip install -U .[docs]
-          cd docs && ../.venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
+          cd docs && ../.venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && cd ..
       - name: Upload wheel file.
         run: |
            mkdir bcl-wheelhouse
@@ -84,6 +88,8 @@ jobs:
             url: 'https://www.python.org/ftp/python/3.9.9/python-3.9.9-macosx10.9.pkg'
             bin-path: '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3'
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS ${{ matrix.python.version-macos }}"
+    env:
+      PY_LIMITED_API: --py-limited-api=${{ matrix.python.version-abi }}
     steps:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive.
@@ -102,14 +108,12 @@ jobs:
       - name: Build wheel file.
         run: |
           mkdir wheelhouse
-          REGEX="3\.([0-9])*"
-          PY_LIMITED_API="--py-limited-api=${{ matrix.python.version-abi }}"
           rm -f dist/*.*
           LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
               venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
-          cp build/lib*/bcl/_sodium*.so src/bcl
+          cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.
-        run: venv/bin/pip install -f wheelhouse --no-index bcl
+        run: venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           venv/bin/pip install -U pip .[lint,test]
@@ -119,7 +123,7 @@ jobs:
       - name: Test auto-generation of documentation.
         run: |
           venv/bin/pip install -U .[docs]
-          cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
+          cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && cd ..
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse
@@ -168,7 +172,7 @@ jobs:
               venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium*.so src/bcl
       - name: Test wheel installation.
-        run: venv/bin/pip install -f wheelhouse --no-index bcl
+        run: venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           venv/bin/pip install -U pip .[lint,test]
@@ -178,7 +182,7 @@ jobs:
       - name: Test auto-generation of documentation.
         run: |
           venv/bin/pip install -U .[docs]
-          cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && cd ..
+          cd docs && ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py && cd ..
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse
@@ -200,6 +204,9 @@ jobs:
           - {version: "3.9", version-abi: "cp39"}
           - {version: "3.10", version-abi: "cp310"}
     name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}"
+    env:
+      INCLUDE: C:/libsodium/include
+      LIB: C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/dynamic/
     steps:
       - uses: actions/checkout@v2
       - name: Download and extract libsodium dynamic library file.
@@ -207,11 +214,6 @@ jobs:
           wget -O c:\libsodium-1.0.18-msvc.zip https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18-msvc.zip
           Expand-Archive c:\libsodium-1.0.18-msvc.zip -DestinationPath c:\
         shell: powershell
-      - name: Add environment variables for libsodium.
-        run: |
-          echo "INCLUDE=C:/libsodium/include;$INCLUDE" >> $GITHUB_ENV
-          echo "LIB=C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/static;$LIB" >> $GITHUB_ENV
-        shell: bash
       - name: Install Python.
         uses: actions/setup-python@v2.2.2
         with:
@@ -225,11 +227,11 @@ jobs:
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.windows.arch-vs }}
           python setup.py bdist_wheel --py-limited-api=${{ matrix.python.version-abi }}
-          cp build/lib*/bcl/_sodium.pyd src/bcl
           mv dist/bcl*.whl wheelhouse
+          cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
         shell: cmd
       - name: Test wheel installation.
-        run: pip install -f wheelhouse bcl --no-index
+        run: pip install -f wheelhouse bcl --no-index --force-reinstall --no-dependencies
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           python -m pip install -U pip .[lint,test]
@@ -240,7 +242,7 @@ jobs:
         run: |
           python -m pip install -U .[docs]
           cd docs
-          sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py
+          sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py
           cd ..
       - name: Upload wheel file.
         run: |

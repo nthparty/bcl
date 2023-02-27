@@ -15,19 +15,18 @@ import os
 import base64
 
 try:
-    # Import shared/dynamic library (libsodium subset).
-    from bcl import _sodium # pylint: disable=cyclic-import
-except: # pylint: disable=bare-except # pragma: no cover
     # Support for direct invocation in order to execute doctests.
-    import _sodium
+    from _sodium import _sodium
+except:  # pylint: disable=bare-except # pragma: no cover
+    from bcl._sodium import _sodium
 
-crypto_secretbox_KEYBYTES = _sodium.lib.crypto_secretbox_keybytes()
-crypto_secretbox_NONCEBYTES = _sodium.lib.crypto_secretbox_noncebytes()
-crypto_secretbox_ZEROBYTES = _sodium.lib.crypto_secretbox_zerobytes()
-crypto_secretbox_BOXZEROBYTES = _sodium.lib.crypto_secretbox_boxzerobytes()
-crypto_secretbox_MESSAGEBYTES_MAX = _sodium.lib.crypto_secretbox_messagebytes_max()
-crypto_box_PUBLICKEYBYTES = _sodium.lib.crypto_box_publickeybytes()
-crypto_box_SEALBYTES = _sodium.lib.crypto_box_sealbytes()
+crypto_secretbox_KEYBYTES = _sodium.crypto_secretbox_keybytes()
+crypto_secretbox_NONCEBYTES = _sodium.crypto_secretbox_noncebytes()
+crypto_secretbox_ZEROBYTES = _sodium.crypto_secretbox_zerobytes()
+crypto_secretbox_BOXZEROBYTES = _sodium.crypto_secretbox_boxzerobytes()
+crypto_secretbox_MESSAGEBYTES_MAX = _sodium.crypto_secretbox_messagebytes_max()
+crypto_box_PUBLICKEYBYTES = _sodium.crypto_box_publickeybytes()
+crypto_box_SEALBYTES = _sodium.crypto_box_sealbytes()
 
 class raw(bytes):
     """
@@ -190,7 +189,7 @@ class key(raw):
 
         return (
             len(k_0) == len(k_1) and
-            _sodium.lib.sodium_memcmp(k_0_buffer, k_1_buffer, length) == 0
+            _sodium.sodium_memcmp(k_0_buffer, k_1_buffer, length) == 0
         )
 
     def __ne__(self: key, other: key) -> bool:

@@ -132,7 +132,8 @@ def render_sodium():
             path_to_sodium, "rb"
         ).read().hex()
     }
-    template = open(f"{extract_current_build_path()}/_sodium.tmpl", encoding='utf-8').read()  # pylint: disable=consider-using-with
+    print('\n\n\n debug \n\n\n', os.listdir(extract_current_build_path()), '?\n\n\n')
+    template = open(os.path.join(extract_current_build_path(), _sodium.tmpl), encoding='utf-8').read()  # pylint: disable=consider-using-with
 
     # Emit rendered file to build directory
     with open(f"{extract_current_build_path()}/_sodium.py", "w", encoding='utf-8') as sodium_out:

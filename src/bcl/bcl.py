@@ -10,6 +10,7 @@ methods (for key generation and encryption/decryption).
 """
 from __future__ import annotations
 from typing import Optional, Union
+from ctypes import c_char
 import doctest
 import os
 import base64
@@ -26,7 +27,13 @@ crypto_secretbox_ZEROBYTES = _sodium.crypto_secretbox_zerobytes()
 crypto_secretbox_BOXZEROBYTES = _sodium.crypto_secretbox_boxzerobytes()
 crypto_secretbox_MESSAGEBYTES_MAX = _sodium.crypto_secretbox_messagebytes_max()
 crypto_box_PUBLICKEYBYTES = _sodium.crypto_box_publickeybytes()
+crypto_SCALARMULTBYTES = _sodium.crypto_scalarmult_bytes()
 crypto_box_SEALBYTES = _sodium.crypto_box_sealbytes()
+
+assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
+
+crypto_scalarmult_bytes_new = c_char * crypto_SCALARMULTBYTES
+buf_new = lambda size : (c_char * size)()
 
 class raw(bytes):
     """
@@ -182,14 +189,9 @@ class key(raw):
         (k_0, k_1) = (bytes(self), bytes(other))
         length = max(len(k_0), len(k_1))
 
-        k_0_buffer = _sodium.ffi.new('char []', length)
-        k_1_buffer = _sodium.ffi.new('char []', length)
-        _sodium.ffi.memmove(k_0_buffer, k_0, len(k_0))
-        _sodium.ffi.memmove(k_1_buffer, k_1, len(k_1))
-
         return (
             len(k_0) == len(k_1) and
-            _sodium.sodium_memcmp(k_0_buffer, k_1_buffer, length) == 0
+            _sodium.sodium_memcmp(k_0, k_1, length) == 0
         )
 
     def __ne__(self: key, other: key) -> bool:
@@ -468,19 +470,13 @@ class symmetric:
             raise TypeError('nonce parameter must be a nonce object')
 
         padded_plaintext = (b'\x00' * crypto_secretbox_ZEROBYTES) + plaintext
-        ciphertext = _sodium.ffi.new('unsigned char[]', len(padded_plaintext))
-        if _sodium.lib.crypto_secretbox(
+        ciphertext = buf_new(len(padded_plaintext))
+        if _sodium.crypto_secretbox(
             ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
         ) != 0:
             raise RuntimeError('libsodium error during encryption') # pragma: no cover
 
-        return cipher(
-            noncetext +
-            _sodium.ffi.buffer(
-                ciphertext,
-                len(padded_plaintext)
-            )[crypto_secretbox_BOXZEROBYTES:]
-        )
+        return cipher(noncetext + ciphertext.raw[crypto_secretbox_BOXZEROBYTES:])
 
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
@@ -519,18 +515,15 @@ class symmetric:
             (b'\x00' * crypto_secretbox_BOXZEROBYTES) +
             ciphertext[crypto_secretbox_NONCEBYTES:]
         )
-        plaintext = _sodium.ffi.new('unsigned char[]', len(padded_ciphertext))
-        if _sodium.lib.crypto_secretbox_open(
+        plaintext = buf_new(len(padded_ciphertext))
+        if _sodium.crypto_secretbox_open(
             plaintext, padded_ciphertext, len(padded_ciphertext),
             ciphertext[:crypto_secretbox_NONCEBYTES],
             secret_key
         ) != 0:
             raise RuntimeError('ciphertext failed verification')
 
-        return plain(
-            _sodium.ffi.buffer(plaintext, len(padded_ciphertext)) \
-            [crypto_secretbox_ZEROBYTES:]
-        )
+        return plain(plaintext.raw[crypto_secretbox_ZEROBYTES:])
 
 class asymmetric:
     """
@@ -572,13 +565,11 @@ class asymmetric:
         >>> isinstance(p, key) and isinstance(p, public)
         True
         """
-        q = _sodium.ffi.new('unsigned char[]', _sodium.lib.crypto_scalarmult_bytes())
-        if _sodium.lib.crypto_scalarmult_base(q, secret_key) != 0:
+        q = crypto_scalarmult_bytes_new()
+        if _sodium.crypto_scalarmult_base(q, secret_key) != 0:
             raise RuntimeError('libsodium error during decryption') # pragma: no cover
 
-        return public(
-            _sodium.ffi.buffer(q, _sodium.lib.crypto_scalarmult_scalarbytes())[:]
-        )
+        return public(q.raw)
 
     @staticmethod
     def encrypt(public_key: public, plaintext: Union[plain, bytes, bytearray]) -> cipher:
@@ -612,13 +603,13 @@ class asymmetric:
 
         plaintext_length = len(plaintext)
         ciphertext_length = crypto_box_SEALBYTES + plaintext_length
-        ciphertext = _sodium.ffi.new('unsigned char[]', ciphertext_length)
-        if _sodium.lib.crypto_box_seal(
+        ciphertext = buf_new(ciphertext_length)
+        if _sodium.crypto_box_seal(
             ciphertext, plaintext, plaintext_length, public_key
         ) != 0:
             raise RuntimeError('libsodium error during encryption') # pragma: no cover
 
-        return cipher(_sodium.ffi.buffer(ciphertext, ciphertext_length)[:])
+        return cipher(ciphertext.raw)
 
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
@@ -656,12 +647,10 @@ class asymmetric:
         if not isinstance(ciphertext, cipher):
             raise TypeError('can only decrypt a ciphertext')
 
-        q = _sodium.ffi.new('unsigned char[]', _sodium.lib.crypto_scalarmult_bytes())
-        if _sodium.lib.crypto_scalarmult_base(q, secret_key) != 0:
+        q = crypto_scalarmult_bytes_new()
+        if _sodium.crypto_scalarmult_base(q, secret_key) != 0:
             raise RuntimeError('libsodium error during decryption') # pragma: no cover
-        public_key = public(
-            _sodium.ffi.buffer(q, _sodium.lib.crypto_scalarmult_scalarbytes())[:]
-        )
+        public_key = public(q.raw)
 
         ciphertext_length = len(ciphertext)
         if not ciphertext_length >= crypto_box_SEALBYTES:
@@ -671,21 +660,24 @@ class asymmetric:
             )
 
         plaintext_length = ciphertext_length - crypto_box_SEALBYTES
-        plaintext = _sodium.ffi.new('unsigned char[]', max(1, plaintext_length))
-        if _sodium.lib.crypto_box_seal_open(
+        plaintext = buf_new('unsigned char[]', max(1, plaintext_length))
+        if _sodium.crypto_box_seal_open(
             plaintext, ciphertext, ciphertext_length, public_key, secret_key
         ) != 0:
             raise RuntimeError('libsodium error during decryption') # pragma: no cover
 
-        return plain(_sodium.ffi.buffer(plaintext, plaintext_length)[:])
+        return plain(plaintext.raw)
 
 # Initializes sodium, picking the best implementations available for this
 # machine.
 def _sodium_init():
-    if _sodium.lib.sodium_init() == -1:
+    ret_code = _sodium.sodium_init()
+    if ret_code == -1:
         raise RuntimeError('libsodium error during initialization') # pragma: no cover
+    return ret_code
 
-_sodium.ffi.init_once(_sodium_init, 'libsodium')
+assert _sodium_init() == 0 and 'libsodium should not be initialized twice!'
+assert _sodium_init() == 1
 
 if __name__ == '__main__':
     doctest.testmod() # pragma: no cover

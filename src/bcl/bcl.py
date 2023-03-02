@@ -660,7 +660,7 @@ class asymmetric:
             )
 
         plaintext_length = ciphertext_length - crypto_box_SEALBYTES
-        plaintext = buf_new('unsigned char[]', max(1, plaintext_length))
+        plaintext = buf_new(max(1, plaintext_length))
         if _sodium.crypto_box_seal_open(
             plaintext, ciphertext, ciphertext_length, public_key, secret_key
         ) != 0:
@@ -671,13 +671,17 @@ class asymmetric:
 # Initializes sodium, picking the best implementations available for this
 # machine.
 def _sodium_init():
-    ret_code = _sodium.sodium_init()
-    if ret_code == -1:
-        raise RuntimeError('libsodium error during initialization') # pragma: no cover
-    return ret_code
+    if _sodium.sodium_init() == 1:
+        raise RuntimeError( # pragma: no cover
+            'libsodium is somehow already in use by this instance of rbcl'
+        )
+    if not _sodium.sodium_init() == 1:
+        raise RuntimeError( # pragma: no cover
+            'libsodium error during initialization'
+        )
+    _sodium.ready = True
 
-assert _sodium_init() == 0 and 'libsodium should not be initialized twice!'
-assert _sodium_init() == 1
+_sodium_init()
 
 if __name__ == '__main__':
     doctest.testmod() # pragma: no cover

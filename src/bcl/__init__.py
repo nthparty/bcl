@@ -1,7 +1,7 @@
 """Allow users to use classes directly."""
 
 try:
-    from bcl import _sodium
+    from bcl import _sodium  # pylint: disable=import-self
 except ImportError:
     pass
 

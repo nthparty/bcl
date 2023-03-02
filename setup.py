@@ -132,8 +132,7 @@ def render_sodium():
             path_to_sodium, "rb"
         ).read().hex()
     }
-    print('\n\n\n debug \n\n\n', os.listdir(extract_current_build_path()), '?\n\n\n')
-    template = open(os.path.join(extract_current_build_path(), _sodium.tmpl), encoding='utf-8').read()  # pylint: disable=consider-using-with
+    template = open(os.path.join(extract_current_build_path(), "_sodium.tmpl"), encoding='utf-8').read()  # pylint: disable=consider-using-with
 
     # Emit rendered file to build directory
     with open(f"{extract_current_build_path()}/_sodium.py", "w", encoding='utf-8') as sodium_out:
@@ -277,6 +276,9 @@ setup(
     name=name,
     version=version,
     packages=[name],
+    package_data={
+        "": ["*.tmpl"]
+    },
     ext_package=name,
     install_requires=['pystache~=0.6'],
     extras_require={

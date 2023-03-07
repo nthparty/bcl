@@ -21,20 +21,22 @@ try:
 except:  # pylint: disable=bare-except # pragma: no cover
     from bcl._sodium import _sodium
 
-crypto_secretbox_KEYBYTES = _sodium.crypto_secretbox_keybytes()
-crypto_secretbox_NONCEBYTES = _sodium.crypto_secretbox_noncebytes()
-crypto_secretbox_ZEROBYTES = _sodium.crypto_secretbox_zerobytes()
-crypto_secretbox_BOXZEROBYTES = _sodium.crypto_secretbox_boxzerobytes()
-crypto_secretbox_MESSAGEBYTES_MAX = _sodium.crypto_secretbox_messagebytes_max()
-crypto_box_PUBLICKEYBYTES = _sodium.crypto_box_publickeybytes()
-crypto_SCALARMULTBYTES = _sodium.crypto_scalarmult_bytes()
-crypto_box_SEALBYTES = _sodium.crypto_box_sealbytes()
+# We cast to uint64 manually below (otherwise we'd add the type signature info to each function).
+crypto_secretbox_KEYBYTES = _sodium.crypto_secretbox_keybytes() % pow(2, 64)
+crypto_secretbox_NONCEBYTES = _sodium.crypto_secretbox_noncebytes() % pow(2, 64)
+crypto_secretbox_ZEROBYTES = _sodium.crypto_secretbox_zerobytes() % pow(2, 64)
+crypto_secretbox_BOXZEROBYTES = _sodium.crypto_secretbox_boxzerobytes() % pow(2, 64)
+crypto_secretbox_MESSAGEBYTES_MAX = _sodium.crypto_secretbox_messagebytes_max() % pow(2, 64)
+crypto_box_PUBLICKEYBYTES = _sodium.crypto_box_publickeybytes() % pow(2, 64)
+crypto_SCALARMULTBYTES = _sodium.crypto_scalarmult_bytes() % pow(2, 64)
+crypto_box_SEALBYTES = _sodium.crypto_box_sealbytes() % pow(2, 64)
 
 assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
 
 crypto_scalarmult_bytes_new = c_char * crypto_SCALARMULTBYTES
-buf_new = lambda size : (c_char * size)()
+buf_new = lambda size : (c_char * size)()  # pylint: disable=unnecessary-lambda-assignment
 
+# pylint: disable=invalid-name  # snake_case and PascalCase for bcl classes and class methods.
 class raw(bytes):
     """
     Wrapper class for a raw bytes-like object that represents a key,
@@ -668,12 +670,11 @@ class asymmetric:
 
         return plain(plaintext.raw)
 
-# Initializes sodium, picking the best implementations available for this
-# machine.
+# Initializes sodium, picking the best implementations available for this machine.
 def _sodium_init():
     if _sodium.sodium_init() == 1:
         raise RuntimeError( # pragma: no cover
-            'libsodium is somehow already in use by this instance of rbcl'
+            'libsodium is somehow already in use by this instance of bcl'
         )
     if not _sodium.sodium_init() == 1:
         raise RuntimeError( # pragma: no cover

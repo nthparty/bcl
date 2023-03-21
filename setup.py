@@ -121,6 +121,10 @@ def render_sodium():
         raise EnvironmentError(
             "For Windows builds, environment variable $LIB must be set to path to libsodium directory"
         )
+    try:
+         print('\n\n\n[*] debug [*]\n\n\n', os.listdir(os.environ.get('LIB')), '?\n\n\n')
+    except Exception as e:
+        pass
 
     # Extract path to compiled libsodium binary
     path_to_sodium = \

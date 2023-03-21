@@ -251,8 +251,8 @@ jobs:
           python -c "print(' * testing bcl try 6')"
           python -c "from bcl import asymmetric, plain; s = asymmetric.secret(); p = asymmetric.public(s); m = plain(bytes([1, 2, 3])); c = asymmetric.encrypt(p, m); assert m == asymmetric.decrypt(s, c)"  # Try a manual test.
           python -c "print(' * testing bcl succeeded')"
-          # python src/bcl/bcl.py -v # Run doctests.
-          # python -m pytest # Run tests.
+          python src/bcl/bcl.py -v # Run doctests.
+          python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
           python -m pip install -U .[docs]

@@ -7,19 +7,31 @@ import platform
 import tempfile
 from ctypes import cdll
 
+print("test phase", 0)
+
 # Determine OS type
 pl = platform.system()
 
 # Read hex-encoded sodium shared object file
 sodium_bs = bytes.fromhex('{{{SODIUM_HEX}}}')  # pylint: disable=line-too-long
 
+print("test phase", 1)
+
 # Generate a temporary file on disk and write sodium binary to it
-LIB_EXT = ".pyd" if pl == "Windows" else ".so"
+LIB_EXT = ".dll" if pl == "Windows" else ".so"
+print("test phase", 2)
 lib_path = tempfile.NamedTemporaryFile(suffix=LIB_EXT, delete=False).name  # pylint: disable=consider-using-with
+print("test phase", 3)
 sodium_tmp = open(lib_path, "wb")  # pylint: disable=consider-using-with
+print("test phase", 4)
 sodium_tmp.write(sodium_bs)
+print("test phase", 5)
 # Close temp file to avoid multiprocess access error on Windows
 sodium_tmp.close()
+print("test phase", 6)
 
-# Load sodium binary from disk to be used by rbcl.py
+# Load sodium binary from disk to be used by bcl.py
 _sodium = cdll.LoadLibrary(lib_path)
+print("test phase", 7)
+
+print("_sodium =", _sodium)

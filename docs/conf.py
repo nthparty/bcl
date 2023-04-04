@@ -17,11 +17,12 @@ sys.path.insert(0, os.path.abspath('../src')) # Prioritize local module copy.
 
 # -- Project information -----------------------------------------------------
 
-# The name and version are retrieved from ``setup.py`` in the root directory.
-with open('../setup.py') as package_file:
-    package = package_file.read()
-project = package.split("name = '")[1].split("'")[0]
-version = package.split("version = '")[1].split("'")[0]
+# The name and version are retrieved from ``setup.cfg`` in the root directory.
+from configparser import ConfigParser
+cf = ConfigParser()
+cf.read('../setup.cfg')
+project = cf['metadata']['name']
+version = cf['metadata']['version']
 release = version
 
 # The copyright year and holder information is retrieved from the

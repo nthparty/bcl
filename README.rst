@@ -43,7 +43,7 @@ Examples
 ^^^^^^^^
 
 .. |symmetric| replace:: symmetric
-.. _symmetric: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.symmetric
+.. _symmetric: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.symmetric
 
 This library provides concise methods for implementing |symmetric|_ encryption workflows::
 
@@ -54,7 +54,7 @@ This library provides concise methods for implementing |symmetric|_ encryption w
     'abc'
 
 .. |Asymmetric| replace:: Asymmetric
-.. _Asymmetric: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.asymmetric
+.. _Asymmetric: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.asymmetric
 
 |Asymmetric|_ encryption workflows are also supported::
 
@@ -66,22 +66,22 @@ This library provides concise methods for implementing |symmetric|_ encryption w
     'abc'
 
 .. |keys| replace:: keys
-.. _keys: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.key
+.. _keys: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.key
 
 .. |secret| replace:: secret
-.. _secret: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.secret
+.. _secret: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.secret
 
 .. |public| replace:: public
-.. _public: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.public
+.. _public: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.public
 
 .. |nonces| replace:: nonces
-.. _nonces: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.nonce
+.. _nonces: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.nonce
 
 .. |plaintexts| replace:: plaintexts
-.. _plaintexts: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.plain
+.. _plaintexts: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.plain
 
 .. |ciphertexts| replace:: ciphertexts
-.. _ciphertexts: https://bcl.readthedocs.io/en/2.2.0/_source/bcl.html#bcl.bcl.cipher
+.. _ciphertexts: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.cipher
 
 This library also provides a number of classes for representing |keys|_ (|secret|_ and |public|_), |nonces|_, |plaintexts|_, and |ciphertexts|_. All methods expect and return instances of the appropriate classes::
 
@@ -163,7 +163,7 @@ Testing and Conventions
 ^^^^^^^^^^^^^^^^^^^^^^^
 Before unit tests can be executed, it is first necessary to prepare for local development by compiling and moving into its designated location the libsodium shared library file (as described in `the relevant subsection above <#preparation-for-local-development>`__).
 
-All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``setup.cfg`` for configuration details)::
+All unit tests are executed and their coverage is measured when using `pytest <https://docs.pytest.org>`__ (see ``pyproject.toml`` for configuration details)::
 
     python -m pip install .[test]
     python -m pytest
@@ -175,7 +175,7 @@ Alternatively, all unit tests are included in the module itself and can be execu
 Style conventions are enforced using `Pylint <https://pylint.pycqa.org>`__::
 
     python -m pip install .[lint]
-    python -m pylint bcl
+    python -m pylint src/bcl
 
 Contributions
 ^^^^^^^^^^^^^
@@ -191,7 +191,7 @@ This library can be published as a `package on PyPI <https://pypi.org/project/bc
 
     python -m pip install .[publish]
 
-Ensure that the correct version number appears in ``setup.py``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number)::
+Ensure that the correct version number appears in ``setup.py`` and in ``.github/workflows/lint-test-cover-docs-build-upload.yml``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number)::
 
     git tag ?.?.?
     git push origin ?.?.?

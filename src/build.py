@@ -13,7 +13,6 @@ from distutils.sysconfig import get_config_vars
 import pystache
 from setuptools.command.install import install
 
-
 def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     """
     Retrieve the libsodium source archive and extract it
@@ -79,7 +78,6 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
 
     return libsodium_folder
 
-
 def render_sodium():
     """
     Emit compiled sodium binary as hex string in _sodium.py file
@@ -141,7 +139,6 @@ try:
 
 except ImportError:
     BdistWheel = None
-
 
 class Install(install):
 

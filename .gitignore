@@ -135,9 +135,12 @@ cover/
 # macOS
 .DS_Store
 
-# IDE
+# Intellij
 .idea
 
-# Manual
+# Automatically generated source files
+src/rbcl/_sodium.py
+
+# Custom development folders
 sandbox/
-_sodium.py
+venv2/

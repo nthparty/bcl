@@ -2,7 +2,7 @@ name: lint-test-cover-docs-build-upload
 on:
   push
 env:
-  version: "2.2.0"
+  version: '2.3.1'
 jobs:
   manylinux:
     runs-on: ubuntu-latest
@@ -10,11 +10,11 @@ jobs:
     strategy:
       matrix:
         python:
-          - {version: "3.7", version-abi: "cp37", version-abi-suffix: "cp37m"}
-          - {version: "3.8", version-abi: "cp38", version-abi-suffix: "cp38"}
-          - {version: "3.9", version-abi: "cp39", version-abi-suffix: "cp39"}
-          - {version: "3.10", version-abi: "cp310", version-abi-suffix: "cp310"}
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64"
+          - {version: '3.7', version-abi: 'cp37', version-abi-suffix: 'cp37m'}
+          - {version: '3.8', version-abi: 'cp38', version-abi-suffix: 'cp38'}
+          - {version: '3.9', version-abi: 'cp39', version-abi-suffix: 'cp39'}
+          - {version: '3.10', version-abi: 'cp310', version-abi-suffix: 'cp310'}
+    name: 'Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64'
     steps:
       - uses: actions/checkout@v2
       - name: Install development dependencies.
@@ -63,7 +63,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64"
+          name: 'bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64'
           path: bcl-wheelhouse/
   macos:
     runs-on: macos-latest
@@ -73,7 +73,7 @@ jobs:
           - {version: '3.7', version-abi: 'cp37', version-url: '3.7.9'}
           - {version: '3.8', version-abi: 'cp38', version-url: '3.8.9'}
           - {version: '3.9', version-abi: 'cp39', version-url: '3.9.9'}
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 10.9"
+    name: 'Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 10.9'
     steps:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive.
@@ -114,7 +114,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_9_x86_64"
+          name: 'bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_9_x86_64'
           path: bcl-wheelhouse/
   macos-arm:
     runs-on: macos-11
@@ -123,7 +123,7 @@ jobs:
         python:
           - {version: '3.9', version-abi: 'cp39', version-url: '3.9.9'}
           - {version: '3.10', version-abi: 'cp310', version-url: '3.10.6'}
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 11 ARM"
+    name: 'Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 11 ARM'
     steps:
       - uses: actions/checkout@v2
       - name: Download libsodium source tree archive.
@@ -164,7 +164,7 @@ jobs:
           mv wheelhouse/bcl*.whl bcl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_10_universal2"
+          name: 'bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_10_universal2'
           path: bcl-wheelhouse/
   windows:
     runs-on: windows-latest
@@ -174,11 +174,11 @@ jobs:
           - {version: 'win32', arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
           - {version: 'win_amd64', arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
         python:
-          - {version: "3.7", version-abi: "cp37"}
-          - {version: "3.8", version-abi: "cp38"}
-          - {version: "3.9", version-abi: "cp39"}
-          - {version: "3.10", version-abi: "cp310"}
-    name: "Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}"
+          - {version: '3.7', version-abi: 'cp37'}
+          - {version: '3.8', version-abi: 'cp38'}
+          - {version: '3.9', version-abi: 'cp39'}
+          - {version: '3.10', version-abi: 'cp310'}
+    name: 'Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}'
     env:
       INCLUDE: C:/libsodium/include
       LIB: C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/dynamic/
@@ -240,5 +240,5 @@ jobs:
           move wheelhouse\bcl*.whl bcl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
-          name: "bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}"
+          name: 'bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}'
           path: bcl-wheelhouse\

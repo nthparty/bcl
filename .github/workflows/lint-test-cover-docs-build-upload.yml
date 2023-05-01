@@ -117,7 +117,7 @@ jobs:
           name: 'bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-macosx_10_9_x86_64'
           path: bcl-wheelhouse/
   macos-arm:
-    runs-on: macos-11
+    runs-on: [self-hosted, macos, ARM64]
     strategy:
       matrix:
         python:

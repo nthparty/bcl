@@ -129,7 +129,7 @@ jobs:
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse/
-macos-arm:
+  macos-arm:
     runs-on: [self-hosted, macos, ARM64]
     strategy:
       matrix:

@@ -186,3 +186,69 @@ macos-arm:
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse/
+  windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        windows:
+          - {version: 'win32', arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
+          - {version: 'win_amd64', arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
+        python:
+          - {version: '3.7', version-abi: 'cp37'}
+          - {version: '3.8', version-abi: 'cp38'}
+          - {version: '3.9', version-abi: 'cp39'}
+          - {version: '3.10', version-abi: 'cp310'}
+          - {version: '3.11', version-abi: 'cp311'}
+    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}
+    env:
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}
+      INCLUDE: C:/libsodium/include
+      LIB: C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/dynamic/
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download and extract libsodium dynamic library file.
+        run: |
+          wget -O c:\libsodium-1.0.18-msvc.zip https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18-msvc.zip
+          Expand-Archive c:\libsodium-1.0.18-msvc.zip -DestinationPath c:\
+        shell: powershell
+      - name: Install Python.
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: ${{ matrix.python.version }}
+          architecture: ${{ matrix.windows.arch }}
+      - name: Install Python dependencies for build process.
+        run: |
+          python -m pip install -U pip .[build]
+        shell: bash
+      - name: Build wheel file.
+        run: |
+          mkdir wheelhouse
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.windows.arch-vs }}
+          python -m build --wheel
+          mv dist/bcl*.whl wheelhouse
+          cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
+        shell: cmd
+      - name: Test wheel installation.
+        run: |
+          pip install -f wheelhouse bcl --no-index --force-reinstall --no-dependencies
+      - name: Lint and test module (and compiled libsodium shared library file).
+        run: |
+          python -m pip install -U pip .[lint,test]
+          python -m pylint bcl # Check against linting rules.
+          python src/bcl/bcl.py -v # Run doctests.
+          python -m pytest # Run tests.
+      - name: Test auto-generation of documentation.
+        run: |
+          python -m pip install -U .[docs]
+          cd docs
+          sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py
+          make html
+          cd ..
+      - name: Upload wheel file.
+        run: |
+          mkdir bcl-wheelhouse
+          move wheelhouse\bcl*.whl bcl-wheelhouse\${{ env.WHEELNAME }}.whl
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.WHEELNAME }}
+          path: bcl-wheelhouse\

@@ -46,7 +46,7 @@ jobs:
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           .venv/bin/pip install -U .[lint,test]
-          .venv/bin/python -m pylint bcl # Check against linting rules.
+          .venv/bin/python -m pylint bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code # Check against linting rules.
           .venv/bin/python src/bcl/bcl.py -v # Run doctests.
           .venv/bin/python -m pytest # Run tests.
       - name: Publish coverage results.
@@ -61,7 +61,7 @@ jobs:
         run: |
           .venv/bin/pip install -U .[docs]
           cd docs
-          ../.venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py
+          ../.venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py
           make html SPHINXBUILD='../.venv/bin/sphinx-build'
           cd ..
       - name: Upload wheel file.
@@ -111,14 +111,14 @@ jobs:
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           venv/bin/pip install -U pip .[lint,test]
-          venv/bin/python -m pylint bcl # Check against linting rules.
+          venv/bin/python -m pylint bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
           venv/bin/pip install -U .[docs]
           cd docs
-          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py
+          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/rbcl/_sodium_build.py
           make html SPHINXBUILD='../venv/bin/sphinx-build'
           cd ..
       - name: Upload wheel file.
@@ -168,14 +168,14 @@ jobs:
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           venv/bin/pip install -U pip .[lint,test]
-          venv/bin/python -m pylint bcl # Check against linting rules.
+          venv/bin/python -m pylint bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code # Check against linting rules.
           venv/bin/python src/bcl/bcl.py -v # Run doctests.
           venv/bin/python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
           venv/bin/pip install -U .[docs]
           cd docs
-          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py
+          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py
           make html SPHINXBUILD='../venv/bin/sphinx-build'
           cd ..
       - name: Upload wheel file.
@@ -234,14 +234,14 @@ jobs:
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           python -m pip install -U pip .[lint,test]
-          python -m pylint bcl # Check against linting rules.
+          python -m pylint bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code # Check against linting rules.
           python src/bcl/bcl.py -v # Run doctests.
           python -m pytest # Run tests.
       - name: Test auto-generation of documentation.
         run: |
           python -m pip install -U .[docs]
           cd docs
-          sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py
+          sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py
           make html
           cd ..
       - name: Upload wheel file.

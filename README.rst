@@ -183,7 +183,7 @@ Once the libsodium shared library file is compiled and moved into its designated
 
     python -m pip install .[docs]
     cd docs
-    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py && make html
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py && make html
 
 Testing and Conventions
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -207,7 +207,7 @@ Style conventions are enforced using `Pylint <https://pylint.readthedocs.io>`__:
 .. code-block:: bash
 
     python -m pip install .[lint]
-    python -m pylint src/bcl
+    python -m pylint src/bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code
 
 Contributions
 ^^^^^^^^^^^^^
@@ -225,7 +225,7 @@ This library can be published as a `package on PyPI <https://pypi.org/project/bc
 
     python -m pip install .[publish]
 
-Ensure that the correct version number appears in ``setup.cfg`` and in ``.github/workflows/lint-test-cover-docs-build-upload.yml``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number):
+Ensure that the correct version number appears in ``setup.cfg``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number):
 
 .. code-block:: bash
 

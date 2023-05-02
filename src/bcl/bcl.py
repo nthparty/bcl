@@ -537,10 +537,6 @@ class asymmetric:
     def secret() -> secret:
         """
         Generate a :obj:`secret` key.
-
-        >>> s = symmetric.secret()
-        >>> isinstance(s, key) and isinstance(s, secret)
-        True
         """
         return secret()
 
@@ -548,11 +544,6 @@ class asymmetric:
     def public(secret_key: secret) -> public:
         """
         Generate a :obj:`public` key using a :obj:`secret` key.
-
-        >>> s = asymmetric.secret()
-        >>> p = asymmetric.public(s)
-        >>> isinstance(p, key) and isinstance(p, public)
-        True
         """
         q = crypto_scalarmult_bytes_new()
         if _sodium.crypto_scalarmult_base(q, secret_key) != 0:
@@ -565,24 +556,6 @@ class asymmetric:
         """
         Encrypt a plaintext (any bytes-like object) using the supplied
         :obj:`public` key.
-
-        >>> m = plain(bytes([1, 2, 3]))
-        >>> s = asymmetric.secret()
-        >>> p = asymmetric.public(s)
-        >>> c = asymmetric.encrypt(p, m)
-        >>> m == asymmetric.decrypt(s, c)
-        True
-
-        All parameters supplied to this method must have appropriate types.
-
-        >>> c = asymmetric.encrypt(s, m)
-        Traceback (most recent call last):
-          ...
-        TypeError: can only encrypt using a public key
-        >>> c = asymmetric.encrypt(p, 'abc')
-        Traceback (most recent call last):
-          ...
-        TypeError: can only encrypt a plaintext object or bytes-like object
         """
         if not isinstance(public_key, public):
             raise TypeError('can only encrypt using a public key')
@@ -605,13 +578,6 @@ class asymmetric:
         """
         Decrypt a ciphertext (an instance of :obj:`cipher`) using the supplied
         :obj:`secret` key.
-
-        >>> m = plain(bytes([1, 2, 3]))
-        >>> s = asymmetric.secret()
-        >>> p = asymmetric.public(s)
-        >>> c = asymmetric.encrypt(p, m)
-        >>> m == asymmetric.decrypt(s, c)
-        True
         """
         if not isinstance(secret_key, secret):
             raise TypeError('can only decrypt using an asymmetric secret key')

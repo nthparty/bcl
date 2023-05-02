@@ -136,7 +136,7 @@ In addition, Base64 conversion methods are included for all of the above classes
 
 Development, Build, and Manual Installation Instructions
 --------------------------------------------------------
-All development and installation dependencies are managed using `setuptools <https://pypi.org/project/setuptools>`__ and are fully specified in ``setup.py``. The ``extras_require`` parameter is used to `specify optional requirements <https://setuptools.pypa.io/en/latest/userguide/dependency_management.html#optional-dependencies>`__ for various development tasks. This makes it possible to specify additional options (such as ``docs``, ``lint``, and so on) when performing installation using `pip <https://pypi.org/project/pip>`__:
+All development and installation dependencies are managed using `setuptools <https://pypi.org/project/setuptools>`__ and are fully specified in ``setup.cfg``. The ``extras_require`` option is used to `specify optional requirements <https://setuptools.pypa.io/en/latest/userguide/dependency_management.html#optional-dependencies>`__ for various development tasks. This makes it possible to specify additional options (such as ``docs``, ``lint``, and so on) when performing installation using `pip <https://pypi.org/project/pip>`__ (assuming that the library has already been built successfully):
 
 .. code-block:: bash
 
@@ -149,9 +149,9 @@ The library can be built manually from source **within Linux and macOS** using t
 .. code-block:: bash
 
     python -m pip install .[build]
-    python setup.py bdist_wheel
+    python -m build --sdist --wheel .
 
-Developing the library further in a local environment and/or building the library from source requires `libsodium <https://doc.libsodium.org>`__. The step ``python setup.py bdist_wheel`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location:
+Developing the library further in a local environment and/or building the library from source requires `libsodium <https://doc.libsodium.org>`__. The step ``python -m build --sdist --wheel .`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location:
 
 .. code-block:: bash
 
@@ -183,7 +183,7 @@ Once the libsodium shared library file is compiled and moved into its designated
 
     python -m pip install .[docs]
     cd docs
-    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../setup.py ../src/bcl/sodium_ffi.py && make html
+    sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py && make html
 
 Testing and Conventions
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -225,7 +225,7 @@ This library can be published as a `package on PyPI <https://pypi.org/project/bc
 
     python -m pip install .[publish]
 
-Ensure that the correct version number appears in ``setup.py`` and in ``.github/workflows/lint-test-cover-docs-build-upload.yml``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number):
+Ensure that the correct version number appears in ``setup.cfg`` and in ``.github/workflows/lint-test-cover-docs-build-upload.yml``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number):
 
 .. code-block:: bash
 
@@ -237,7 +237,7 @@ Remove any old build/distribution files. Then, package the source into a distrib
 .. code-block:: bash
 
     rm -rf build dist src/*.egg-info
-    python setup.py sdist
+    python -m build --sdist .
 
 Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-cover-docs-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain:
 

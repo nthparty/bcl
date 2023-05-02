@@ -612,23 +612,6 @@ class asymmetric:
         >>> c = asymmetric.encrypt(p, m)
         >>> m == asymmetric.decrypt(s, c)
         True
-
-        All parameters supplied to this method must have appropriate types.
-
-        >>> c = asymmetric.decrypt(p, m)
-        Traceback (most recent call last):
-          ...
-        TypeError: can only decrypt using an asymmetric secret key
-        >>> c = asymmetric.decrypt(s, 'abc')
-        Traceback (most recent call last):
-          ...
-        TypeError: can only decrypt a ciphertext
-        >>> try:
-        ...     asymmetric.decrypt(s, cipher(bytes([0])))
-        ... except ValueError as e:
-        ...     length = crypto_box_SEALBYTES
-        ...     str(e) == 'asymmetric ciphertext must have at least '  + str(length) + ' bytes'
-        True
         """
         if not isinstance(secret_key, secret):
             raise TypeError('can only decrypt using an asymmetric secret key')

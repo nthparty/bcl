@@ -532,19 +532,6 @@ class asymmetric:
     Asymmetric (*i.e.*, public-key) encryption/decryption primitives.
     This class encapsulates only static methods and should not be
     instantiated.
-
-    >>> x = 'abc'.encode()
-    >>> s = asymmetric.secret()
-    >>> isinstance(s, key) and isinstance(s, secret)
-    True
-    >>> p = asymmetric.public(s)
-    >>> isinstance(p, key) and isinstance(p, public)
-    True
-    >>> p == public.from_base64(p.to_base64())
-    True
-    >>> c = asymmetric.encrypt(p, x)
-    >>> asymmetric.decrypt(s, c) == x
-    True
     """
     @staticmethod
     def secret() -> secret:

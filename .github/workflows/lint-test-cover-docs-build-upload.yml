@@ -1,8 +1,6 @@
 name: lint-test-cover-docs-build-upload
 on:
   push
-env:
-  version: '2.3.1'
 jobs:
   manylinux:
     runs-on: ubuntu-latest
@@ -12,6 +10,8 @@ jobs:
         python:
           - {version: '3.7', version-abi: 'cp37', version-abi-suffix: 'cp37m'}
     name: 'Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for manylinux2014_x86_64'
+    env:
+      WHEELNAME: 'bcl-${{ github.ref_name }}-${{ matrix.python.version-abi }}-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64'
     steps:
       - uses: actions/checkout@v2
       - name: Install development dependencies.
@@ -57,8 +57,9 @@ jobs:
       - name: Upload wheel file.
         run: |
           mkdir bcl-wheelhouse
-          mv wheelhouse/bcl*.whl bcl-wheelhouse/
+          mv wheelhouse/bcl*.whl bcl-wheelhouse/${{ env.WHEELNAME }}.whl
       - uses: actions/upload-artifact@v1
         with:
-          name: 'bcl-${{ env.version }}-${{ matrix.python.version-abi }}-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64'
+          name: ${{ env.WHEELNAME }}
+          path: bcl-wheelhouse/
           path: bcl-wheelhouse/

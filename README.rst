@@ -165,7 +165,7 @@ Before `documentation can be generated <#documentation>`_ or `tests can be execu
 
 .. code-block:: bash
 
-    cp build/lib*/bcl/_sodium*.* src/bcl
+    cp build/lib*/bcl/_sodium.py src/bcl
 
 Manual Installation
 ^^^^^^^^^^^^^^^^^^^

@@ -43,7 +43,7 @@ Examples
 ^^^^^^^^
 
 .. |symmetric| replace:: symmetric
-.. _symmetric: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.symmetric
+.. _symmetric: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.symmetric
 
 This library provides concise methods for implementing |symmetric|_ encryption workflows::
 
@@ -54,7 +54,7 @@ This library provides concise methods for implementing |symmetric|_ encryption w
     'abc'
 
 .. |Asymmetric| replace:: Asymmetric
-.. _Asymmetric: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.asymmetric
+.. _Asymmetric: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.asymmetric
 
 |Asymmetric|_ encryption workflows are also supported::
 
@@ -66,22 +66,22 @@ This library provides concise methods for implementing |symmetric|_ encryption w
     'abc'
 
 .. |keys| replace:: keys
-.. _keys: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.key
+.. _keys: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.key
 
 .. |secret| replace:: secret
-.. _secret: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.secret
+.. _secret: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.secret
 
 .. |public| replace:: public
-.. _public: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.public
+.. _public: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.public
 
 .. |nonces| replace:: nonces
-.. _nonces: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.nonce
+.. _nonces: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.nonce
 
 .. |plaintexts| replace:: plaintexts
-.. _plaintexts: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.plain
+.. _plaintexts: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.plain
 
 .. |ciphertexts| replace:: ciphertexts
-.. _ciphertexts: https://bcl.readthedocs.io/en/2.3.1/_source/bcl.html#bcl.bcl.cipher
+.. _ciphertexts: https://bcl.readthedocs.io/en/3.0.0/_source/bcl.html#bcl.bcl.cipher
 
 This library also provides a number of classes for representing |keys|_ (|secret|_ and |public|_), |nonces|_, |plaintexts|_, and |ciphertexts|_. All methods expect and return instances of the appropriate classes::
 

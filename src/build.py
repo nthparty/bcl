@@ -1,4 +1,7 @@
-""" Build script invoked by setuptools """
+"""
+Script for building a bundled instance of libsodium  (for invocation by
+setuptools via ``setup.cfg``).
+"""
 import sys
 import platform
 import os
@@ -9,7 +12,7 @@ import subprocess
 import tarfile
 import errno
 import urllib.request
-from distutils.sysconfig import get_config_vars
+from distutils.sysconfig import get_config_vars # pylint: disable=deprecated-module
 import pystache
 from setuptools.command.install import install
 
@@ -18,7 +21,6 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     Retrieve the libsodium source archive and extract it
     to the location used by the build process.
     """
-
     # Return if libsodium source tree has already been prepared.
     if os.path.exists(libsodium_folder) and len(os.listdir(libsodium_folder)) != 0:
         return libsodium_folder
@@ -26,8 +28,8 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     # URL from which libsodium source archive is retrieved,
     # and paths into which it is extracted and then moved.
     url = (
-            'https://github.com/jedisct1/libsodium/releases' +
-            '/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
+        'https://github.com/jedisct1/libsodium/releases' +
+        '/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz'
     )
     libsodium_tar_gz_path = './src/bcl/libsodium.tar.gz'
     libsodium_tar_gz_folder = './src/bcl/libsodium_tar_gz'
@@ -67,10 +69,7 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
     # the destination folder first, if it already exists).
     if os.path.exists(libsodium_folder):
         shutil.rmtree(libsodium_folder)
-    shutil.move(
-        libsodium_tar_gz_folder + '/libsodium-1.0.18',
-        libsodium_folder
-    )
+    shutil.move(libsodium_tar_gz_folder + '/libsodium-1.0.18', libsodium_folder)
 
     # Remove the archive and temporary folder.
     os.remove(libsodium_tar_gz_path)
@@ -78,71 +77,79 @@ def prepare_libsodium_source_tree(libsodium_folder='src/bcl/libsodium'):
 
     return libsodium_folder
 
-def render_sodium():
+def emit_libsodium():
     """
-    Emit compiled sodium binary as hex string in _sodium.py file
+    Emit compiled libsodium binary as hexadecimal string in ``_sodium.py`` file.
     """
-
-    if os.environ.get('LIB', None) is None and sys.platform == "win32":
-        raise EnvironmentError(
-            "For Windows builds, environment variable $LIB must be set to path to libsodium directory"
+    # Extract path to compiled libsodium binary.
+    path_libsodium = 'build/temp/lib/libsodium.so' # Default for non-Windows builds.
+    if sys.platform == 'win32':
+        path_directory = (
+            os.environ.get('LIB', None)
+            if os.environ.get('LIB', None) is not None else
+            os.path.join(os.environ['WINDIR'], 'System32') # Windows default.
         )
+        path_libsodium = os.path.join(path_directory, 'libsodium.dll')
+        if not os.path.exists(path_libsodium):
+            raise EnvironmentError(
+                'libsodium DLL not found at ' + path_libsodium + ', ' +
+                'set environment variable $LIB to path of directory ' +
+                'containing libsodium DLL'
+            )
 
-    # Extract path to compiled libsodium binary
-    path_to_sodium = \
-        f"{os.environ.get('LIB')}/libsodium.dll" if sys.platform == "win32" \
-        else "build/temp/lib/libsodium.so"
+    # pylint: disable=consider-using-with
+    data = {'SODIUM_HEX': open(path_libsodium, 'rb').read().hex()}
+    template = open('build/lib/bcl/_sodium.tmpl', encoding='utf-8').read()
 
-    data = {
-        "SODIUM_HEX": open(
-            path_to_sodium, "rb"
-        ).read().hex()
-    }
-    template = open("build/lib/bcl/_sodium.tmpl", encoding='utf-8').read()  # pylint: disable=consider-using-with
-
-    # Emit rendered file to build directory
-    with open("build/lib/bcl/_sodium.py", "w", encoding='utf-8') as sodium_out:
+    # Emit rendered file to build directory.
+    with open('build/lib/bcl/_sodium.py', 'w', encoding='utf-8') as sodium_out:
         sodium_out.write(pystache.render(template, data))
 
-
-def extract_sodium_from_static_archive(lib_temp: str):
+def extract_libsodium_from_static_archive(lib_temp: str):
     """
-    For certain versions of macOS, the libsodium.a contains multiple target architectures.
-    Calls to subprocess are wrapped in a try/except because only certain macOS GH runners contain
-    these multi-target files
+    For certain versions of macOS, the ``libsodium.a`` file contains multiple
+    target architectures. Calls to ``subprocess`` are wrapped in a ``try``
+    block because only certain macOS GitHub runners contain these multi-target
+    files.
     """
-
-    if platform.processor() == "arm":
+    if platform.processor() == 'arm':
         try:
-            subprocess.check_call(['lipo', 'libsodium.a', '-thin', 'arm64', '-output', 'libsodium.a'], cwd=lib_temp)
-        except:
+            subprocess.check_call(
+                ['lipo', 'libsodium.a', '-thin', 'arm64', '-output', 'libsodium.a'],
+                cwd=lib_temp
+            )
+        except: # pylint: disable=bare-except
             pass
     else:
         try:
-            subprocess.check_call(['lipo', 'libsodium.a', '-thin', 'x86_64', '-output', 'libsodium.a'], cwd=lib_temp)
-        except:
+            subprocess.check_call(
+                ['lipo', 'libsodium.a', '-thin', 'x86_64', '-output', 'libsodium.a'],
+                cwd=lib_temp
+            )
+        except: # pylint: disable=bare-except
             pass
 
 try:
     from wheel.bdist_wheel import bdist_wheel
 
-    # override bdist_wheel opts so output wheel file has platform-specific tags
-    class BdistWheel(bdist_wheel):
+    # Override bdist_wheel options so that output wheel file has platform-specific tags.
+    class BdistWheel(bdist_wheel): # pylint: disable=invalid-name
+        # pylint: disable=missing-class-docstring,missing-function-docstring
         def finalize_options(self):
             bdist_wheel.finalize_options(self)
-            self.root_is_pure = False
+            self.root_is_pure = False # pylint: disable=attribute-defined-outside-init
 
         def get_tag(self):
             python, abi, plat = bdist_wheel.get_tag(self)
-            python, abi = "py3", 'none'
+            python, abi = 'py3', 'none'
             return python, abi, plat
 
 except ImportError:
-    BdistWheel = None
+    BdistWheel = None # pylint: disable=invalid-name
 
 class Install(install):
-
-    BUILD_TEMP = "build/temp"
+    # pylint: disable=missing-class-docstring,missing-function-docstring
+    BUILD_TEMP = 'build/temp'
 
     def get_source_files(self):
         return [
@@ -155,12 +162,11 @@ class Install(install):
         return ['sodium']
 
     def run(self):
-
         install.run(self)
 
         # On Windows, only a precompiled dynamic library file is used.
         if sys.platform == 'win32':
-            render_sodium()
+            emit_libsodium()
             return
 
         # Confirm that make utility can be found.
@@ -170,10 +176,7 @@ class Install(install):
                 p = os.path.join(p, 'make')
                 if os.access(p, os.X_OK):
                     found = True
-                for e in filter(
-                        None,
-                        os.environ.get('PATHEXT', '').split(os.pathsep)
-                ):
+                for e in filter(None, os.environ.get('PATHEXT', '').split(os.pathsep)):
                     if os.access(p + e, os.X_OK):
                         found = True
         if not found:
@@ -184,9 +187,8 @@ class Install(install):
             variable: value
             for (variable, value) in get_config_vars().items()
             if (
-                    variable in [
-                'LDFLAGS', 'CFLAGS', 'CC', 'CCSHARED', 'LDSHARED'
-            ] and variable not in os.environ
+                variable in ['LDFLAGS', 'CFLAGS', 'CC', 'CCSHARED', 'LDSHARED'] and
+                variable not in os.environ
             )
         })
 
@@ -225,20 +227,25 @@ class Install(install):
         subprocess.check_call(['make', 'check'] + make_args, cwd=build_temp)
         subprocess.check_call(['make', 'install'] + make_args, cwd=build_temp)
 
-        # Build dynamic (shared object) library file from the statically compiled archive binary file.
+        # Build dynamic (shared object) library file from the statically compiled
+        # archive binary file.
         lib_temp = os.path.join(Install.BUILD_TEMP, 'lib')
 
-        # Different macOS GH runners contain either single or multi-target static archives
-        if sys.platform == "darwin":
-            extract_sodium_from_static_archive(lib_temp)
+        # Different macOS GitHub runners contain either single or multi-target static
+        # archives.
+        if sys.platform == 'darwin':
+            extract_libsodium_from_static_archive(lib_temp)
 
         # Explode the archive into many individual object files.
         subprocess.check_call(['ar', '-x', 'libsodium.a'], cwd=lib_temp)
 
-        object_file_relpaths = glob.glob(lib_temp+"/*.o")
+        object_file_relpaths = glob.glob(lib_temp + '/*.o')
         object_file_names = [o.split('/')[-1] for o in object_file_relpaths]
         # Invoke gcc to (re-)link dynamically.
-        subprocess.check_call(['gcc', '-shared'] + object_file_names + ['-o', 'libsodium.so'], cwd=lib_temp)
+        subprocess.check_call(
+            ['gcc', '-shared'] + object_file_names + ['-o', 'libsodium.so'],
+            cwd=lib_temp
+        )
 
-        # Emit sodium binary to _sodium.py file as hex-encoded string
-        render_sodium()
+        # Emit libsodium binary to ``_sodium.py`` file as a hex-encoded string.
+        emit_libsodium()

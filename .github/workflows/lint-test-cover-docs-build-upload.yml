@@ -106,7 +106,8 @@ jobs:
               venv/bin/python -m build --wheel && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.
-        run: venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
+        run: |
+          venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           venv/bin/pip install -U pip .[lint,test]
@@ -127,4 +128,61 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: ${{ env.WHEELNAME }}
-          path: rbcl-wheelhouse/
+          path: bcl-wheelhouse/
+macos-arm:
+    runs-on: [self-hosted, macos, ARM64]
+    strategy:
+      matrix:
+        python:
+          - {version: '3.9', version-abi: 'cp39', version-url: '3.9.9'}
+          - {version: '3.10', version-abi: 'cp310', version-url: '3.10.6'}
+          - {version: '3.11', version-abi: 'cp311', version-url: '3.11.3'}
+    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for macOS 11 ARM
+    env:
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.version-abi }}-abi3-macosx_10_10_universal2
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download libsodium source tree archive.
+        run: |
+          wget https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
+          mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
+      - name: Install Python.
+        run: |
+          curl "https://www.python.org/ftp/python/${{ matrix.python.version-url }}/python-${{ matrix.python.version-url }}-macos11.pkg" -o python.pkg
+          sudo installer -pkg python.pkg -target /
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m pip install -U virtualenv
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m virtualenv venv
+      - name: Install Python dependencies for build process.
+        run: |
+          venv/bin/pip install -U pip .[build]
+      - name: Build wheel file.
+        run: |
+          mkdir wheelhouse
+          rm -f dist/*.*
+          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" MACOSX_DEPLOYMENT_TARGET="10.10" CFLAGS="-arch arm64" ARCHFLAGS="-arch arm64" _PYTHON_HOST_PLATFORM="macosx-10.9-universal2" \
+              venv/bin/python -m build --wheel && mv dist/bcl*.whl wheelhouse
+          cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
+      - name: Test wheel installation.
+        run: |
+          venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
+      - name: Lint and test module (and compiled libsodium shared library file).
+        run: |
+          venv/bin/pip install -U pip .[lint,test]
+          venv/bin/python -m pylint bcl # Check against linting rules.
+          venv/bin/python src/bcl/bcl.py -v # Run doctests.
+          venv/bin/python -m pytest # Run tests.
+      - name: Test auto-generation of documentation.
+        run: |
+          venv/bin/pip install -U .[docs]
+          cd docs
+          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/build.py
+          make html SPHINXBUILD='../venv/bin/sphinx-build'
+          cd ..
+      - name: Upload wheel file.
+        run: |
+          mkdir bcl-wheelhouse
+          mv wheelhouse/bcl*.whl bcl-wheelhouse/${{ env.WHEELNAME }}.whl
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.WHEELNAME }}
+          path: bcl-wheelhouse/

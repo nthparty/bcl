@@ -14,15 +14,18 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../src')) # Prioritize local module copy.
 
+# Set environment variable so that module can detect that documentation is
+# being generated.
+os.environ['BCL_SPHINX_AUTODOC_BUILD'] = '1'
 
 # -- Project information -----------------------------------------------------
 
 # The name and version are retrieved from ``setup.cfg`` in the root directory.
 from configparser import ConfigParser
-cf = ConfigParser()
-cf.read('../setup.cfg')
-project = cf['metadata']['name']
-version = cf['metadata']['version']
+setup_config = ConfigParser()
+setup_config.read('../setup.cfg')
+project = setup_config['metadata']['name']
+version = setup_config['metadata']['version']
 release = version
 
 # The copyright year and holder information is retrieved from the
@@ -70,11 +73,24 @@ autodoc_default_options = {
     ])
 }
 autodoc_preserve_defaults = True
-autodoc_mock_imports = ["_sodium"]
+autodoc_mock_imports = ['_sodium']
 
-# Allow references/links to definitions found in the Python documentation.
+# Allow references/links to definitions found in the Python documentation
+# and in the documentation for this package's dependencies.
+
+def rtd_url_for_installed_version(name):
+    prefix = 'https://' + name + '.readthedocs.io/en/'
+
+    if sys.version_info.major == 3 and sys.version_info.minor == 7:
+        import pkg_resources
+        return prefix + pkg_resources.get_distribution(name).version
+
+    import importlib.metadata
+    return prefix + importlib.metadata.version(name)
+
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
+    'barriers': (rtd_url_for_installed_version('barriers'), None)
 }
 
 

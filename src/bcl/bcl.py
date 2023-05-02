@@ -670,19 +670,22 @@ class asymmetric:
 
         return plain(plaintext.raw)
 
-# Initializes sodium, picking the best implementations available for this machine.
 def _sodium_init():
+    """
+    Checks that libsodium is not already initialized and initialize it.
+    """
     if _sodium.sodium_init() == 1:
-        raise RuntimeError( # pragma: no cover
-            'libsodium is somehow already in use by this instance of bcl'
-        )
+        raise RuntimeError('libsodium is already initialized') # pragma: no cover
+
     if not _sodium.sodium_init() == 1:
-        raise RuntimeError( # pragma: no cover
-            'libsodium error during initialization'
-        )
+        raise RuntimeError('libsodium error during initialization') # pragma: no cover
+
     _sodium.ready = True
 
-_sodium_init()
+# Check that libsodium is not already initialized and initialize it
+# (unless documentation is being automatically generated).
+if not os.environ.get('BCL_SPHINX_AUTODOC_BUILD', None) == '1':
+    _sodium_init()
 
 if __name__ == '__main__':
     doctest.testmod() # pragma: no cover

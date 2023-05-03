@@ -9,9 +9,9 @@ two classes :obj:`symmetric` and :obj:`asymmetric` that have only static
 methods (for key generation and encryption/decryption).
 """
 from __future__ import annotations
-from typing import Optional, Union
-from ctypes import c_char
+from typing import Union, Optional, Callable
 import doctest
+import ctypes
 import os
 import base64
 
@@ -23,17 +23,58 @@ except:  # pylint: disable=bare-except # pragma: no cover
 
 # Public and private globals (defined within ``_sodium_init`` after libsodium is ready).
 crypto_secretbox_ZEROBYTES = None
-crypto_secretbox_BOXZEROBYTES = None
-crypto_secretbox_NONCEBYTES = None
-crypto_secretbox_MESSAGEBYTES_MAX = None
-crypto_secretbox_KEYBYTES = None
-crypto_box_SEALBYTES = None
-crypto_box_PUBLICKEYBYTES = None
-crypto_SCALARMULTBYTES = None
+"""Length of padding for plaintext.
 
-crypto_scalarmult_bytes_new = None
-buf_new = ( # pylint: disable=unnecessary-lambda-assignment
-    lambda size : (c_char * size)()
+:meta hide-value:
+"""
+
+crypto_secretbox_BOXZEROBYTES = None
+"""Length of padding for plaintext.
+
+:meta hide-value:
+"""
+
+crypto_secretbox_NONCEBYTES = None
+"""Length of padding for ciphertext.
+
+:meta hide-value:
+"""
+
+crypto_secretbox_MESSAGEBYTES_MAX = None
+"""Maximum message length for symmetric encryption.
+
+:meta hide-value:
+"""
+
+crypto_secretbox_KEYBYTES = None
+"""Length of symmetric encryption/decryption key.
+
+:meta hide-value:
+"""
+
+crypto_box_SEALBYTES = None
+"""Minimum length of asymmetric encryption ciphertext.
+
+:meta hide-value:
+"""
+
+crypto_box_PUBLICKEYBYTES = None
+"""Length of asymmetric public encryption key.
+
+:meta hide-value:
+"""
+
+crypto_SCALARMULTBYTES = None
+"""Length of element used as an asymmetric public encryption key.
+
+:meta hide-value:
+"""
+
+_crypto_scalarmult_bytes_new: Callable[[], bytes] = (
+    lambda: None # pylint: disable=unnecessary-lambda-assignment
+)
+_buffer_create: Callable[[int], bytes] = (
+    lambda size: (ctypes.c_char * size)() # pylint: disable=unnecessary-lambda-assignment
 )
 
 # pylint: disable=invalid-name  # snake_case and PascalCase for bcl classes and class methods.
@@ -472,7 +513,7 @@ class symmetric:
             raise TypeError('nonce parameter must be a nonce object')
 
         padded_plaintext = (b'\x00' * crypto_secretbox_ZEROBYTES) + plaintext
-        ciphertext = buf_new(len(padded_plaintext))
+        ciphertext = _buffer_create(len(padded_plaintext))
         if _sodium.crypto_secretbox(
             ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
         ) != 0:
@@ -517,7 +558,7 @@ class symmetric:
             (b'\x00' * crypto_secretbox_BOXZEROBYTES) +
             ciphertext[crypto_secretbox_NONCEBYTES:]
         )
-        plaintext = buf_new(len(padded_ciphertext))
+        plaintext = _buffer_create(len(padded_ciphertext))
         if _sodium.crypto_secretbox_open(
             plaintext, padded_ciphertext, len(padded_ciphertext),
             ciphertext[:crypto_secretbox_NONCEBYTES],
@@ -567,7 +608,7 @@ class asymmetric:
         >>> isinstance(p, key) and isinstance(p, public)
         True
         """
-        q = crypto_scalarmult_bytes_new()
+        q = _crypto_scalarmult_bytes_new()
         if _sodium.crypto_scalarmult_base(q, secret_key) != 0:
             raise RuntimeError('libsodium error during decryption') # pragma: no cover
 
@@ -605,7 +646,7 @@ class asymmetric:
 
         plaintext_length = len(plaintext)
         ciphertext_length = crypto_box_SEALBYTES + plaintext_length
-        ciphertext = buf_new(ciphertext_length)
+        ciphertext = _buffer_create(ciphertext_length)
         if _sodium.crypto_box_seal(
             ciphertext, plaintext, plaintext_length, public_key
         ) != 0:
@@ -649,7 +690,7 @@ class asymmetric:
         if not isinstance(ciphertext, cipher):
             raise TypeError('can only decrypt a ciphertext')
 
-        q = crypto_scalarmult_bytes_new()
+        q = _crypto_scalarmult_bytes_new()
         if _sodium.crypto_scalarmult_base(q, secret_key) != 0:
             raise RuntimeError('libsodium error during decryption') # pragma: no cover
         public_key = public(q.raw)
@@ -662,7 +703,7 @@ class asymmetric:
             )
 
         plaintext_length = ciphertext_length - crypto_box_SEALBYTES
-        plaintext = buf_new(max(1, plaintext_length))
+        plaintext = _buffer_create(max(1, plaintext_length))
         if _sodium.crypto_box_seal_open(
             plaintext, ciphertext, ciphertext_length, public_key, secret_key
         ) != 0:
@@ -708,9 +749,10 @@ def _sodium_init():
 
     assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
 
-    context['crypto_scalarmult_bytes_new'] = c_char * crypto_SCALARMULTBYTES
+    context['_crypto_scalarmult_bytes_new'] = \
+        c.types.c_char * crypto_SCALARMULTBYTES
 
-    # Define static class variables.
+    # Define static class attributes.
     nonce.length = context['crypto_secretbox_NONCEBYTES']
     secret.length = context['crypto_secretbox_KEYBYTES']
     public.length = context['crypto_box_PUBLICKEYBYTES']

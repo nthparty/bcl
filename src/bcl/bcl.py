@@ -100,7 +100,7 @@ class nonce(raw):
     True
     """
 
-    length: int = crypto_secretbox_NONCEBYTES
+    length: int = None
     """Length (in number of bytes) of nonce instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> nonce:
@@ -237,7 +237,7 @@ class secret(key):
     of this class.
     """
 
-    length: int = crypto_secretbox_KEYBYTES
+    length: int = None
     """Length (in number of bytes) of secret key instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> secret:
@@ -294,7 +294,7 @@ class public(key):
     are objects of this class.
     """
 
-    length: int = crypto_box_PUBLICKEYBYTES
+    length: int = None
     """Length (in number of bytes) of public key instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> public:
@@ -561,6 +561,11 @@ def _sodium_init():
     assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
 
     context['crypto_scalarmult_bytes_new'] = c_char * crypto_SCALARMULTBYTES
+
+    # Define static class variables.
+    nonce.length = context['crypto_secretbox_NONCEBYTES']
+    secret.length = context['crypto_secretbox_KEYBYTES']
+    public.length = context['crypto_box_PUBLICKEYBYTES']
 
 # Check that libsodium is not already initialized and initialize it
 # (unless documentation is being automatically generated).

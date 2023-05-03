@@ -21,20 +21,20 @@ try:
 except:  # pylint: disable=bare-except # pragma: no cover
     from bcl._sodium import _sodium
 
-# We cast to uint64 manually below (otherwise we'd add the type signature info to each function).
-crypto_secretbox_KEYBYTES = _sodium.crypto_secretbox_keybytes() % pow(2, 64)
-crypto_secretbox_NONCEBYTES = _sodium.crypto_secretbox_noncebytes() % pow(2, 64)
-crypto_secretbox_ZEROBYTES = _sodium.crypto_secretbox_zerobytes() % pow(2, 64)
-crypto_secretbox_BOXZEROBYTES = _sodium.crypto_secretbox_boxzerobytes() % pow(2, 64)
-crypto_secretbox_MESSAGEBYTES_MAX = _sodium.crypto_secretbox_messagebytes_max() % pow(2, 64)
-crypto_box_PUBLICKEYBYTES = _sodium.crypto_box_publickeybytes() % pow(2, 64)
-crypto_SCALARMULTBYTES = _sodium.crypto_scalarmult_bytes() % pow(2, 64)
-crypto_box_SEALBYTES = _sodium.crypto_box_sealbytes() % pow(2, 64)
+# Public and private globals (defined within ``_sodium_init`` after libsodium is ready).
+crypto_secretbox_ZEROBYTES = None
+crypto_secretbox_BOXZEROBYTES = None
+crypto_secretbox_NONCEBYTES = None
+crypto_secretbox_MESSAGEBYTES_MAX = None
+crypto_secretbox_KEYBYTES = None
+crypto_box_SEALBYTES = None
+crypto_box_PUBLICKEYBYTES = None
+crypto_SCALARMULTBYTES = None
 
-assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
-
-crypto_scalarmult_bytes_new = c_char * crypto_SCALARMULTBYTES
-buf_new = lambda size : (c_char * size)()  # pylint: disable=unnecessary-lambda-assignment
+crypto_scalarmult_bytes_new = None
+buf_new = ( # pylint: disable=unnecessary-lambda-assignment
+    lambda size : (c_char * size)()
+)
 
 # pylint: disable=invalid-name  # snake_case and PascalCase for bcl classes and class methods.
 class raw(bytes):
@@ -100,7 +100,7 @@ class nonce(raw):
     True
     """
 
-    length: int = crypto_secretbox_NONCEBYTES
+    length: int = None
     """Length (in number of bytes) of nonce instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> nonce:
@@ -252,7 +252,7 @@ class secret(key):
     of this class.
     """
 
-    length: int = crypto_secretbox_KEYBYTES
+    length: int = None
     """Length (in number of bytes) of secret key instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> secret:
@@ -326,7 +326,7 @@ class public(key):
     are objects of this class.
     """
 
-    length: int = crypto_box_PUBLICKEYBYTES
+    length: int = None
     """Length (in number of bytes) of public key instances."""
 
     def __new__(cls, argument: Optional[Union[bytes, bytearray, int]] = None) -> public:
@@ -672,7 +672,9 @@ class asymmetric:
 
 def _sodium_init():
     """
-    Checks that libsodium is not already initialized and initialize it.
+    Checks that libsodium is not already initialized, initializes it,
+    and defines globals whose definitions depend on functions exported
+    by libsodium.
     """
     if _sodium.sodium_init() == 1:
         raise RuntimeError('libsodium is already initialized') # pragma: no cover
@@ -681,6 +683,37 @@ def _sodium_init():
         raise RuntimeError('libsodium error during initialization') # pragma: no cover
 
     _sodium.ready = True
+
+    # Define values of public and private globals.
+    context = globals()
+
+    # We cast to 64-bit integer manually below (otherwise, we would add the type
+    # signature information to each function.
+    context['crypto_secretbox_ZEROBYTES'] = \
+        _sodium.crypto_secretbox_zerobytes() % pow(2, 64)
+    context['crypto_secretbox_BOXZEROBYTES'] = \
+        _sodium.crypto_secretbox_boxzerobytes() % pow(2, 64)
+    context['crypto_secretbox_NONCEBYTES'] = \
+        _sodium.crypto_secretbox_noncebytes() % pow(2, 64)
+    context['crypto_secretbox_MESSAGEBYTES_MAX'] = \
+        _sodium.crypto_secretbox_messagebytes_max() % pow(2, 64)
+    context['crypto_secretbox_KEYBYTES'] = \
+            _sodium.crypto_secretbox_keybytes() % pow(2, 64)
+    context['crypto_box_SEALBYTES'] = \
+        _sodium.crypto_box_sealbytes() % pow(2, 64)
+    context['crypto_box_PUBLICKEYBYTES'] = \
+        _sodium.crypto_box_publickeybytes() % pow(2, 64)
+    context['crypto_SCALARMULTBYTES'] = \
+        _sodium.crypto_scalarmult_bytes() % pow(2, 64)
+
+    assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
+
+    context['crypto_scalarmult_bytes_new'] = c_char * crypto_SCALARMULTBYTES
+
+    # Define static class variables.
+    nonce.length = context['crypto_secretbox_NONCEBYTES']
+    secret.length = context['crypto_secretbox_KEYBYTES']
+    public.length = context['crypto_box_PUBLICKEYBYTES']
 
 # Check that libsodium is not already initialized and initialize it
 # (unless documentation is being automatically generated).

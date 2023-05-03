@@ -23,17 +23,21 @@ except:  # pylint: disable=bare-except # pragma: no cover
     from bcl._sodium import _sodium
 
 # We cast to uint64 manually below (otherwise we'd add the type signature info to each function).
-crypto_secretbox_KEYBYTES = None
-crypto_secretbox_NONCEBYTES = None
+
 crypto_secretbox_ZEROBYTES = None
 crypto_secretbox_BOXZEROBYTES = None
+crypto_secretbox_NONCEBYTES = None
 crypto_secretbox_MESSAGEBYTES_MAX = None
+crypto_secretbox_KEYBYTES = None
+crypto_box_SEALBYTES = None
 crypto_box_PUBLICKEYBYTES = None
 crypto_SCALARMULTBYTES = None
-crypto_box_SEALBYTES = None
 
 crypto_scalarmult_bytes_new = None
-buf_new = None
+
+buf_new = ( # pylint: disable=unnecessary-lambda-assignment
+    lambda size : (c_char * size)()
+)
 
 # pylint: disable=invalid-name  # snake_case and PascalCase for bcl classes and class methods.
 class raw(bytes):
@@ -617,21 +621,31 @@ def _sodium_init():
 
     _sodium.ready = True
 
+    # Define values of public and private globals.
+    context = globals()
+
     # We cast to 64-bit integer manually below (otherwise, we would add the type
     # signature information to each function.
-    crypto_secretbox_KEYBYTES = _sodium.crypto_secretbox_keybytes() % pow(2, 64)
-    crypto_secretbox_NONCEBYTES = _sodium.crypto_secretbox_noncebytes() % pow(2, 64)
-    crypto_secretbox_ZEROBYTES = _sodium.crypto_secretbox_zerobytes() % pow(2, 64)
-    crypto_secretbox_BOXZEROBYTES = _sodium.crypto_secretbox_boxzerobytes() % pow(2, 64)
-    crypto_secretbox_MESSAGEBYTES_MAX = _sodium.crypto_secretbox_messagebytes_max() % pow(2, 64)
-    crypto_box_PUBLICKEYBYTES = _sodium.crypto_box_publickeybytes() % pow(2, 64)
-    crypto_SCALARMULTBYTES = _sodium.crypto_scalarmult_bytes() % pow(2, 64)
-    crypto_box_SEALBYTES = _sodium.crypto_box_sealbytes() % pow(2, 64)
+    context['crypto_secretbox_ZEROBYTES'] = \
+        _sodium.crypto_secretbox_zerobytes() % pow(2, 64)
+    context['crypto_secretbox_BOXZEROBYTES'] = \
+        _sodium.crypto_secretbox_boxzerobytes() % pow(2, 64)
+    context['crypto_secretbox_NONCEBYTES'] = \
+        _sodium.crypto_secretbox_noncebytes() % pow(2, 64)
+    context['crypto_secretbox_MESSAGEBYTES_MAX'] = \
+        _sodium.crypto_secretbox_messagebytes_max() % pow(2, 64)
+    context['crypto_secretbox_KEYBYTES'] = \
+            _sodium.crypto_secretbox_keybytes() % pow(2, 64)
+    context['crypto_box_SEALBYTES'] = \
+        _sodium.crypto_box_sealbytes() % pow(2, 64)
+    context['crypto_box_PUBLICKEYBYTES'] = \
+        _sodium.crypto_box_publickeybytes() % pow(2, 64)
+    context['crypto_SCALARMULTBYTES'] = \
+        _sodium.crypto_scalarmult_bytes() % pow(2, 64)
 
     assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
 
-    crypto_scalarmult_bytes_new = c_char * crypto_SCALARMULTBYTES
-    buf_new = lambda size : (c_char * size)()  # pylint: disable=unnecessary-lambda-assignment
+    context['crypto_scalarmult_bytes_new'] = c_char * crypto_SCALARMULTBYTES
 
 # Check that libsodium is not already initialized and initialize it
 # (unless documentation is being automatically generated).
@@ -639,8 +653,4 @@ if not os.environ.get('BCL_SPHINX_AUTODOC_BUILD', None) == '1':
     _sodium_init()
 
 if __name__ == '__main__':
-    for _ in range(10):
-        if _sodium.ready != True:
-            time.sleep(1)
-
     doctest.testmod() # pragma: no cover

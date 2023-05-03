@@ -51,6 +51,9 @@ class raw(bytes):
     >>> s.hex()
     'd4fde68cd9da7687e34d49334e68a9625fb1768f73fc46862db59c27c3003c14'
     >>> n = nonce.from_base64('JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI')
+    >>> c = symmetric.encrypt(s, 'abc'.encode(), n)
+    >>> c.to_base64()
+    'JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI9dvFXD+om1dHB6UUCt1y4BqrBw=='
     """
     @classmethod
     def from_base64(cls, s: str) -> raw:
@@ -367,6 +370,16 @@ class symmetric:
     Encryption is non-deterministic if no :obj:`nonce` parameter is
     supplied.
 
+    >>> c = symmetric.encrypt(s, x)
+    >>> isinstance(c, raw) and isinstance(c, cipher)
+    True
+    >>> c == cipher.from_base64(c.to_base64())
+    True
+    >>> symmetric.decrypt(s, c) == x
+    True
+    >>> isinstance(symmetric.decrypt(s, c), plain)
+    True
+
     Deterministic encryption is possible by supplying a :obj:`nonce`
     parameter.
 
@@ -573,9 +586,4 @@ if not os.environ.get('BCL_SPHINX_AUTODOC_BUILD', None) == '1':
     _sodium_init()
 
 if __name__ == '__main__':
-    time.sleep(10)
-    for _ in range(10):
-        if _sodium.ready is not True:
-            time.sleep(1)
-
     doctest.testmod() # pragma: no cover

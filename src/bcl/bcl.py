@@ -512,7 +512,7 @@ class symmetric:
         elif not isinstance(noncetext, nonce):
             raise TypeError('nonce parameter must be a nonce object')
 
-        padded_plaintext = (b'\x00' * crypto_secretbox_ZEROBYTES) + plaintext
+        padded_plaintext = bytes(crypto_secretbox_ZEROBYTES) + plaintext
         ciphertext = _buffer_create(len(padded_plaintext))
         if _sodium.crypto_secretbox(
             ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
@@ -555,7 +555,7 @@ class symmetric:
             raise TypeError('can only decrypt a ciphertext')
 
         padded_ciphertext = (
-            (b'\x00' * crypto_secretbox_BOXZEROBYTES) +
+            bytes(crypto_secretbox_BOXZEROBYTES) +
             ciphertext[crypto_secretbox_NONCEBYTES:]
         )
         plaintext = _buffer_create(len(padded_ciphertext))

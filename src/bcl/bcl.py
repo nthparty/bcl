@@ -653,4 +653,9 @@ if not os.environ.get('BCL_SPHINX_AUTODOC_BUILD', None) == '1':
     _sodium_init()
 
 if __name__ == '__main__':
+    time.sleep(10)
+    for _ in range(10):
+        if _sodium.ready is not True:
+            time.sleep(1)
+
     doctest.testmod() # pragma: no cover

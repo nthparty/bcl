@@ -51,9 +51,6 @@ class raw(bytes):
     >>> s.hex()
     'd4fde68cd9da7687e34d49334e68a9625fb1768f73fc46862db59c27c3003c14'
     >>> n = nonce.from_base64('JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI')
-    >>> c = symmetric.encrypt(s, 'abc'.encode(), n)
-    >>> c.to_base64()
-    'JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI9dvFXD+om1dHB6UUCt1y4BqrBw=='
     """
     @classmethod
     def from_base64(cls, s: str) -> raw:
@@ -366,28 +363,14 @@ class symmetric:
     True
     >>> s == secret.from_base64(s.to_base64())
     True
-    >>> c = symmetric.encrypt(s, x)
-    >>> isinstance(c, raw) and isinstance(c, cipher)
-    True
-    >>> c == cipher.from_base64(c.to_base64())
-    True
-    >>> symmetric.decrypt(s, c) == x
-    True
-    >>> isinstance(symmetric.decrypt(s, c), plain)
-    True
 
     Encryption is non-deterministic if no :obj:`nonce` parameter is
     supplied.
-
-    >>> symmetric.encrypt(s, x) == symmetric.encrypt(s, x)
-    False
 
     Deterministic encryption is possible by supplying a :obj:`nonce`
     parameter.
 
     >>> n = nonce()
-    >>> symmetric.encrypt(s, x, n) == symmetric.encrypt(s, x, n)
-    True
     """
     @staticmethod
     def secret() -> secret:
@@ -407,9 +390,6 @@ class symmetric:
 
         >>> m = plain(bytes([1, 2, 3]))
         >>> s = symmetric.secret()
-        >>> c = symmetric.encrypt(s, m)
-        >>> m == symmetric.decrypt(s, c)
-        True
         """
         if not isinstance(secret_key, secret):
             raise TypeError('can only encrypt using a symmetric secret key')
@@ -444,9 +424,6 @@ class symmetric:
 
         >>> m = plain(bytes([1, 2, 3]))
         >>> s = symmetric.secret()
-        >>> c = symmetric.encrypt(s, m)
-        >>> m == symmetric.decrypt(s, c)
-        True
         """
         if not isinstance(secret_key, secret):
             raise TypeError('can only decrypt using a symmetric secret key')

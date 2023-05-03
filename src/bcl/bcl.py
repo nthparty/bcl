@@ -13,6 +13,7 @@ from typing import Optional, Union
 from ctypes import c_char
 import doctest
 import os
+import time
 import base64
 
 try:
@@ -638,4 +639,8 @@ if not os.environ.get('BCL_SPHINX_AUTODOC_BUILD', None) == '1':
     _sodium_init()
 
 if __name__ == '__main__':
+    for _ in range(10):
+        if _sodium.ready != True:
+            time.sleep(1)
+
     doctest.testmod() # pragma: no cover

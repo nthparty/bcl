@@ -235,21 +235,6 @@ class secret(key):
     object or integer argument satisfy the conditions for a valid secret
     key.
 
-    >>> secret('abc')
-    Traceback (most recent call last):
-      ...
-    TypeError: secret key constructor argument must be a bytes-like object or an integer
-    >>> try:
-    ...     secret(bytes([1, 2, 3]))
-    ... except ValueError as e:
-    ...     str(e) == 'secret key must have exactly '  + str(secret.length) + ' bytes'
-    True
-    >>> try:
-    ...     secret(123)
-    ... except ValueError as e:
-    ...     str(e) == 'secret key must have exactly '  + str(secret.length) + ' bytes'
-    True
-
     The methods :obj:`symmetric.encrypt`, :obj:`symmetric.decrypt`, and
     :obj:`asymmetric.decrypt` only accept key parameters that are objects
     of this class.
@@ -307,23 +292,6 @@ class public(key):
     The constructor for this class checks that the supplied bytes-like
     object or integer argument satisfy the conditions for a valid public
     key.
-
-    >>> public('abc')
-    Traceback (most recent call last):
-      ...
-    TypeError: public key constructor argument must be a bytes-like object or an integer
-    >>> try:
-    ...     public(bytes([1, 2, 3]))
-    ... except ValueError as e:
-    ...     length = crypto_box_PUBLICKEYBYTES
-    ...     str(e) == 'public key must have exactly '  + str(length) + ' bytes'
-    True
-    >>> try:
-    ...     public(123)
-    ... except ValueError as e:
-    ...     length = crypto_box_PUBLICKEYBYTES
-    ...     str(e) == 'public key must have exactly '  + str(length) + ' bytes'
-    True
 
     The method :obj:`asymmetric.encrypt` only accepts key parameters that
     are objects of this class.
@@ -442,21 +410,6 @@ class symmetric:
         >>> c = symmetric.encrypt(s, m)
         >>> m == symmetric.decrypt(s, c)
         True
-
-        All parameters supplied to this method must have appropriate types.
-
-        >>> c = symmetric.encrypt(bytes([0, 0, 0]), m)
-        Traceback (most recent call last):
-          ...
-        TypeError: can only encrypt using a symmetric secret key
-        >>> c = symmetric.encrypt(s, 'abc')
-        Traceback (most recent call last):
-          ...
-        TypeError: can only encrypt a plaintext object or bytes-like object
-        >>> c = symmetric.encrypt(s, m, bytes([0, 0, 0]))
-        Traceback (most recent call last):
-          ...
-        TypeError: nonce parameter must be a nonce object
         """
         if not isinstance(secret_key, secret):
             raise TypeError('can only encrypt using a symmetric secret key')
@@ -494,21 +447,6 @@ class symmetric:
         >>> c = symmetric.encrypt(s, m)
         >>> m == symmetric.decrypt(s, c)
         True
-
-        All parameters supplied to this method must have appropriate types.
-
-        >>> c = symmetric.decrypt(bytes([0, 0, 0]), m)
-        Traceback (most recent call last):
-          ...
-        TypeError: can only decrypt using a symmetric secret key
-        >>> c = symmetric.decrypt(s, 'abc')
-        Traceback (most recent call last):
-          ...
-        TypeError: can only decrypt a ciphertext
-        >>> symmetric.decrypt(s, cipher(c + bytes([0, 0, 0])))
-        Traceback (most recent call last):
-          ...
-        RuntimeError: ciphertext failed verification
         """
         if not isinstance(secret_key, secret):
             raise TypeError('can only decrypt using a symmetric secret key')

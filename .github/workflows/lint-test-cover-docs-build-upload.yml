@@ -14,10 +14,10 @@ jobs:
     env:
       WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}
       INCLUDE: C:/libsodium/include
-      LIB: C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/dynamic/
+      LIB: C:/libsodium/${{ matrix.windows.arch-sodium }}/release/v142/static/
     steps:
       - uses: actions/checkout@v3
-      - name: Download and extract libsodium dynamic library file.
+      - name: Download and extract libsodium static library file.
         run: |
           wget -O c:\libsodium-1.0.18-msvc.zip https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18-msvc.zip
           Expand-Archive c:\libsodium-1.0.18-msvc.zip -DestinationPath c:\

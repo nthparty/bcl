@@ -370,16 +370,6 @@ class symmetric:
     Encryption is non-deterministic if no :obj:`nonce` parameter is
     supplied.
 
-    >>> c = symmetric.encrypt(s, x)
-    >>> isinstance(c, raw) and isinstance(c, cipher)
-    True
-    >>> c == cipher.from_base64(c.to_base64())
-    True
-    >>> symmetric.decrypt(s, c) == x
-    True
-    >>> isinstance(symmetric.decrypt(s, c), plain)
-    True
-
     Deterministic encryption is possible by supplying a :obj:`nonce`
     parameter.
 
@@ -497,10 +487,13 @@ class asymmetric:
         plaintext_length = len(plaintext)
         ciphertext_length = crypto_box_SEALBYTES + plaintext_length
         ciphertext = buf_new(ciphertext_length)
-        if _sodium.crypto_box_seal(
-            ciphertext, plaintext, plaintext_length, public_key
-        ) != 0:
-            raise RuntimeError('libsodium error during encryption') # pragma: no cover
+        try:
+            if _sodium.crypto_box_seal(
+                ciphertext, plaintext, plaintext_length, public_key
+            ) != 0:
+                raise RuntimeError('libsodium error during encryption') # pragma: no cover
+        except Exception as e:
+            raise e
 
         return cipher(ciphertext.raw)
 

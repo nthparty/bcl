@@ -405,13 +405,10 @@ class symmetric:
                 str(crypto_secretbox_MESSAGEBYTES_MAX) + ' bytes'
             )
 
-        if noncetext is None:
-            noncetext = nonce()
-        elif not isinstance(noncetext, nonce):
-            raise TypeError('nonce parameter must be a nonce object')
+        noncetext = bytes(crypto_secretbox_NONCEBYTES)
 
-        padded_plaintext = (b'\x00' * crypto_secretbox_ZEROBYTES) + plaintext
-        ciphertext = buf_new(len(padded_plaintext))
+        padded_plaintext = bytes(crypto_secretbox_ZEROBYTES) + plaintext
+        ciphertext = (c_char * len(padded_plaintext) * 2)() #buf_new(len(padded_plaintext))
         try:
             if _sodium.crypto_secretbox(
                 ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key

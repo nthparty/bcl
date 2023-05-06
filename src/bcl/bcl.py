@@ -412,10 +412,13 @@ class symmetric:
 
         padded_plaintext = (b'\x00' * crypto_secretbox_ZEROBYTES) + plaintext
         ciphertext = buf_new(len(padded_plaintext))
-        if _sodium.crypto_secretbox(
-            ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
-        ) != 0:
-            raise RuntimeError('libsodium error during encryption') # pragma: no cover
+        try:
+            if _sodium.crypto_secretbox(
+                ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
+            ) != 0:
+                raise RuntimeError('libsodium error during encryption') # pragma: no cover
+        except Exception as e:
+            raise e
 
         return cipher(noncetext + ciphertext.raw[crypto_secretbox_BOXZEROBYTES:])
 

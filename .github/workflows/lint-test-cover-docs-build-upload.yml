@@ -14,7 +14,7 @@ jobs:
     env:
       WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}
       INCLUDE: C:\libsodium\include
-      LIB: C:\libsodium\${{ matrix.windows.arch-sodium }}\Release\v142\dynamic\
+      LIB: C:\libsodium\${{ matrix.windows.arch-sodium }}\Release\v143\dynamic\
     steps:
       - uses: actions/checkout@v3
       - name: Download and extract libsodium dynamic library file.
@@ -34,7 +34,7 @@ jobs:
       - name: Build wheel file.
         run: |
           mkdir wheelhouse
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.windows.arch-vs }}
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.windows.arch-vs }}
           python -m build --wheel
           mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py

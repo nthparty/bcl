@@ -8,6 +8,7 @@ jobs:
       matrix:
         windows:
           - {version: 'win32', arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
+          - {version: 'win_amd64', arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
         python:
           - {version: '3.10', version-abi: 'cp310'}
     name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.version-abi }} for Windows ${{ matrix.windows.arch }}

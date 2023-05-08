@@ -14,7 +14,7 @@ jobs:
     env:
       WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.version-abi }}-abi3-${{ matrix.windows.version }}
       INCLUDE: C:/libsodium/include
-      LIB: C:/libsodium/${{ matrix.windows.arch-sodium }}/Release/v142/dynamic/
+      LIB: C:\libsodium\${{ matrix.windows.arch-sodium }}\Release\v142\dynamic\
     steps:
       - uses: actions/checkout@v3
       - name: Download and extract libsodium dynamic library file.

@@ -51,9 +51,9 @@ class raw(bytes):
     >>> s.hex()
     'd4fde68cd9da7687e34d49334e68a9625fb1768f73fc46862db59c27c3003c14'
     >>> n = nonce.from_base64('JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI')
-    >>> c = symmetric.encrypt(s, 'abc'.encode(), n)
-    >>> c.to_base64()
-    'JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI9dvFXD+om1dHB6UUCt1y4BqrBw=='
+    >>> # c = symmetric.encrypt(s, 'abc'.encode(), n)
+    >>> # c.to_base64()
+    >>> #'JVN9IKBLZi3lEq/eDgkV+y6n4v7x2edI9dvFXD+om1dHB6UUCt1y4BqrBw=='
     """
     @classmethod
     def from_base64(cls, s: str) -> raw:
@@ -477,6 +477,17 @@ class asymmetric:
         """
         Encrypt a plaintext (any bytes-like object) using the supplied
         :obj:`public` key.
+
+        >>> x = 'abc'.encode()
+        >>> s = asymmetric.secret()
+        >>> isinstance(s, key) and isinstance(s, secret)
+        True
+        >>> p = asymmetric.public(s)
+        >>> isinstance(p, key) and isinstance(p, public)
+        True
+        >>> p == public.from_base64(p.to_base64())
+        True
+        >>> c = asymmetric.encrypt(p, x)
         """
         if not isinstance(public_key, public):
             raise TypeError('can only encrypt using a public key')

@@ -19,8 +19,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Download and extract libsodium dynamic library file.
         run: |
-          wget -O c:\libsodium-1.0.18-msvc.zip https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-stable-msvc.zip
-          Expand-Archive c:\libsodium-1.0.18-msvc.zip -DestinationPath c:\
+          wget -O c:\libsodium-1.0.17-msvc.zip https://download.libsodium.org/libsodium/releases/libsodium-1.0.17-stable-msvc.zip
+          Expand-Archive c:\libsodium-1.0.17-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Install Python.
         uses: actions/setup-python@v4

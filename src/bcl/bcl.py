@@ -21,54 +21,31 @@ try:
 except:  # pylint: disable=bare-except # pragma: no cover
     from bcl._sodium import _sodium
 
-# Public and private globals (defined within ``_sodium_init`` after libsodium is ready).
-crypto_secretbox_ZEROBYTES = None
-"""Length of padding for plaintext.
+# Private global constants and functions (defined within
+# ``_sodium_init`` after libsodium is ready).
+_CRYPTO_SECRETBOX_ZEROBYTES = None
+"""Length of padding for plaintext."""
 
-:meta hide-value:
-"""
+_CRYPTO_SECRETBOX_BOXZEROBYTES = None
+"""Length of padding for plaintext."""
 
-crypto_secretbox_BOXZEROBYTES = None
-"""Length of padding for plaintext.
+_CRYPTO_SECRETBOX_NONCEBYTES = None
+"""Length of padding for ciphertext."""
 
-:meta hide-value:
-"""
+_CRYPTO_SECRETBOX_MESSAGEBYTES_MAX = None
+"""Maximum message length for symmetric encryption."""
 
-crypto_secretbox_NONCEBYTES = None
-"""Length of padding for ciphertext.
+_CRYPTO_SECRETBOX_KEYBYTES = None
+"""Length of symmetric encryption/decryption key."""
 
-:meta hide-value:
-"""
+_CRYPTO_BOX_SEALBYTES = None
+"""Minimum length of asymmetric encryption ciphertext."""
 
-crypto_secretbox_MESSAGEBYTES_MAX = None
-"""Maximum message length for symmetric encryption.
+_CRYPTO_BOX_PUBLICKEYBYTES = None
+"""Length of asymmetric public encryption key."""
 
-:meta hide-value:
-"""
-
-crypto_secretbox_KEYBYTES = None
-"""Length of symmetric encryption/decryption key.
-
-:meta hide-value:
-"""
-
-crypto_box_SEALBYTES = None
-"""Minimum length of asymmetric encryption ciphertext.
-
-:meta hide-value:
-"""
-
-crypto_box_PUBLICKEYBYTES = None
-"""Length of asymmetric public encryption key.
-
-:meta hide-value:
-"""
-
-crypto_SCALARMULTBYTES = None
-"""Length of element used as an asymmetric public encryption key.
-
-:meta hide-value:
-"""
+_CRYPTO_SCALARMULTBYTES = None
+"""Length of element used as an asymmetric public encryption key."""
 
 _crypto_scalarmult_bytes_new: Callable[[], bytes] = (
     lambda: None # pylint: disable=unnecessary-lambda-assignment
@@ -149,21 +126,21 @@ class nonce(raw):
         Create a nonce object.
         """
         if argument is None:
-            return bytes.__new__(cls, os.urandom(crypto_secretbox_NONCEBYTES))
+            return bytes.__new__(cls, os.urandom(_CRYPTO_SECRETBOX_NONCEBYTES))
 
         if isinstance(argument, (bytes, bytearray)):
-            if len(argument) != crypto_secretbox_NONCEBYTES:
+            if len(argument) != _CRYPTO_SECRETBOX_NONCEBYTES:
                 raise ValueError(
                     'nonce must have exactly ' +
-                    str(crypto_secretbox_NONCEBYTES) + ' bytes'
+                    str(_CRYPTO_SECRETBOX_NONCEBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         if isinstance(argument, int):
-            if argument != crypto_secretbox_NONCEBYTES:
+            if argument != _CRYPTO_SECRETBOX_NONCEBYTES:
                 raise ValueError(
                     'nonce must have exactly ' +
-                    str(crypto_secretbox_NONCEBYTES) + ' bytes'
+                    str(_CRYPTO_SECRETBOX_NONCEBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
@@ -301,21 +278,21 @@ class secret(key):
         Create a secret key object.
         """
         if argument is None:
-            return bytes.__new__(cls, secret(os.urandom(crypto_secretbox_KEYBYTES)))
+            return bytes.__new__(cls, secret(os.urandom(_CRYPTO_SECRETBOX_KEYBYTES)))
 
         if isinstance(argument, (bytes, bytearray)):
-            if len(argument) != crypto_secretbox_KEYBYTES:
+            if len(argument) != _CRYPTO_SECRETBOX_KEYBYTES:
                 raise ValueError(
                     'secret key must have exactly ' +
-                    str(crypto_secretbox_KEYBYTES) + ' bytes'
+                    str(_CRYPTO_SECRETBOX_KEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         if isinstance(argument, int):
-            if argument != crypto_secretbox_KEYBYTES:
+            if argument != _CRYPTO_SECRETBOX_KEYBYTES:
                 raise ValueError(
                     'secret key must have exactly ' +
-                    str(crypto_secretbox_KEYBYTES) + ' bytes'
+                    str(_CRYPTO_SECRETBOX_KEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
@@ -353,13 +330,13 @@ class public(key):
     >>> try:
     ...     public(bytes([1, 2, 3]))
     ... except ValueError as e:
-    ...     length = crypto_box_PUBLICKEYBYTES
+    ...     length = _CRYPTO_BOX_PUBLICKEYBYTES
     ...     str(e) == 'public key must have exactly '  + str(length) + ' bytes'
     True
     >>> try:
     ...     public(123)
     ... except ValueError as e:
-    ...     length = crypto_box_PUBLICKEYBYTES
+    ...     length = _CRYPTO_BOX_PUBLICKEYBYTES
     ...     str(e) == 'public key must have exactly '  + str(length) + ' bytes'
     True
 
@@ -375,21 +352,21 @@ class public(key):
         Create a public key object.
         """
         if argument is None:
-            return bytes.__new__(cls, secret(os.urandom(crypto_box_PUBLICKEYBYTES)))
+            return bytes.__new__(cls, secret(os.urandom(_CRYPTO_BOX_PUBLICKEYBYTES)))
 
         if isinstance(argument, (bytes, bytearray)):
-            if len(argument) != crypto_box_PUBLICKEYBYTES:
+            if len(argument) != _CRYPTO_BOX_PUBLICKEYBYTES:
                 raise ValueError(
                     'public key must have exactly ' +
-                    str(crypto_box_PUBLICKEYBYTES) + ' bytes'
+                    str(_CRYPTO_BOX_PUBLICKEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
         if isinstance(argument, int):
-            if argument != crypto_box_PUBLICKEYBYTES:
+            if argument != _CRYPTO_BOX_PUBLICKEYBYTES:
                 raise ValueError(
                     'public key must have exactly ' +
-                    str(crypto_box_PUBLICKEYBYTES) + ' bytes'
+                    str(_CRYPTO_BOX_PUBLICKEYBYTES) + ' bytes'
                 )
             return bytes.__new__(cls, argument)
 
@@ -501,10 +478,10 @@ class symmetric:
 
         if not isinstance(plaintext, (plain, bytes, bytearray)):
             raise TypeError('can only encrypt a plaintext object or bytes-like object')
-        if len(plaintext) > crypto_secretbox_MESSAGEBYTES_MAX:
+        if len(plaintext) > _CRYPTO_SECRETBOX_MESSAGEBYTES_MAX:
             raise ValueError( # pragma: no cover
                 'message length can be at most ' +
-                str(crypto_secretbox_MESSAGEBYTES_MAX) + ' bytes'
+                str(_CRYPTO_SECRETBOX_MESSAGEBYTES_MAX) + ' bytes'
             )
 
         if noncetext is None:
@@ -512,14 +489,14 @@ class symmetric:
         elif not isinstance(noncetext, nonce):
             raise TypeError('nonce parameter must be a nonce object')
 
-        padded_plaintext = bytes(crypto_secretbox_ZEROBYTES) + plaintext
+        padded_plaintext = bytes(_CRYPTO_SECRETBOX_ZEROBYTES) + plaintext
         ciphertext = _buffer_create(len(padded_plaintext))
         if _sodium.crypto_secretbox(
             ciphertext, padded_plaintext, len(padded_plaintext), noncetext, secret_key
         ) != 0:
             raise RuntimeError('libsodium error during encryption') # pragma: no cover
 
-        return cipher(noncetext + ciphertext.raw[crypto_secretbox_BOXZEROBYTES:])
+        return cipher(noncetext + ciphertext.raw[_CRYPTO_SECRETBOX_BOXZEROBYTES:])
 
     @staticmethod
     def decrypt(secret_key: secret, ciphertext: cipher) -> plain:
@@ -555,18 +532,18 @@ class symmetric:
             raise TypeError('can only decrypt a ciphertext')
 
         padded_ciphertext = (
-            bytes(crypto_secretbox_BOXZEROBYTES) +
-            ciphertext[crypto_secretbox_NONCEBYTES:]
+            bytes(_CRYPTO_SECRETBOX_BOXZEROBYTES) +
+            ciphertext[_CRYPTO_SECRETBOX_NONCEBYTES:]
         )
         plaintext = _buffer_create(len(padded_ciphertext))
         if _sodium.crypto_secretbox_open(
             plaintext, padded_ciphertext, len(padded_ciphertext),
-            ciphertext[:crypto_secretbox_NONCEBYTES],
+            ciphertext[:_CRYPTO_SECRETBOX_NONCEBYTES],
             secret_key
         ) != 0:
             raise RuntimeError('ciphertext failed verification')
 
-        return plain(plaintext.raw[crypto_secretbox_ZEROBYTES:])
+        return plain(plaintext.raw[_CRYPTO_SECRETBOX_ZEROBYTES:])
 
 class asymmetric:
     """
@@ -645,7 +622,7 @@ class asymmetric:
             raise TypeError('can only encrypt a plaintext object or bytes-like object')
 
         plaintext_length = len(plaintext)
-        ciphertext_length = crypto_box_SEALBYTES + plaintext_length
+        ciphertext_length = _CRYPTO_BOX_SEALBYTES + plaintext_length
         ciphertext = _buffer_create(ciphertext_length)
         if _sodium.crypto_box_seal(
             ciphertext, plaintext, plaintext_length, public_key
@@ -696,13 +673,13 @@ class asymmetric:
         public_key = public(q.raw)
 
         ciphertext_length = len(ciphertext)
-        if not ciphertext_length >= crypto_box_SEALBYTES:
+        if not ciphertext_length >= _CRYPTO_BOX_SEALBYTES:
             raise ValueError(
                 'asymmetric ciphertext must have at least ' +
-                str(crypto_box_SEALBYTES) + ' bytes'
+                str(_CRYPTO_BOX_SEALBYTES) + ' bytes'
             )
 
-        plaintext_length = ciphertext_length - crypto_box_SEALBYTES
+        plaintext_length = ciphertext_length - _CRYPTO_BOX_SEALBYTES
         plaintext = _buffer_create(max(1, plaintext_length))
         if _sodium.crypto_box_seal_open(
             plaintext, ciphertext, ciphertext_length, public_key, secret_key
@@ -730,32 +707,32 @@ def _sodium_init():
 
     # We cast to 64-bit integer manually below (otherwise, we would add the type
     # signature information to each function.
-    context['crypto_secretbox_ZEROBYTES'] = \
+    context['_CRYPTO_SECRETBOX_ZEROBYTES'] = \
         _sodium.crypto_secretbox_zerobytes() % pow(2, 64)
-    context['crypto_secretbox_BOXZEROBYTES'] = \
+    context['_CRYPTO_SECRETBOX_BOXZEROBYTES'] = \
         _sodium.crypto_secretbox_boxzerobytes() % pow(2, 64)
-    context['crypto_secretbox_NONCEBYTES'] = \
+    context['_CRYPTO_SECRETBOX_NONCEBYTES'] = \
         _sodium.crypto_secretbox_noncebytes() % pow(2, 64)
-    context['crypto_secretbox_MESSAGEBYTES_MAX'] = \
+    context['_CRYPTO_SECRETBOX_MESSAGEBYTES_MAX'] = \
         _sodium.crypto_secretbox_messagebytes_max() % pow(2, 64)
-    context['crypto_secretbox_KEYBYTES'] = \
+    context['_CRYPTO_SECRETBOX_KEYBYTES'] = \
             _sodium.crypto_secretbox_keybytes() % pow(2, 64)
-    context['crypto_box_SEALBYTES'] = \
+    context['_CRYPTO_BOX_SEALBYTES'] = \
         _sodium.crypto_box_sealbytes() % pow(2, 64)
-    context['crypto_box_PUBLICKEYBYTES'] = \
+    context['_CRYPTO_BOX_PUBLICKEYBYTES'] = \
         _sodium.crypto_box_publickeybytes() % pow(2, 64)
-    context['crypto_SCALARMULTBYTES'] = \
+    context['_CRYPTO_SCALARMULTBYTES'] = \
         _sodium.crypto_scalarmult_bytes() % pow(2, 64)
 
-    assert crypto_box_PUBLICKEYBYTES == crypto_SCALARMULTBYTES
+    assert _CRYPTO_BOX_PUBLICKEYBYTES == _CRYPTO_SCALARMULTBYTES
 
     context['_crypto_scalarmult_bytes_new'] = \
-        c.types.c_char * crypto_SCALARMULTBYTES
+        ctypes.c_char * _CRYPTO_SCALARMULTBYTES
 
     # Define static class attributes.
-    nonce.length = context['crypto_secretbox_NONCEBYTES']
-    secret.length = context['crypto_secretbox_KEYBYTES']
-    public.length = context['crypto_box_PUBLICKEYBYTES']
+    nonce.length = context['_CRYPTO_SECRETBOX_NONCEBYTES']
+    secret.length = context['_CRYPTO_SECRETBOX_KEYBYTES']
+    public.length = context['_CRYPTO_BOX_PUBLICKEYBYTES']
 
 # Check that libsodium is not already initialized and initialize it
 # (unless documentation is being automatically generated).

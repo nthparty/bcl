@@ -657,7 +657,7 @@ class asymmetric:
         >>> try:
         ...     asymmetric.decrypt(s, cipher(bytes([0])))
         ... except ValueError as e:
-        ...     length = crypto_box_SEALBYTES
+        ...     length = _CRYPTO_BOX_SEALBYTES
         ...     str(e) == 'asymmetric ciphertext must have at least '  + str(length) + ' bytes'
         True
         """

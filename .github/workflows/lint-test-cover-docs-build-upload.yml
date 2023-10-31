@@ -39,7 +39,7 @@ jobs:
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.
         run: |
-          .venv/bin/pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
+          pip install -f wheelhouse --no-index --force-reinstall --no-dependencies bcl
       - name: Lint and test module (and compiled libsodium shared library file).
         run: |
           pip install -U .[lint,test]
@@ -115,7 +115,7 @@ jobs:
         run: |
           venv/bin/pip install -U .[docs]
           cd docs
-          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/rbcl/_sodium_build.py
+          ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py
           make html SPHINXBUILD='../venv/bin/sphinx-build'
           cd ..
       - name: Upload wheel file.

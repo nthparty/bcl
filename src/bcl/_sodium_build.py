@@ -12,7 +12,7 @@ import subprocess
 import tarfile
 import errno
 import urllib.request
-from distutils.sysconfig import get_config_vars # pylint: disable=deprecated-module
+import sysconfig
 import pystache
 from setuptools.command.install import install
 
@@ -185,7 +185,7 @@ class Install(install):
         # Reproduce Python's build environment variables.
         os.environ.update({
             variable: value
-            for (variable, value) in get_config_vars().items()
+            for (variable, value) in sysconfig.get_config_vars().items()
             if (
                 variable in ['LDFLAGS', 'CFLAGS', 'CC', 'CCSHARED', 'LDSHARED'] and
                 variable not in os.environ

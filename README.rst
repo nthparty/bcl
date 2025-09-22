@@ -6,7 +6,7 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
 
 |pypi| |readthedocs| |actions| |coveralls|
 
-.. |pypi| image:: https://badge.fury.io/py/bcl.svg
+.. |pypi| image:: https://badge.fury.io/py/bcl.svg#
    :target: https://badge.fury.io/py/bcl
    :alt: PyPI version and link.
 
@@ -14,7 +14,7 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
    :target: https://bcl.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
 
-.. |actions| image:: https://github.com/nthparty/bcl/workflows/lint-test-cover-docs-build-upload/badge.svg
+.. |actions| image:: https://github.com/nthparty/bcl/workflows/lint-test-cover-docs-build-upload/badge.svg#
    :target: https://github.com/nthparty/bcl/actions
    :alt: GitHub Actions status.
 
@@ -36,7 +36,7 @@ This library is available as a `package on PyPI <https://pypi.org/project/bcl>`_
 
     python -m pip install bcl
 
-The library can be imported in the usual ways:
+The library can be imported in the usual manner:
 
 .. code-block:: python
 
@@ -140,7 +140,7 @@ All development and installation dependencies are managed using `setuptools <htt
 
 .. code-block:: bash
 
-    python -m pip install .[docs,lint]
+    python -m pip install ".[docs,lint]"
 
 Building from Source
 ^^^^^^^^^^^^^^^^^^^^
@@ -148,7 +148,7 @@ The library can be built manually from source **within Linux and macOS** using t
 
 .. code-block:: bash
 
-    python -m pip install .[build]
+    python -m pip install ".[build]"
     python -m build --sdist --wheel .
 
 Developing the library further in a local environment and/or building the library from source requires `libsodium <https://doc.libsodium.org>`__. The step ``python -m build --sdist --wheel .`` in the above attempts to automatically locate a copy of the libsodium source archive ``src/bcl/libsodium.tar.gz``. If the archive corresponding to the operating system is not found, the build process attempts to download it. To support building offline, it is necessary to first download the appropriate libsodium archive to its designated location:
@@ -181,7 +181,7 @@ Once the libsodium shared library file is compiled and moved into its designated
 
 .. code-block:: bash
 
-    python -m pip install .[docs]
+    python -m pip install ".[docs]"
     cd docs
     sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py && make html
 
@@ -193,7 +193,7 @@ All unit tests are executed and their coverage is measured when using `pytest <h
 
 .. code-block:: bash
 
-    python -m pip install .[test]
+    python -m pip install ".[test]"
     python -m pytest
 
 Alternatively, all unit tests are included in the module itself and can be executed using `doctest <https://docs.python.org/3/library/doctest.html>`__:
@@ -206,7 +206,7 @@ Style conventions are enforced using `Pylint <https://pylint.readthedocs.io>`__:
 
 .. code-block:: bash
 
-    python -m pip install .[lint]
+    python -m pip install ".[lint]"
     python -m pylint src/bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code
 
 Contributions
@@ -223,7 +223,7 @@ This library can be published as a `package on PyPI <https://pypi.org/project/bc
 
 .. code-block:: bash
 
-    python -m pip install .[publish]
+    python -m pip install ".[publish]"
 
 Ensure that the correct version number appears in ``setup.cfg``, and that any links in this README document to the Read the Docs documentation of this package (or its dependencies) have appropriate version numbers. Also ensure that the Read the Docs project for this library has an `automation rule <https://docs.readthedocs.io/en/stable/automation-rules.html>`__ that activates and sets as the default all tagged versions. Create and push a tag for this version (replacing ``?.?.?`` with the version number):
 

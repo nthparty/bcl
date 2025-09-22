@@ -7,18 +7,18 @@ jobs:
     strategy:
       matrix:
         python:
-          - {version: '3.7', abi: 'cp37'}
-          - {version: '3.8', abi: 'cp38'}
           - {version: '3.9', abi: 'cp39'}
           - {version: '3.10', abi: 'cp310'}
           - {version: '3.11', abi: 'cp311'}
+          - {version: '3.12', abi: 'cp312'}
+          - {version: '3.13', abi: 'cp313'}
     name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for manylinux2014_x86_64
     env:
       WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Python.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python.version }}
           architecture: x64
@@ -65,23 +65,21 @@ jobs:
         run: |
           mkdir bcl-wheelhouse
           mv wheelhouse/bcl*.whl bcl-wheelhouse/${{ env.WHEELNAME }}.whl
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse/
   macos:
-    runs-on: macos-latest
+    runs-on: macos-13
     strategy:
       matrix:
         python:
-          - {version: '3.7', abi: 'cp37', url: '3.7.9'}
-          - {version: '3.8', abi: 'cp38', url: '3.8.9'}
           - {version: '3.9', abi: 'cp39', url: '3.9.9'}
     name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 10.9
     env:
       WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macosx_10_9_x86_64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Python.
         run: |
           curl "https://www.python.org/ftp/python/${{ matrix.python.url }}/python-${{ matrix.python.url }}-macosx10.9.pkg" -o python.pkg
@@ -122,23 +120,25 @@ jobs:
         run: |
           mkdir bcl-wheelhouse
           mv wheelhouse/bcl*.whl bcl-wheelhouse/${{ env.WHEELNAME }}.whl
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse/
   macos-arm:
-    runs-on: [self-hosted, macos, ARM64]
+    runs-on: macos-15
     strategy:
       matrix:
         python:
-          - {version: '3.9', abi: 'cp39', url: '3.9.9'}
-          - {version: '3.10', abi: 'cp310', url: '3.10.6'}
-          - {version: '3.11', abi: 'cp311', url: '3.11.3'}
+          - {version: '3.9', abi: 'cp39', url: '3.9.13'}
+          - {version: '3.10', abi: 'cp310', url: '3.10.11'}
+          - {version: '3.11', abi: 'cp311', url: '3.11.9'}
+          - {version: '3.12', abi: 'cp312', url: '3.12.10'}
+          - {version: '3.13', abi: 'cp313', url: '3.13.7'}
     name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 11 ARM
     env:
-      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macosx_10_10_universal2
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macos11-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Python.
         run: |
           curl "https://www.python.org/ftp/python/${{ matrix.python.url }}/python-${{ matrix.python.url }}-macos11.pkg" -o python.pkg
@@ -179,7 +179,7 @@ jobs:
         run: |
           mkdir bcl-wheelhouse
           mv wheelhouse/bcl*.whl bcl-wheelhouse/${{ env.WHEELNAME }}.whl
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse/
@@ -188,26 +188,25 @@ jobs:
     strategy:
       matrix:
         windows:
-          - {version: 'win32', arch: 'x86', arch-sodium: 'Win32', arch-vs: 'x86'}
           - {version: 'win_amd64', arch: 'x64', arch-sodium: 'x64', arch-vs: 'amd64'}
         python:
-          - {version: '3.7', abi: 'cp37'}
-          - {version: '3.8', abi: 'cp38'}
           - {version: '3.9', abi: 'cp39'}
           - {version: '3.10', abi: 'cp310'}
           - {version: '3.11', abi: 'cp311'}
+          - {version: '3.12', abi: 'cp312'}
+          - {version: '3.13', abi: 'cp313'}
     name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for Windows ${{ matrix.windows.arch }}
     env:
       WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-${{ matrix.windows.version }}
       INCLUDE: C:\libsodium\include
       LIB: C:\libsodium\${{ matrix.windows.arch-sodium }}\Release\v142\dynamic\
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Python.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python.version }}
-          architecture: ${{ matrix.windows.arch }}                                
+          architecture: ${{ matrix.windows.arch }}
       - name: Download and extract libsodium dynamic library file.
         run: |
           wget -O C:\libsodium-1.0.18-msvc.zip https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip
@@ -249,7 +248,7 @@ jobs:
           mkdir bcl-wheelhouse
           move wheelhouse\bcl*.whl bcl-wheelhouse\${{ env.WHEELNAME }}.whl
         shell: cmd
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse\

@@ -59,6 +59,9 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build']
 
+# Do not qualify class names with module and submodule names.
+add_module_names = False
+
 # Options to configure autodoc extension behavior.
 autodoc_member_order = 'bysource'
 autodoc_default_options = {
@@ -80,17 +83,11 @@ autodoc_mock_imports = ['_sodium']
 
 def rtd_url_for_installed_version(name):
     prefix = 'https://' + name + '.readthedocs.io/en/'
-
-    if sys.version_info.major == 3 and sys.version_info.minor == 7:
-        import pkg_resources
-        return prefix + pkg_resources.get_distribution(name).version
-
     import importlib.metadata
     return prefix + importlib.metadata.version(name)
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'barriers': (rtd_url_for_installed_version('barriers'), None)
 }
 
 

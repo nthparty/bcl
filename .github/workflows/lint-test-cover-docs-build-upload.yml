@@ -7,15 +7,15 @@ jobs:
     strategy:
       matrix:
         python:
-          - {version: '3.12', abi: 'cp312', url: '3.12.10'}
-    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 11
+          - {version: '3.10', abi: 'cp310', url: '3.9.9'}
+    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 10.9
     env:
-      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macos11_x86_64
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macosx_10_9_x86_64
     steps:
       - uses: actions/checkout@v5
       - name: Install Python.
         run: |
-          curl "https://www.python.org/ftp/python/${{ matrix.python.url }}/python-${{ matrix.python.url }}-macos11.pkg" -o python.pkg
+          curl "https://www.python.org/ftp/python/${{ matrix.python.url }}/python-${{ matrix.python.url }}-macosx10.9.pkg" -o python.pkg
           sudo installer -pkg python.pkg -target /
           /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m pip install -U virtualenv
           /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m virtualenv venv
@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir wheelhouse
           rm -f dist/*.*
-          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=11 -march=native" \
+          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
               venv/bin/python -m build --wheel && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.

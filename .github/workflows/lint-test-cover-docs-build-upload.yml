@@ -2,15 +2,15 @@ name: lint-test-cover-docs-build-upload
 on:
   push
 jobs:
-  macos:
-    runs-on: macos-13
+  macos-intel:
+    runs-on: macos-15-intel
     strategy:
       matrix:
         python:
-          - {version: '3.10', abi: 'cp310', url: '3.10.11'}
-    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 10.9
+          - {version: '3.9', abi: 'cp39', url: '3.9.13'}
+    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 11 ARM
     env:
-      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macosx_10_9_x86_64
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macos11-arm
     steps:
       - uses: actions/checkout@v5
       - name: Install Python.
@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir wheelhouse
           rm -f dist/*.*
-          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
+          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" MACOSX_DEPLOYMENT_TARGET="10.10" CFLAGS="-arch native" ARCHFLAGS="-arch native" _PYTHON_HOST_PLATFORM="macosx-10.9-universal2" \
               venv/bin/python -m build --wheel && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.

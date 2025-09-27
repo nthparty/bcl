@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v5
       - name: Install Python.
         run: |
-          curl "https://www.python.org/ftp/python/${{ matrix.python.url }}/python-${{ matrix.python.url }}-macosx10.9.pkg" -o python.pkg
+          curl "https://www.python.org/ftp/python/${{ matrix.python.url }}/python-${{ matrix.python.url }}-macos11.pkg" -o python.pkg
           sudo installer -pkg python.pkg -target /
           /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m pip install -U virtualenv
           /Library/Frameworks/Python.framework/Versions/${{ matrix.python.version }}/bin/python3 -m virtualenv venv

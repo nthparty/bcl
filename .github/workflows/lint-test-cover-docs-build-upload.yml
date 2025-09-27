@@ -7,10 +7,14 @@ jobs:
     strategy:
       matrix:
         python:
+          - {version: '3.9', abi: 'cp39', url: '3.9.13'}
           - {version: '3.10', abi: 'cp310', url: '3.10.11'}
-    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 11 ARM
+          - {version: '3.11', abi: 'cp311', url: '3.11.9'}
+          - {version: '3.12', abi: 'cp312', url: '3.12.10'}
+          - {version: '3.13', abi: 'cp313', url: '3.13.7'}
+    name: Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} for macOS 11
     env:
-      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macos11-arm
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macos11
     steps:
       - uses: actions/checkout@v5
       - name: Install Python.
@@ -30,7 +34,7 @@ jobs:
         run: |
           mkdir wheelhouse
           rm -f dist/*.*
-          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-arch x86_64" ARCHFLAGS="-arch x86_64" \
+          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
               venv/bin/python -m build --wheel && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.

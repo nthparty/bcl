@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir wheelhouse
           rm -f dist/*.*
-          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=11 -march=core2" \
+          LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=11 -march=native" \
               venv/bin/python -m build --wheel && mv dist/bcl*.whl wheelhouse
           cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py
       - name: Test wheel installation.

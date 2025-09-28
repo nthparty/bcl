@@ -1,6 +1,9 @@
 name: build-lint-test-cover-docs-upload
 on:
-  push
+  push:
+    branches:
+      - '**'
+  workflow_call: # If invoked by build-publish-sign-release workflow.
 jobs:
   manylinux:
     runs-on: ${{ matrix.os-arch.os }}

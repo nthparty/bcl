@@ -14,7 +14,7 @@ Python library that provides a simple interface for symmetric (*i.e.*, secret-ke
    :target: https://bcl.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs documentation status.
 
-.. |actions| image:: https://github.com/nthparty/bcl/workflows/lint-test-cover-docs-build-upload/badge.svg#
+.. |actions| image:: https://github.com/nthparty/bcl/workflows/build-lint-test-cover-docs-upload/badge.svg#
    :target: https://github.com/nthparty/bcl/actions
    :alt: GitHub Actions status.
 
@@ -157,7 +157,7 @@ Developing the library further in a local environment and/or building the librar
 
     wget -O src/bcl/libsodium.tar.gz https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
 
-The process for building manually from source within a Windows environment is not currently documented, but an example of one sequence of steps can be found in the Windows job entry within the GitHub Actions workflow defined in the file ``.github/workflows/lint-test-cover-docs-build-upload.yml``.
+The process for building manually from source within a Windows environment is not currently documented, but an example of one sequence of steps can be found in the Windows job entry within the GitHub Actions workflow defined in the file ``.github/workflows/build-lint-test-cover-docs-upload.yml``.
 
 Preparation for Local Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -239,7 +239,7 @@ Remove any old build/distribution files. Then, package the source into a distrib
     rm -rf build dist src/*.egg-info
     python -m build --sdist .
 
-Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``lint-test-cover-docs-build-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain:
+Next, navigate to the appropriate GitHub Actions run of the workflow defined in ``build-lint-test-cover-docs-upload.yml``. Click on the workflow and scroll down to the **Artifacts** panel. Download the archive files to the ``dist`` directory. Unzip all the archive files so that only the ``*.whl`` files remain:
 
 .. code-block:: bash
 

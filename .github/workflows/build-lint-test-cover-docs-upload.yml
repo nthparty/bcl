@@ -80,6 +80,66 @@ jobs:
         with:
           name: bcl-${{ env.WHEELNAME_PY }}-${{ env.WHEELNAME_OS }}
           path: bcl-wheelhouse/
+  musllinux:
+    runs-on: ${{ matrix.os-arch.os }}
+    strategy:
+      matrix:
+        os-arch:
+          - {os: 'ubuntu-24.04', arch: 'x86_64'}
+          - {os: 'ubuntu-24.04-arm', arch: 'aarch64'}
+        python:
+          - {version: '3.9', abi: 'cp39'}
+          - {version: '3.10', abi: 'cp310'}
+          - {version: '3.11', abi: 'cp311'}
+          - {version: '3.12', abi: 'cp312'}
+          - {version: '3.13', abi: 'cp313'}
+    name: >
+      Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }} 
+      for musllinux_1_2_${{ matrix.os-arch.arch }}
+    env:
+      WHEELNAME_PY: ${{ github.ref_name }}-${{ matrix.python.abi }}
+      WHEELNAME_OS: abi3-musllinux_1_2_${{ matrix.os-arch.arch }}
+      CIBW_BUILD_VERBOSITY: 1
+      CIBW_ARCHS_LINUX: ${{ matrix.os-arch.arch }}
+      CIBW_BUILD: ${{ matrix.python.abi }}-musllinux_${{ matrix.os-arch.arch }}
+      CIBW_SKIP: '*-manylinux_*'
+      CIBW_PROJECT_REQUIRES_PYTHON: '~=${{ matrix.python.version }}'
+      CIBW_ENVIRONMENT: LIBSODIUM_MAKE_ARGS="-j$(nproc)"
+      CIBW_BEFORE_ALL: >
+        pip install .[build] -v
+      CIBW_REPAIR_WHEEL_COMMAND: ''
+      CIBW_TEST_EXTRAS: 'lint,test,docs'
+      CIBW_BEFORE_TEST: >
+        cd {project} &&
+        cp build/lib*/bcl/_sodium.py src/bcl/_sodium.py &&
+        pip3 install pystache~=0.6 setuptools &&
+        apk add wget &&
+        wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz &&
+        mv libsodium-1.0.18.tar.gz src/bcl/libsodium.tar.gz
+      CIBW_TEST_COMMAND: >
+        cd {project} &&
+        python -m pylint bcl src/bcl/_sodium.tmpl src/bcl/_sodium_build.py --disable=duplicate-code &&
+        python src/bcl/bcl.py -v &&
+        python -m pytest &&
+        cd docs &&
+        sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py ** &&
+        make html
+      CIBW_DEBUG_TRACEBACK: True
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build wheel file.
+        uses: pypa/cibuildwheel@v3.2.0
+        with:
+          output-dir: wheelhouse
+      - name: Rename wheel file.
+        run: |
+          mkdir bcl-wheelhouse
+          mv wheelhouse/bcl*.whl bcl-wheelhouse/bcl-${{ env.WHEELNAME_PY }}-${{ env.WHEELNAME_OS }}.whl
+      - name: Upload wheel file.
+        uses: actions/upload-artifact@v4
+        with:
+          name: bcl-${{ env.WHEELNAME_PY }}-${{ env.WHEELNAME_OS }}
+          path: bcl-wheelhouse/
   macos:
     runs-on: ${{ matrix.os-arch.os }}
     strategy:

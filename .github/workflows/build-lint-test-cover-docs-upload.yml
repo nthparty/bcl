@@ -8,7 +8,7 @@ jobs:
       matrix:
         os-arch:
           - {os: 'ubuntu-24.04', arch: 'x64', suffix: 'x86_64'}
-          - {os: 'ubuntu-24.04-arm', arch: 'arm64', suffix: 'arm'}
+          - {os: 'ubuntu-24.04-arm', arch: 'arm64', suffix: 'aarch64'}
         python:
           - {version: '3.9', abi: 'cp39'}
           - {version: '3.10', abi: 'cp310'}
@@ -68,11 +68,12 @@ jobs:
           sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py
           make html
           cd ..
-      - name: Upload wheel file.
+      - name: Rename wheel file.
         run: |
           mkdir bcl-wheelhouse
           mv wheelhouse/bcl*.whl bcl-wheelhouse/bcl-${{ env.WHEELNAME_PY }}-${{ env.WHEELNAME_OS }}.whl
-      - uses: actions/upload-artifact@v4
+      - name: Upload wheel file.
+        uses: actions/upload-artifact@v4
         with:
           name: bcl-${{ env.WHEELNAME_PY }}-${{ env.WHEELNAME_OS }}
           path: bcl-wheelhouse/
@@ -83,13 +84,13 @@ jobs:
         include:
           - os-arch:
               os: 'macos-13'
-              arch: 'x_10_9_x86_64'
+              arch: '10_9_x86_64'
               suffix: '10.9 Intel'
               flags: 'CFLAGS="-mmacosx-version-min=10.9 -march=core2"'
             python: {version: '3.9', abi: 'cp39', url: '3.9.13/python-3.9.13-macosx10.9'}
         os-arch:
-          - {os: 'macos-13', arch: '11-intel', suffix: '11 Intel', flags: ''}
-          - {os: 'macos-15', arch: '11-arm', suffix: '11 ARM', flags: 'CFLAGS="-arch arm64" ARCHFLAGS="-arch arm64"'}
+          - {os: 'macos-13', arch: '11_0_x86_64', suffix: '11 Intel', flags: ''}
+          - {os: 'macos-15', arch: '11_0_arm64', suffix: '11 ARM', flags: 'CFLAGS="-arch arm64" ARCHFLAGS="-arch arm64"'}
         python:
           - {version: '3.9', abi: 'cp39', url: '3.9.13/python-3.9.13-macos11'}
           - {version: '3.10', abi: 'cp310', url: '3.10.11/python-3.10.11-macos11'}
@@ -100,7 +101,7 @@ jobs:
       Python ${{ matrix.python.version }} with ABI ${{ matrix.python.abi }}
       for macOS ${{ matrix.os-arch.suffix }}
     env:
-      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macos${{ matrix.os-arch.arch }}
+      WHEELNAME: bcl-${{ github.ref_name }}-${{ matrix.python.abi }}-abi3-macosx_${{ matrix.os-arch.arch }}
     steps:
       - uses: actions/checkout@v5
       - name: Install Python.
@@ -142,11 +143,12 @@ jobs:
           ../venv/bin/sphinx-apidoc -f -E --templatedir=_templates -o _source .. ../src/bcl/_sodium_build.py
           make html SPHINXBUILD='../venv/bin/sphinx-build'
           cd ..
-      - name: Upload wheel file.
+      - name: Rename wheel file.
         run: |
           mkdir bcl-wheelhouse
           mv wheelhouse/bcl*.whl bcl-wheelhouse/${{ env.WHEELNAME }}.whl
-      - uses: actions/upload-artifact@v4
+      - name: Upload wheel file.
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse/
@@ -210,12 +212,13 @@ jobs:
           make html
           cd ..
         shell: bash
-      - name: Upload wheel file.
+      - name: Rename wheel file.
         run: |
           mkdir bcl-wheelhouse
           move wheelhouse\bcl*.whl bcl-wheelhouse\${{ env.WHEELNAME }}.whl
         shell: cmd
-      - uses: actions/upload-artifact@v4
+      - name: Upload wheel file.
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.WHEELNAME }}
           path: bcl-wheelhouse\
